@@ -1,0 +1,94 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import '../../../styles/global.css';
+---
+
+<Layout title="PDFビューワー - 高校情報">
+  <div class="min-h-screen bg-background text-foreground">
+    <main class="mx-auto flex min-h-screen max-w-6xl flex-col gap-4 px-4 py-6">
+      <section class="rounded-xl border border-border bg-card p-4 text-card-foreground shadow-sm">
+        <h1 class="text-xl font-semibold">PDFビューワー</h1>
+        <p class="mt-1 text-sm text-muted-foreground">ページ指定して外部PDFを参照します。</p>
+
+        <div id="toolbar" class="mt-4 flex flex-wrap items-center gap-2">
+          <button id="prevButton" type="button" class="inline-flex h-9 items-center rounded-md border border-input bg-background px-3 text-sm hover:bg-accent">
+            前へ
+          </button>
+          <label for="pageInput" class="text-sm text-muted-foreground">ページ</label>
+          <input id="pageInput" type="number" min="1" class="h-9 w-24 rounded-md border border-input bg-background px-3 text-sm" />
+          <button id="goButton" type="button" class="inline-flex h-9 items-center rounded-md bg-primary px-3 text-sm text-primary-foreground hover:opacity-90">
+            移動
+          </button>
+          <button id="nextButton" type="button" class="inline-flex h-9 items-center rounded-md border border-input bg-background px-3 text-sm hover:bg-accent">
+            次へ
+          </button>
+          <a id="openDirect" target="_blank" rel="noreferrer noopener" class="inline-flex h-9 items-center rounded-md border border-input bg-background px-3 text-sm hover:bg-accent">
+            直接開く
+          </a>
+        </div>
+        <p id="status" class="mt-3 text-xs text-muted-foreground"></p>
+      </section>
+
+      <iframe
+        id="pdfFrame"
+        title="PDF Viewer"
+        class="min-h-[72vh] w-full rounded-xl border border-border bg-background"
+        loading="lazy"
+      ></iframe>
+    </main>
+  </div>
+
+  <script is:inline>
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      const rawFile = params.get('file') || '';
+      const frame = document.getElementById('pdfFrame');
+      const status = document.getElementById('status');
+      const pageInput = document.getElementById('pageInput');
+      const prevButton = document.getElementById('prevButton');
+      const nextButton = document.getElementById('nextButton');
+      const goButton = document.getElementById('goButton');
+      const openDirect = document.getElementById('openDirect');
+
+      if (!(frame instanceof HTMLIFrameElement) || !(status instanceof HTMLElement) || !(pageInput instanceof HTMLInputElement) || !(prevButton instanceof HTMLButtonElement) || !(nextButton instanceof HTMLButtonElement) || !(goButton instanceof HTMLButtonElement) || !(openDirect instanceof HTMLAnchorElement)) {
+        return;
+      }
+
+      if (!rawFile) {
+        status.textContent = 'file パラメータが指定されていません。';
+        frame.removeAttribute('src');
+        return;
+      }
+
+      let page = Number.parseInt(params.get('page') || '1', 10);
+      if (!Number.isFinite(page) || page < 1) page = 1;
+
+      const setPage = (nextPage) => {
+        page = Math.max(1, Number.parseInt(String(nextPage), 10) || 1);
+        pageInput.value = String(page);
+
+        frame.src = `${rawFile}#page=${page}`;
+        openDirect.href = rawFile;
+
+        const nextUrl = new URL(window.location.href);
+        nextUrl.searchParams.set('file', rawFile);
+        nextUrl.searchParams.set('page', String(page));
+        window.history.replaceState(null, '', nextUrl);
+
+        status.textContent = `表示中: page ${page}`;
+      };
+
+      prevButton.addEventListener('click', () => setPage(page - 1));
+      nextButton.addEventListener('click', () => setPage(page + 1));
+      goButton.addEventListener('click', () => setPage(pageInput.value));
+      pageInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          setPage(pageInput.value);
+        }
+      });
+
+      setPage(page);
+    })();
+  </script>
+</Layout>

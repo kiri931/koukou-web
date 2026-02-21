@@ -1,0 +1,13 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Header from '../../../components/Header.astro';
+import { PdfReferenceMode } from '../../../features/pdf-viewer';
+import '../../../styles/global.css';
+---
+
+<Layout title="PDF参照モード - 高校情報">
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <Header />
+    <PdfReferenceMode client:only="react" />
+  </div>
+</Layout>
