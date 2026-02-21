@@ -4,7 +4,7 @@ import Header from '../../components/Header.astro';
 import '../../styles/global.css';
 ---
 
-<Layout title="Tools - ToolBox">
+<Layout title="高校情報">
   <div class="dark">
     <div class="min-h-screen bg-slate-950 text-slate-100">
       <Header />
@@ -16,6 +16,23 @@ import '../../styles/global.css';
         </section>
 
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <!-- 席替えアプリ サポート -->
+          <a
+            href="/tools/sekigae"
+            class="group rounded-xl border border-slate-800 bg-slate-900/50 p-6 transition-all hover:border-emerald-500/50 hover:bg-slate-900"
+          >
+            <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 transition-colors group-hover:bg-emerald-500/20">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+                <path d="M4 20h16" />
+                <path d="M7 20V8h10v12" />
+                <path d="M9 8V4h6v4" />
+                <path d="M9 12h6" />
+              </svg>
+            </div>
+            <h3 class="mb-1 font-semibold text-slate-100 group-hover:text-white">席替えアプリ サポート</h3>
+            <p class="text-sm text-slate-400">名簿作成から座席配置、席替え、共有までの使い方とFAQを掲載。</p>
+          </a>
+
           <!-- 顔モザイクツール -->
           <a
             href="/tools/face-mosaic"

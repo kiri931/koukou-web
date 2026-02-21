@@ -1,0 +1,16 @@
+---
+const { currentPath = "/tools/sekigae" } = Astro.props;
+const items = [
+  { href: "/tools/sekigae", label: "サポート" },
+  { href: "/tools/sekigae/privacy-policy", label: "プライバシーポリシー" },
+  { href: "/tools/sekigae/terms-of-use", label: "利用規約" },
+];
+---
+
+<nav class="sekigae-subnav" aria-label="席替えアプリ 関連ページ">
+  {items.map((item) => (
+    <a href={item.href} aria-current={currentPath === item.href ? "page" : undefined}>
+      {item.label}
+    </a>
+  ))}
+</nav>

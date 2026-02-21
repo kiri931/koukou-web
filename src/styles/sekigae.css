@@ -1,0 +1,87 @@
+@reference "tailwindcss";
+@reference "tw-animate-css";
+@reference "shadcn/tailwind.css";
+
+@layer base {
+  .sekigae-page {
+    @apply text-slate-100;
+  }
+
+  .sekigae-card {
+    @apply rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg shadow-slate-950/40;
+  }
+
+  .sekigae-prose h2 {
+    @apply mt-10 text-xl font-semibold text-slate-100;
+  }
+
+  .sekigae-prose h3 {
+    @apply mt-8 text-lg font-semibold text-slate-200;
+  }
+
+  .sekigae-prose p {
+    @apply mb-4 text-slate-300;
+  }
+
+  .sekigae-prose ul,
+  .sekigae-prose ol {
+    @apply mb-4 list-disc pl-6 text-slate-300;
+  }
+
+  .sekigae-prose ol {
+    @apply list-decimal;
+  }
+
+  .sekigae-prose li {
+    @apply mb-2;
+  }
+
+  .sekigae-prose a {
+    @apply text-indigo-300 underline underline-offset-4 hover:text-indigo-200;
+  }
+
+  .sekigae-prose code {
+    @apply rounded-lg border border-slate-700 bg-slate-800 px-1.5 py-0.5 font-mono text-[0.9em] text-slate-100;
+  }
+
+  .sekigae-prose hr {
+    @apply my-10 border-slate-800;
+  }
+
+  .sekigae-prose table {
+    @apply w-full border-collapse text-sm;
+  }
+
+  .sekigae-prose th,
+  .sekigae-prose td {
+    @apply border border-slate-700 px-3 py-2 align-top;
+  }
+
+  .sekigae-prose th {
+    @apply bg-slate-800 text-left text-slate-200;
+  }
+}
+
+.sekigae-subnav {
+  @apply flex flex-wrap gap-2 text-sm;
+}
+
+.sekigae-subnav a {
+  @apply rounded-full border border-slate-700 px-3 py-1.5 text-slate-300 transition;
+}
+
+.sekigae-subnav a:hover {
+  @apply border-slate-500 text-slate-100;
+}
+
+.sekigae-subnav a[aria-current="page"] {
+  @apply border-indigo-400 bg-indigo-500/20 text-indigo-100;
+}
+
+.sekigae-btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 font-semibold text-white transition hover:bg-indigo-500;
+}
+
+.sekigae-btn--subtle {
+  @apply border border-slate-700 bg-slate-900/80 text-slate-100 hover:bg-slate-800;
+}

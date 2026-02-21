@@ -1,6 +1,9 @@
 ---
-interface Props { title?: string; }
-const { title = 'Astro Basics' } = Astro.props;
+interface Props {
+	title?: string;
+	description?: string;
+}
+const { title = 'Astro Basics', description } = Astro.props;
 ---
 <!doctype html>
 <html lang="en">
@@ -10,6 +13,7 @@ const { title = 'Astro Basics' } = Astro.props;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
+		{description ? <meta name="description" content={description} /> : null}
 		<title>{title}</title>
 	</head>
 	<body>

@@ -1,0 +1,100 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { Header } from '../../../components/Header';
+import SekigaeSubnav from '../../../components/SekigaeSubnav.astro';
+import '../../../styles/global.css';
+import '../../../styles/sekigae.css';
+---
+
+<Layout
+  title="席替えアプリ | サポート・紹介"
+  description="教室の席替えを、かんたん・柔軟・実用的に。名簿作成→座席配置→席替え→微調整→PDF/CSV共有まで。"
+>
+  <div class="dark">
+    <div class="min-h-screen bg-slate-950">
+      <Header currentPath="/tools/sekigae" />
+
+      <main id="main" class="sekigae-page">
+        <section class="mx-auto max-w-5xl px-4 py-10">
+          <div class="mb-8">
+            <h1 class="text-3xl font-bold tracking-tight text-slate-100">
+              席替えアプリ サポート・紹介ページ
+            </h1>
+            <p class="mt-3 text-slate-400">
+              教室の席替えを、<strong class="text-slate-200">かんたん・柔軟・実用的</strong>に。名簿作成から座席配置、席替え、微調整、共有までをこれ1つで。
+            </p>
+          </div>
+
+          <SekigaeSubnav currentPath="/tools/sekigae" />
+
+          <section class="sekigae-card mt-6">
+            <div class="p-6 sm:p-8 sekigae-prose">
+              <h2>できること</h2>
+              <ul>
+                <li><strong>名簿の作成／編集</strong>（Excel からの貼り付け対応）</li>
+                <li><strong>座席表の作成</strong>（教室レイアウトに合わせて自由に配置）</li>
+                <li><strong>席替え</strong>（通常モード／抽選モード）</li>
+                <li><strong>結果の微調整</strong>（ドラッグで入れ替え）</li>
+                <li>出席番号順表示／色分け／黒板側から見た向きに反転表示</li>
+                <li>結果の保存／復元、<strong>PDF・CSVエクスポート</strong>、共有</li>
+              </ul>
+
+              <h2>おすすめの使い方</h2>
+              <ol>
+                <li>名簿を作成（またはExcelから貼り付け）</li>
+                <li>座席を配置（教室に合わせて調整）</li>
+                <li>席替えスタート</li>
+                <li>必要ならドラッグで微調整</li>
+                <li>PDF/CSVで共有・印刷</li>
+              </ol>
+
+              <h2>よくある質問（FAQ）</h2>
+              <h3>Q. 生徒名などのデータは外部に送信されますか？</h3>
+              <p>
+                原則として、名簿や座席情報は端末内に保存されます。共有（PDF/CSV）を行う場合のみ、ユーザーの操作により外部アプリへ送信されます。
+                詳細は <a href="/tools/sekigae/privacy-policy">プライバシーポリシー</a> をご確認ください。
+              </p>
+
+              <h3>Q. 広告を消せますか？</h3>
+              <p>アプリ内課金でバナー広告を削除できる場合があります。アプリ内の案内をご確認ください。</p>
+
+              <h3>Q. 不具合や要望を伝えたい</h3>
+              <p>
+                下の「お問い合わせ」からご連絡ください。再現手順（どの画面で何をしたか）と、端末/iOSバージョンがあると助かります。
+              </p>
+
+              <h2>お問い合わせ</h2>
+              <p>
+                不具合報告・改善要望・ご質問は、こちらのフォームからお願いします。
+              </p>
+              <p>
+                <a
+                  class="sekigae-btn"
+                  href="https://docs.google.com/forms/d/e/1FAIpQLSdboc88VTd-QLBccyoSY1yWiA-RTvrYEDPJzKgGWlRqmxawmA/viewform?usp=header"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  お問い合わせフォームを開く
+                </a>
+              </p>
+              <ul>
+                <li><strong>フォーム：</strong><a href="https://docs.google.com/forms/d/e/1FAIpQLSdboc88VTd-QLBccyoSY1yWiA-RTvrYEDPJzKgGWlRqmxawmA/viewform?usp=header" target="_blank" rel="noopener noreferrer">Googleフォーム</a></li>
+                <li><strong>Web：</strong><a href="https://koukou-jouhou.org/" target="_blank" rel="noopener noreferrer">https://koukou-jouhou.org/</a></li>
+              </ul>
+
+              <h2>リンク</h2>
+              <ul>
+                <li><a href="/tools/sekigae/privacy-policy">プライバシーポリシー</a></li>
+                <li><a href="/tools/sekigae/terms-of-use">利用規約</a></li>
+              </ul>
+            </div>
+          </section>
+        </section>
+      </main>
+
+      <footer class="border-t border-slate-800 py-8 text-center text-sm text-slate-500">
+        <p>© 席替えアプリ</p>
+      </footer>
+    </div>
+  </div>
+</Layout>
