@@ -1,0 +1,1426 @@
+<div id="fm-app">
+
+  <!-- OpenCV status bar -->
+  <div id="fm-opencv-status" class="fm-status fm-status--loading">
+    <span class="fm-status-dot"></span>
+    <span id="fm-status-text">OpenCV.js 読み込み中...</span>
+  </div>
+
+  <!-- Step 1: Image selection -->
+  <div class="fm-step" id="fm-step-1">
+    <h2 class="fm-step-title"><span class="fm-step-num">1</span> 画像を選択</h2>
+    <div
+      id="fm-drop-zone"
+      role="button"
+      tabindex="0"
+      aria-label="画像をドラッグ＆ドロップまたはクリックしてファイルを選択"
+    >
+      <div class="fm-drop-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+        </svg>
+      </div>
+      <p class="fm-drop-text">画像をここにドラッグ＆ドロップ</p>
+      <p class="fm-drop-subtext">または</p>
+      <label class="fm-file-btn" for="fm-file-input">
+        ファイルを選択
+        <input
+          type="file"
+          id="fm-file-input"
+          accept="image/jpeg,image/png,image/webp,image/gif"
+          hidden
+        />
+      </label>
+      <p class="fm-drop-formats">対応形式: JPEG / PNG / WebP / GIF（最大 20MB）</p>
+    </div>
+    <p id="fm-file-error" class="fm-error" hidden></p>
+    <p id="fm-file-name" class="fm-file-name" hidden></p>
+  </div>
+
+  <!-- Step 2: Face detection -->
+  <div class="fm-step" id="fm-step-2">
+    <h2 class="fm-step-title"><span class="fm-step-num">2</span> 顔を検出</h2>
+    <div class="fm-params">
+      <div class="fm-param-row">
+        <label class="fm-param-label" for="fm-min-neighbors">
+          minNeighbors
+          <span class="fm-param-hint">（小さいほど多く検出・誤検出も増える）</span>
+        </label>
+        <div class="fm-slider-row">
+          <input type="range" id="fm-min-neighbors" min="1" max="10" value="2" step="1" />
+          <span class="fm-slider-val" id="fm-min-neighbors-val">2</span>
+        </div>
+      </div>
+      <div class="fm-param-row">
+        <label class="fm-param-label" for="fm-scale-factor">
+          scaleFactor
+          <span class="fm-param-hint">（小さいほど精度高い・処理は遅くなる）</span>
+        </label>
+        <div class="fm-slider-row">
+          <input type="range" id="fm-scale-factor" min="1.05" max="2.0" value="1.1" step="0.05" />
+          <span class="fm-slider-val" id="fm-scale-factor-val">1.10</span>
+        </div>
+      </div>
+    </div>
+    <div class="fm-detect-row">
+      <button id="fm-detect-btn" class="fm-btn fm-btn--primary" disabled>
+        <span id="fm-detect-spinner" class="fm-spinner" hidden></span>
+        顔を検出
+      </button>
+      <span id="fm-detect-status" class="fm-detect-status"></span>
+    </div>
+  </div>
+
+  <!-- Step 3 + Canvas (grid layout) -->
+  <div id="fm-step3-canvas-row">
+
+    <!-- Step 3: Effect selection -->
+    <div class="fm-step" id="fm-step-3">
+      <h2 class="fm-step-title"><span class="fm-step-num">3</span> エフェクト選択</h2>
+
+      <div class="fm-effect-cards" role="radiogroup" aria-label="エフェクト選択">
+        <label class="fm-effect-card">
+          <input type="radio" name="fm-effect" value="mosaic" checked />
+          <span class="fm-effect-card-inner">
+            <span class="fm-effect-icon">⬛</span>
+            <span class="fm-effect-name">モザイク</span>
+          </span>
+        </label>
+        <label class="fm-effect-card">
+          <input type="radio" name="fm-effect" value="blur" />
+          <span class="fm-effect-card-inner">
+            <span class="fm-effect-icon">💧</span>
+            <span class="fm-effect-name">ぼかし</span>
+          </span>
+        </label>
+        <label class="fm-effect-card">
+          <input type="radio" name="fm-effect" value="blackout" />
+          <span class="fm-effect-card-inner">
+            <span class="fm-effect-icon">⬛</span>
+            <span class="fm-effect-name">黒塗り</span>
+          </span>
+        </label>
+        <label class="fm-effect-card">
+          <input type="radio" name="fm-effect" value="border" />
+          <span class="fm-effect-card-inner">
+            <span class="fm-effect-icon">🔲</span>
+            <span class="fm-effect-name">枠線</span>
+          </span>
+        </label>
+      </div>
+
+      <!-- Mosaic params -->
+      <div id="fm-params-mosaic" class="fm-effect-params">
+        <label class="fm-param-label" for="fm-mosaic-size">
+          ピクセルサイズ
+        </label>
+        <div class="fm-slider-row">
+          <input type="range" id="fm-mosaic-size" min="5" max="40" value="15" step="1" />
+          <span class="fm-slider-val" id="fm-mosaic-size-val">15px</span>
+        </div>
+      </div>
+
+      <!-- Blur params -->
+      <div id="fm-params-blur" class="fm-effect-params" hidden>
+        <label class="fm-param-label" for="fm-blur-kernel">
+          ぼかし強度
+        </label>
+        <div class="fm-slider-row">
+          <input type="range" id="fm-blur-kernel" min="5" max="51" value="21" step="2" />
+          <span class="fm-slider-val" id="fm-blur-kernel-val">21</span>
+        </div>
+      </div>
+
+      <!-- Border params -->
+      <div id="fm-params-border" class="fm-effect-params" hidden>
+        <div class="fm-param-row">
+          <label class="fm-param-label" for="fm-border-color">枠線の色</label>
+          <input type="color" id="fm-border-color" value="#ef4444" class="fm-color-input" />
+        </div>
+        <div class="fm-param-row">
+          <label class="fm-param-label" for="fm-border-width">枠線の太さ</label>
+          <div class="fm-slider-row">
+            <input type="range" id="fm-border-width" min="1" max="10" value="3" step="1" />
+            <span class="fm-slider-val" id="fm-border-width-val">3px</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fm-draw-controls">
+        <button id="fm-draw-mode-btn" class="fm-btn fm-btn--secondary" disabled>
+          ✏️ 手動描画モード
+        </button>
+        <button id="fm-delete-rect-btn" class="fm-btn fm-btn--danger" disabled>
+          削除
+        </button>
+        <button id="fm-reset-rects-btn" class="fm-btn fm-btn--ghost" disabled>
+          全リセット
+        </button>
+      </div>
+    </div>
+
+    <!-- Canvas -->
+    <div id="fm-canvas-wrapper">
+      <canvas id="fm-canvas"></canvas>
+      <canvas id="fm-overlay-canvas"></canvas>
+      <div id="fm-canvas-placeholder">
+        <p>画像を選択するとここに表示されます</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 4: Save / Reset -->
+  <div class="fm-step" id="fm-step-4">
+    <h2 class="fm-step-title"><span class="fm-step-num">4</span> 保存 / リセット</h2>
+    <div class="fm-action-row">
+      <button id="fm-save-btn" class="fm-btn fm-btn--primary fm-btn--large" disabled>
+        💾 画像を保存（PNG）
+      </button>
+      <button id="fm-reset-btn" class="fm-btn fm-btn--ghost fm-btn--large">
+        🔄 全体リセット
+      </button>
+    </div>
+  </div>
+
+  <!-- Privacy notice -->
+  <div id="fm-privacy-notice">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+    <span>画像はブラウザ内でのみ処理され、サーバーへの送信は一切行われません。</span>
+  </div>
+
+</div>
+
+<style>
+  /* ===== CSS Variables ===== */
+  #fm-app {
+    --fm-bg: #0f172a;
+    --fm-card: #1e293b;
+    --fm-card-hover: #263548;
+    --fm-border: #334155;
+    --fm-accent: #6366f1;
+    --fm-accent-hover: #4f46e5;
+    --fm-danger: #ef4444;
+    --fm-success: #22c55e;
+    --fm-warning: #f59e0b;
+    --fm-text: #f1f5f9;
+    --fm-text-muted: #94a3b8;
+    --fm-radius: 12px;
+    --fm-radius-sm: 8px;
+    --fm-shadow: 0 4px 24px rgba(0,0,0,0.35);
+
+    background: var(--fm-bg);
+    color: var(--fm-text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+    box-sizing: border-box;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* ===== Status Bar ===== */
+  #fm-opencv-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border-radius: var(--fm-radius-sm);
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .fm-status--loading {
+    background: rgba(99,102,241,0.12);
+    border: 1px solid rgba(99,102,241,0.3);
+    color: #a5b4fc;
+  }
+
+  .fm-status--ready {
+    background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: #86efac;
+  }
+
+  .fm-status--error {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: #fca5a5;
+  }
+
+  .fm-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+
+  .fm-status--loading .fm-status-dot {
+    animation: fm-pulse 1.2s ease-in-out infinite;
+  }
+
+  @keyframes fm-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ===== Steps ===== */
+  .fm-step {
+    background: var(--fm-card);
+    border-radius: var(--fm-radius);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--fm-shadow);
+    border: 1px solid var(--fm-border);
+  }
+
+  .fm-step-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--fm-text);
+  }
+
+  .fm-step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: var(--fm-accent);
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  /* ===== Drop Zone ===== */
+  #fm-drop-zone {
+    border: 2px dashed var(--fm-border);
+    border-radius: var(--fm-radius);
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  #fm-drop-zone:hover,
+  #fm-drop-zone:focus-visible,
+  #fm-drop-zone.fm-drag-over {
+    border-color: var(--fm-accent);
+    background: rgba(99,102,241,0.06);
+    outline: none;
+  }
+
+  .fm-drop-icon {
+    width: 56px;
+    height: 56px;
+    color: var(--fm-text-muted);
+    margin-bottom: 0.25rem;
+  }
+
+  .fm-drop-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .fm-drop-text {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--fm-text);
+  }
+
+  .fm-drop-subtext {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--fm-text-muted);
+  }
+
+  .fm-file-btn {
+    display: inline-block;
+    padding: 0.5rem 1.25rem;
+    background: var(--fm-accent);
+    color: #fff;
+    border-radius: var(--fm-radius-sm);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-top: 0.25rem;
+  }
+
+  .fm-file-btn:hover {
+    background: var(--fm-accent-hover);
+  }
+
+  .fm-drop-formats {
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--fm-text-muted);
+  }
+
+  .fm-error {
+    color: var(--fm-danger);
+    font-size: 0.85rem;
+    margin: 0.5rem 0 0;
+    padding: 0.5rem 0.75rem;
+    background: rgba(239,68,68,0.08);
+    border-radius: var(--fm-radius-sm);
+    border-left: 3px solid var(--fm-danger);
+  }
+
+  .fm-file-name {
+    color: var(--fm-text-muted);
+    font-size: 0.85rem;
+    margin: 0.5rem 0 0;
+  }
+
+  /* ===== Params & Sliders ===== */
+  .fm-params {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .fm-param-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .fm-param-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--fm-text);
+  }
+
+  .fm-param-hint {
+    font-weight: 400;
+    color: var(--fm-text-muted);
+    font-size: 0.8rem;
+    margin-left: 0.25rem;
+  }
+
+  .fm-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .fm-slider-row input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--fm-border);
+    outline: none;
+    cursor: pointer;
+  }
+
+  .fm-slider-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--fm-accent);
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    transition: transform 0.1s;
+  }
+
+  .fm-slider-row input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
+
+  .fm-slider-row input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--fm-accent);
+    border: none;
+    cursor: pointer;
+  }
+
+  .fm-slider-val {
+    min-width: 3rem;
+    text-align: right;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--fm-accent);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ===== Detect row ===== */
+  .fm-detect-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .fm-detect-status {
+    font-size: 0.875rem;
+    color: var(--fm-text-muted);
+  }
+
+  /* ===== Step3 + Canvas grid ===== */
+  #fm-step3-canvas-row {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: start;
+  }
+
+  @media (max-width: 767px) {
+    #fm-step3-canvas-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ===== Effect Cards ===== */
+  .fm-effect-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .fm-effect-card {
+    cursor: pointer;
+  }
+
+  .fm-effect-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .fm-effect-card-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.75rem 0.5rem;
+    background: var(--fm-bg);
+    border: 2px solid var(--fm-border);
+    border-radius: var(--fm-radius-sm);
+    transition: border-color 0.15s, background 0.15s;
+    font-size: 0.82rem;
+    color: var(--fm-text-muted);
+    font-weight: 500;
+  }
+
+  .fm-effect-card:has(input:checked) .fm-effect-card-inner {
+    border-color: var(--fm-accent);
+    background: rgba(99,102,241,0.12);
+    color: var(--fm-text);
+  }
+
+  .fm-effect-icon {
+    font-size: 1.3rem;
+  }
+
+  .fm-effect-name {
+    text-align: center;
+  }
+
+  /* ===== Effect Params ===== */
+  .fm-effect-params {
+    padding: 0.75rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: var(--fm-radius-sm);
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .fm-color-input {
+    width: 44px;
+    height: 36px;
+    padding: 2px;
+    border: 1px solid var(--fm-border);
+    border-radius: var(--fm-radius-sm);
+    background: var(--fm-bg);
+    cursor: pointer;
+  }
+
+  /* ===== Draw Controls ===== */
+  .fm-draw-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  /* ===== Buttons ===== */
+  .fm-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.1rem;
+    border: none;
+    border-radius: var(--fm-radius-sm);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, opacity 0.15s, transform 0.1s;
+    outline: none;
+  }
+
+  .fm-btn:active { transform: scale(0.97); }
+
+  .fm-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .fm-btn--primary {
+    background: var(--fm-accent);
+    color: #fff;
+  }
+
+  .fm-btn--primary:not(:disabled):hover {
+    background: var(--fm-accent-hover);
+  }
+
+  .fm-btn--secondary {
+    background: var(--fm-card-hover);
+    color: var(--fm-text);
+    border: 1px solid var(--fm-border);
+  }
+
+  .fm-btn--secondary:not(:disabled):hover {
+    border-color: var(--fm-accent);
+    color: var(--fm-accent);
+  }
+
+  .fm-btn--secondary.fm-draw-active {
+    border-color: var(--fm-accent);
+    color: var(--fm-accent);
+    background: rgba(99,102,241,0.12);
+  }
+
+  .fm-btn--danger {
+    background: rgba(239,68,68,0.1);
+    color: var(--fm-danger);
+    border: 1px solid rgba(239,68,68,0.3);
+  }
+
+  .fm-btn--danger:not(:disabled):hover {
+    background: rgba(239,68,68,0.2);
+  }
+
+  .fm-btn--ghost {
+    background: transparent;
+    color: var(--fm-text-muted);
+    border: 1px solid var(--fm-border);
+  }
+
+  .fm-btn--ghost:not(:disabled):hover {
+    color: var(--fm-text);
+    border-color: var(--fm-text-muted);
+  }
+
+  .fm-btn--large {
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  /* ===== Spinner ===== */
+  .fm-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: fm-spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes fm-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* ===== Canvas Wrapper ===== */
+  #fm-canvas-wrapper {
+    position: relative;
+    background: var(--fm-card);
+    border-radius: var(--fm-radius);
+    border: 1px solid var(--fm-border);
+    overflow: hidden;
+    min-height: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--fm-shadow);
+  }
+
+  #fm-canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  #fm-overlay-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-width: 100%;
+    height: auto;
+    cursor: crosshair;
+  }
+
+  #fm-canvas-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--fm-text-muted);
+    font-size: 0.9rem;
+    pointer-events: none;
+  }
+
+  /* ===== Step 4 actions ===== */
+  .fm-action-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  /* ===== Privacy notice ===== */
+  #fm-privacy-notice {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(99,102,241,0.06);
+    border: 1px solid rgba(99,102,241,0.15);
+    border-radius: var(--fm-radius-sm);
+    font-size: 0.8rem;
+    color: var(--fm-text-muted);
+    margin-top: 1rem;
+  }
+
+  #fm-privacy-notice svg {
+    color: var(--fm-accent);
+    flex-shrink: 0;
+  }
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  // ===== State =====
+  const state = {
+    originalImage: null,
+    originalFile: null,
+    imageLoaded: false,
+    opencvReady: false,
+    opencvLoading: false,
+    cascade: null,
+    detectedRects: [],
+    manualRects: [],
+    selectedRect: null,
+    drawMode: false,
+    isDrawing: false,
+    drawStart: null,
+    drawCurrent: null,
+    effect: 'mosaic',
+    mosaicSize: 15,
+    blurKernel: 21,
+    borderColor: '#ef4444',
+    borderWidth: 3,
+    renderTimer: null,
+  };
+
+  // ===== DOM refs =====
+  const $ = (id) => document.getElementById(id);
+
+  const statusEl = $('fm-opencv-status');
+  const statusTextEl = $('fm-status-text');
+  const dropZone = $('fm-drop-zone');
+  const fileInput = $('fm-file-input');
+  const fileError = $('fm-file-error');
+  const fileName = $('fm-file-name');
+  const detectBtn = $('fm-detect-btn');
+  const detectSpinner = $('fm-detect-spinner');
+  const detectStatus = $('fm-detect-status');
+  const drawModeBtn = $('fm-draw-mode-btn');
+  const deleteRectBtn = $('fm-delete-rect-btn');
+  const resetRectsBtn = $('fm-reset-rects-btn');
+  const saveBtn = $('fm-save-btn');
+  const resetBtn = $('fm-reset-btn');
+  const canvas = $('fm-canvas');
+  const overlayCanvas = $('fm-overlay-canvas');
+  const canvasPlaceholder = $('fm-canvas-placeholder');
+  const minNeighborsInput = $('fm-min-neighbors');
+  const minNeighborsVal = $('fm-min-neighbors-val');
+  const scaleFactorInput = $('fm-scale-factor');
+  const scaleFactorVal = $('fm-scale-factor-val');
+  const mosaicSizeInput = $('fm-mosaic-size');
+  const mosaicSizeVal = $('fm-mosaic-size-val');
+  const blurKernelInput = $('fm-blur-kernel');
+  const blurKernelVal = $('fm-blur-kernel-val');
+  const borderColorInput = $('fm-border-color');
+  const borderWidthInput = $('fm-border-width');
+  const borderWidthVal = $('fm-border-width-val');
+  const paramsMosaic = $('fm-params-mosaic');
+  const paramsBlur = $('fm-params-blur');
+  const paramsBorder = $('fm-params-border');
+
+  const ctx = canvas.getContext('2d');
+  const overlayCtx = overlayCanvas.getContext('2d');
+
+  // ===== OpenCV loading =====
+  function setStatus(mode, text) {
+    statusEl.className = 'fm-status fm-status--' + mode;
+    statusTextEl.textContent = text;
+  }
+
+  function loadOpenCV() {
+    if (state.opencvReady || state.opencvLoading) {
+      return;
+    }
+    state.opencvLoading = true;
+    setStatus('loading', 'OpenCV.js 読み込み中...');
+
+    if (window['cv'] && typeof window['cv'].Mat === 'function') {
+      setStatus('loading', 'モデル読み込み中...');
+      loadCascade();
+      return;
+    }
+
+    window['Module'] = {
+      onRuntimeInitialized: function () {
+        setStatus('loading', 'モデル読み込み中...');
+        loadCascade();
+      }
+    };
+
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = '/opencv.js';
+    script.onerror = function () {
+      state.opencvLoading = false;
+      setStatus('error', 'OpenCV.js の読み込みに失敗しました。ページを再読み込みしてください。');
+    };
+    document.head.appendChild(script);
+  }
+
+  async function loadCascade() {
+    try {
+      const cv = window['cv'];
+      const res = await fetch('/haarcascade_frontalface_default.xml');
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const buf = await res.arrayBuffer();
+      const data = new Uint8Array(buf);
+      cv.FS_createDataFile('/', 'haarcascade_frontalface_default.xml', data, true, false, false);
+      state.cascade = new cv.CascadeClassifier();
+      state.cascade.load('haarcascade_frontalface_default.xml');
+      state.opencvReady = true;
+      state.opencvLoading = false;
+      setStatus('ready', '準備完了');
+      updateDetectButton();
+    } catch (e) {
+      state.opencvLoading = false;
+      setStatus('error', 'Cascade 読み込みに失敗しました: ' + e.message);
+    }
+  }
+
+  // ===== Image loading =====
+  function handleFile(file) {
+    fileError.hidden = true;
+
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!allowed.includes(file.type)) {
+      fileError.textContent = '対応フォーマット（JPEG / PNG / WebP）の画像を選択してください。';
+      fileError.hidden = false;
+      return;
+    }
+
+    if (file.size > 20 * 1024 * 1024) {
+      fileError.textContent = 'ファイルサイズが上限（20MB）を超えています。';
+      fileError.hidden = false;
+      return;
+    }
+
+    state.originalFile = file;
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const img = new Image();
+      img.onload = function () {
+        state.originalImage = img;
+        state.imageLoaded = true;
+        state.detectedRects = [];
+        state.manualRects = [];
+        state.selectedRect = null;
+        state.drawMode = false;
+        drawModeBtn.classList.remove('fm-draw-active');
+
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        overlayCanvas.width = img.naturalWidth;
+        overlayCanvas.height = img.naturalHeight;
+
+        canvasPlaceholder.style.display = 'none';
+        canvas.style.display = 'block';
+        overlayCanvas.style.display = 'block';
+
+        fileName.textContent = '選択ファイル: ' + file.name;
+        fileName.hidden = false;
+
+        updateDetectButton();
+        updateDrawControls();
+        saveBtn.disabled = false;
+        renderAll();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ===== Drag & Drop =====
+  dropZone.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    dropZone.classList.add('fm-drag-over');
+  });
+
+  dropZone.addEventListener('dragleave', function () {
+    dropZone.classList.remove('fm-drag-over');
+  });
+
+  dropZone.addEventListener('drop', function (e) {
+    e.preventDefault();
+    dropZone.classList.remove('fm-drag-over');
+    const files = e.dataTransfer.files;
+    if (files.length > 0) handleFile(files[0]);
+  });
+
+  dropZone.addEventListener('click', function (e) {
+    if (e.target !== fileInput && !e.target.closest('label.fm-file-btn')) {
+      fileInput.click();
+    }
+  });
+
+  dropZone.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      fileInput.click();
+    }
+  });
+
+  fileInput.addEventListener('change', function () {
+    if (fileInput.files.length > 0) handleFile(fileInput.files[0]);
+  });
+
+  // ===== Detection =====
+  function updateDetectButton() {
+    detectBtn.disabled = !(state.opencvReady && state.imageLoaded);
+  }
+
+  detectBtn.addEventListener('click', async function () {
+    if (!state.opencvReady || !state.imageLoaded) return;
+
+    detectBtn.disabled = true;
+    detectSpinner.hidden = false;
+    detectStatus.textContent = '検出中...';
+
+    await new Promise((r) => setTimeout(r, 10));
+
+    try {
+      const cv = window['cv'];
+      const src = cv.imread(canvas);
+      const gray = new cv.Mat();
+      cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+
+      const faces = new cv.RectVector();
+      const msize = new cv.Size(0, 0);
+      const minNeighbors = parseInt(minNeighborsInput.value, 10);
+      const scaleFactor = parseFloat(scaleFactorInput.value);
+
+      state.cascade.detectMultiScale(gray, faces, scaleFactor, minNeighbors, 0, msize, msize);
+
+      state.detectedRects = [];
+      for (let i = 0; i < faces.size(); i++) {
+        const face = faces.get(i);
+        state.detectedRects.push({ x: face.x, y: face.y, w: face.width, h: face.height, type: 'auto' });
+      }
+
+      src.delete();
+      gray.delete();
+      faces.delete();
+
+      const n = state.detectedRects.length;
+      if (n === 0) {
+        detectStatus.textContent = '顔が検出されませんでした。minNeighbors を下げて再試行してください。';
+      } else {
+        detectStatus.textContent = n + ' 個の顔を検出しました';
+      }
+
+      state.selectedRect = null;
+      updateDrawControls();
+      renderAll();
+    } catch (e) {
+      detectStatus.textContent = 'エラー: ' + e.message;
+    } finally {
+      detectBtn.disabled = false;
+      detectSpinner.hidden = true;
+    }
+  });
+
+  // ===== Effect params =====
+  document.querySelectorAll('input[name="fm-effect"]').forEach(function (radio) {
+    radio.addEventListener('change', function () {
+      state.effect = radio.value;
+      paramsMosaic.hidden = state.effect !== 'mosaic';
+      paramsBlur.hidden = state.effect !== 'blur';
+      paramsBorder.hidden = state.effect !== 'border';
+      scheduleRender();
+    });
+  });
+
+  mosaicSizeInput.addEventListener('input', function () {
+    state.mosaicSize = parseInt(mosaicSizeInput.value, 10);
+    mosaicSizeVal.textContent = state.mosaicSize + 'px';
+    scheduleRender();
+  });
+
+  blurKernelInput.addEventListener('input', function () {
+    state.blurKernel = parseInt(blurKernelInput.value, 10);
+    blurKernelVal.textContent = state.blurKernel;
+    scheduleRender();
+  });
+
+  borderColorInput.addEventListener('input', function () {
+    state.borderColor = borderColorInput.value;
+    scheduleRender();
+  });
+
+  borderWidthInput.addEventListener('input', function () {
+    state.borderWidth = parseInt(borderWidthInput.value, 10);
+    borderWidthVal.textContent = state.borderWidth + 'px';
+    scheduleRender();
+  });
+
+  minNeighborsInput.addEventListener('input', function () {
+    minNeighborsVal.textContent = minNeighborsInput.value;
+  });
+
+  scaleFactorInput.addEventListener('input', function () {
+    scaleFactorVal.textContent = parseFloat(scaleFactorInput.value).toFixed(2);
+  });
+
+  function scheduleRender() {
+    clearTimeout(state.renderTimer);
+    state.renderTimer = setTimeout(renderAll, 150);
+  }
+
+  // ===== Draw controls =====
+  function updateDrawControls() {
+    const hasRects = state.detectedRects.length > 0 || state.manualRects.length > 0;
+    drawModeBtn.disabled = !state.imageLoaded;
+    resetRectsBtn.disabled = !hasRects;
+    deleteRectBtn.disabled = state.selectedRect === null;
+  }
+
+  drawModeBtn.addEventListener('click', function () {
+    state.drawMode = !state.drawMode;
+    state.selectedRect = null;
+    if (state.drawMode) {
+      drawModeBtn.classList.add('fm-draw-active');
+      drawModeBtn.textContent = '✏️ 描画モード ON';
+      overlayCanvas.style.cursor = 'crosshair';
+    } else {
+      drawModeBtn.classList.remove('fm-draw-active');
+      drawModeBtn.textContent = '✏️ 手動描画モード';
+      overlayCanvas.style.cursor = 'default';
+    }
+    updateDrawControls();
+    renderOverlay();
+  });
+
+  deleteRectBtn.addEventListener('click', deleteSelected);
+  resetRectsBtn.addEventListener('click', function () {
+    state.detectedRects = [];
+    state.manualRects = [];
+    state.selectedRect = null;
+    updateDrawControls();
+    renderAll();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if ((e.key === 'Delete' || e.key === 'Backspace') && state.selectedRect) {
+      if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+      deleteSelected();
+    }
+  });
+
+  function deleteSelected() {
+    if (!state.selectedRect) return;
+    const r = state.selectedRect;
+    state.detectedRects = state.detectedRects.filter((x) => x !== r);
+    state.manualRects = state.manualRects.filter((x) => x !== r);
+    state.selectedRect = null;
+    updateDrawControls();
+    renderAll();
+  }
+
+  // ===== Mouse / Touch =====
+  function getImageCoords(e) {
+    const rect = overlayCanvas.getBoundingClientRect();
+    const scaleX = overlayCanvas.width / rect.width;
+    const scaleY = overlayCanvas.height / rect.height;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY,
+    };
+  }
+
+  overlayCanvas.addEventListener('mousedown', onPointerDown);
+  overlayCanvas.addEventListener('mousemove', onPointerMove);
+  overlayCanvas.addEventListener('mouseup', onPointerUp);
+  overlayCanvas.addEventListener('mouseleave', onPointerLeave);
+  overlayCanvas.addEventListener('touchstart', function (e) { e.preventDefault(); onPointerDown(e); }, { passive: false });
+  overlayCanvas.addEventListener('touchmove', function (e) { e.preventDefault(); onPointerMove(e); }, { passive: false });
+  overlayCanvas.addEventListener('touchend', function (e) { e.preventDefault(); onPointerUp(e); }, { passive: false });
+
+  function onPointerDown(e) {
+    if (!state.imageLoaded) return;
+    const pos = getImageCoords(e);
+
+    if (state.drawMode) {
+      state.isDrawing = true;
+      state.drawStart = pos;
+      state.drawCurrent = pos;
+    } else {
+      // Hit test (reverse order)
+      const allRects = [...state.detectedRects, ...state.manualRects];
+      let hit = null;
+      for (let i = allRects.length - 1; i >= 0; i--) {
+        const r = allRects[i];
+        if (pos.x >= r.x && pos.x <= r.x + r.w && pos.y >= r.y && pos.y <= r.y + r.h) {
+          hit = r;
+          break;
+        }
+      }
+      state.selectedRect = hit;
+      updateDrawControls();
+      renderOverlay();
+    }
+  }
+
+  function onPointerMove(e) {
+    if (!state.isDrawing) return;
+    state.drawCurrent = getImageCoords(e);
+    renderOverlay();
+  }
+
+  function onPointerUp(e) {
+    if (!state.isDrawing) return;
+    state.isDrawing = false;
+    const pos = e.changedTouches ? getImageCoords({ clientX: e.changedTouches[0].clientX, clientY: e.changedTouches[0].clientY }) : getImageCoords(e);
+    const x = Math.min(state.drawStart.x, pos.x);
+    const y = Math.min(state.drawStart.y, pos.y);
+    const w = Math.abs(pos.x - state.drawStart.x);
+    const h = Math.abs(pos.y - state.drawStart.y);
+
+    if (w > 5 && h > 5) {
+      state.manualRects.push({ x, y, w, h, type: 'manual' });
+      updateDrawControls();
+      renderAll();
+    } else {
+      renderOverlay();
+    }
+    state.drawStart = null;
+    state.drawCurrent = null;
+  }
+
+  function onPointerLeave() {
+    if (state.isDrawing) {
+      state.isDrawing = false;
+      state.drawStart = null;
+      state.drawCurrent = null;
+      renderOverlay();
+    }
+  }
+
+  // ===== Rendering =====
+  function renderAll() {
+    if (!state.imageLoaded) return;
+    ctx.drawImage(state.originalImage, 0, 0);
+    const allRects = [...state.detectedRects, ...state.manualRects];
+    allRects.forEach(function (rect) {
+      applyEffect(rect);
+    });
+    renderOverlay();
+  }
+
+  function applyEffect(rect) {
+    const { x, y, w, h } = rect;
+    if (w <= 0 || h <= 0) return;
+
+    switch (state.effect) {
+      case 'mosaic':
+        applyMosaic(x, y, w, h);
+        break;
+      case 'blur':
+        applyBlur(x, y, w, h);
+        break;
+      case 'blackout':
+        ctx.fillStyle = '#000';
+        ctx.fillRect(x, y, w, h);
+        break;
+      case 'border':
+        ctx.strokeStyle = state.borderColor;
+        ctx.lineWidth = state.borderWidth;
+        ctx.strokeRect(x + state.borderWidth / 2, y + state.borderWidth / 2, w - state.borderWidth, h - state.borderWidth);
+        break;
+    }
+  }
+
+  function applyMosaic(x, y, w, h) {
+    const blockSize = Math.max(1, state.mosaicSize);
+    const ix = Math.floor(x);
+    const iy = Math.floor(y);
+    const iw = Math.ceil(w);
+    const ih = Math.ceil(h);
+    for (let bx = ix; bx < ix + iw; bx += blockSize) {
+      for (let by = iy; by < iy + ih; by += blockSize) {
+        const bw = Math.min(blockSize, ix + iw - bx);
+        const bh = Math.min(blockSize, iy + ih - by);
+        const cx = Math.floor(bx + bw / 2);
+        const cy = Math.floor(by + bh / 2);
+        const pixel = ctx.getImageData(cx, cy, 1, 1).data;
+        ctx.fillStyle = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
+        ctx.fillRect(bx, by, bw, bh);
+      }
+    }
+  }
+
+  function applyBlur(x, y, w, h) {
+    const blurPx = state.blurKernel * 0.4;
+    const tmp = new OffscreenCanvas(w, h);
+    const tmpCtx = tmp.getContext('2d');
+    tmpCtx.drawImage(canvas, x, y, w, h, 0, 0, w, h);
+    ctx.save();
+    ctx.filter = `blur(${blurPx}px)`;
+    ctx.drawImage(tmp, x, y);
+    ctx.restore();
+  }
+
+  function renderOverlay() {
+    overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+
+    // Draw detected rects (green)
+    state.detectedRects.forEach(function (r) {
+      const isSelected = r === state.selectedRect;
+      if (isSelected) return;
+      overlayCtx.strokeStyle = '#22c55e';
+      overlayCtx.lineWidth = 2;
+      overlayCtx.setLineDash([]);
+      overlayCtx.strokeRect(r.x, r.y, r.w, r.h);
+    });
+
+    // Draw manual rects (blue)
+    state.manualRects.forEach(function (r) {
+      const isSelected = r === state.selectedRect;
+      if (isSelected) return;
+      overlayCtx.strokeStyle = '#60a5fa';
+      overlayCtx.lineWidth = 2;
+      overlayCtx.setLineDash([4, 3]);
+      overlayCtx.strokeRect(r.x, r.y, r.w, r.h);
+      overlayCtx.setLineDash([]);
+    });
+
+    // Selected rect (yellow dashed)
+    if (state.selectedRect) {
+      const r = state.selectedRect;
+      overlayCtx.strokeStyle = '#fbbf24';
+      overlayCtx.lineWidth = 2.5;
+      overlayCtx.setLineDash([6, 3]);
+      overlayCtx.strokeRect(r.x, r.y, r.w, r.h);
+      overlayCtx.setLineDash([]);
+    }
+
+    // In-progress drawing rect
+    if (state.isDrawing && state.drawStart && state.drawCurrent) {
+      const x = Math.min(state.drawStart.x, state.drawCurrent.x);
+      const y = Math.min(state.drawStart.y, state.drawCurrent.y);
+      const w = Math.abs(state.drawCurrent.x - state.drawStart.x);
+      const h = Math.abs(state.drawCurrent.y - state.drawStart.y);
+      overlayCtx.strokeStyle = '#60a5fa';
+      overlayCtx.lineWidth = 2;
+      overlayCtx.setLineDash([4, 3]);
+      overlayCtx.strokeRect(x, y, w, h);
+      overlayCtx.setLineDash([]);
+    }
+  }
+
+  // ===== Save =====
+  saveBtn.addEventListener('click', async function () {
+    if (!state.imageLoaded) return;
+
+    const tmp = new OffscreenCanvas(canvas.width, canvas.height);
+    const tmpCtx = tmp.getContext('2d');
+
+    // Draw original
+    tmpCtx.drawImage(state.originalImage, 0, 0);
+
+    // Apply effects (reuse applyEffect logic on tmp canvas)
+    const origCtx = ctx;
+    // Temporarily redirect: apply effects on tmp
+    const allRects = [...state.detectedRects, ...state.manualRects];
+
+    // We need to apply effects on the tmp canvas — helper function
+    allRects.forEach(function (rect) {
+      const { x, y, w, h } = rect;
+      if (w <= 0 || h <= 0) return;
+
+      switch (state.effect) {
+        case 'mosaic': {
+          const blockSize = Math.max(1, state.mosaicSize);
+          const ix = Math.floor(x); const iy = Math.floor(y);
+          const iw = Math.ceil(w); const ih = Math.ceil(h);
+          for (let bx = ix; bx < ix + iw; bx += blockSize) {
+            for (let by = iy; by < iy + ih; by += blockSize) {
+              const bw2 = Math.min(blockSize, ix + iw - bx);
+              const bh2 = Math.min(blockSize, iy + ih - by);
+              const cx2 = Math.floor(bx + bw2 / 2);
+              const cy2 = Math.floor(by + bh2 / 2);
+              const pixel = tmpCtx.getImageData(cx2, cy2, 1, 1).data;
+              tmpCtx.fillStyle = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
+              tmpCtx.fillRect(bx, by, bw2, bh2);
+            }
+          }
+          break;
+        }
+        case 'blur': {
+          const blurPx2 = state.blurKernel * 0.4;
+          const sub = new OffscreenCanvas(w, h);
+          const subCtx = sub.getContext('2d');
+          subCtx.drawImage(tmp, x, y, w, h, 0, 0, w, h);
+          tmpCtx.save();
+          tmpCtx.filter = `blur(${blurPx2}px)`;
+          tmpCtx.drawImage(sub, x, y);
+          tmpCtx.restore();
+          break;
+        }
+        case 'blackout':
+          tmpCtx.fillStyle = '#000';
+          tmpCtx.fillRect(x, y, w, h);
+          break;
+        case 'border':
+          tmpCtx.strokeStyle = state.borderColor;
+          tmpCtx.lineWidth = state.borderWidth;
+          tmpCtx.strokeRect(x + state.borderWidth / 2, y + state.borderWidth / 2, w - state.borderWidth, h - state.borderWidth);
+          break;
+      }
+    });
+
+    const blob = await tmp.convertToBlob({ type: 'image/png' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const baseName = state.originalFile ? state.originalFile.name.replace(/\.[^.]+$/, '') : 'image';
+    a.href = url;
+    a.download = 'face-mosaic_' + baseName + '.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  });
+
+  // ===== Global Reset =====
+  resetBtn.addEventListener('click', function () {
+    state.originalImage = null;
+    state.originalFile = null;
+    state.imageLoaded = false;
+    state.detectedRects = [];
+    state.manualRects = [];
+    state.selectedRect = null;
+    state.drawMode = false;
+    state.isDrawing = false;
+    state.drawStart = null;
+    state.drawCurrent = null;
+
+    canvas.width = 1;
+    canvas.height = 1;
+    canvas.style.display = 'none';
+    overlayCanvas.width = 1;
+    overlayCanvas.height = 1;
+    overlayCanvas.style.display = 'none';
+    canvasPlaceholder.style.display = '';
+
+    fileInput.value = '';
+    fileError.hidden = true;
+    fileName.hidden = true;
+    detectStatus.textContent = '';
+    detectBtn.disabled = true;
+    drawModeBtn.disabled = true;
+    drawModeBtn.classList.remove('fm-draw-active');
+    drawModeBtn.textContent = '✏️ 手動描画モード';
+    deleteRectBtn.disabled = true;
+    resetRectsBtn.disabled = true;
+    saveBtn.disabled = true;
+
+    // Reset effect UI
+    document.querySelector('input[name="fm-effect"][value="mosaic"]').checked = true;
+    state.effect = 'mosaic';
+    paramsMosaic.hidden = false;
+    paramsBlur.hidden = true;
+    paramsBorder.hidden = true;
+    mosaicSizeInput.value = 15;
+    mosaicSizeVal.textContent = '15px';
+    state.mosaicSize = 15;
+    blurKernelInput.value = 21;
+    blurKernelVal.textContent = '21';
+    state.blurKernel = 21;
+    borderColorInput.value = '#ef4444';
+    state.borderColor = '#ef4444';
+    borderWidthInput.value = 3;
+    borderWidthVal.textContent = '3px';
+    state.borderWidth = 3;
+    minNeighborsInput.value = 2;
+    minNeighborsVal.textContent = '2';
+    scaleFactorInput.value = 1.1;
+    scaleFactorVal.textContent = '1.10';
+  });
+
+  // ===== Init =====
+  canvas.style.display = 'none';
+  overlayCanvas.style.display = 'none';
+
+  document.addEventListener('DOMContentLoaded', function () {
+    loadOpenCV();
+  });
+
+  // In case DOMContentLoaded already fired (Astro)
+  if (document.readyState !== 'loading') {
+    loadOpenCV();
+  }
+
+})();
+</script>

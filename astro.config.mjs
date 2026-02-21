@@ -10,6 +10,16 @@ export default defineConfig({
   integrations: [react()],
 
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    server: {
+      headers: {
+        'Cross-Origin-Embedder-Policy': 'unsafe-none',
+      },
+    },
+    preview: {
+      headers: {
+        'Cross-Origin-Embedder-Policy': 'unsafe-none',
+      },
+    },
   }
 });
