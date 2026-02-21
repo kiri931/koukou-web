@@ -1,13 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Header from '../components/Header.astro';
+import { Header } from '../components/Header';
 import '../styles/global.css';
 ---
 
 <Layout title="ToolBox - Webツール集">
   <div class="dark">
     <div class="min-h-screen bg-slate-950 text-slate-100">
-      <Header />
+      <Header currentPath="/" />
 
       <main class="mx-auto max-w-5xl px-4 py-16">
         <!-- Hero -->
