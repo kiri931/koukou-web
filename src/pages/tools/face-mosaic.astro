@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import Header from '../../components/Header.astro';
+import { Header } from '../../components/Header';
 import { FaceMosaicShadcn } from '../../features/face-mosaic';
 import '../../styles/global.css';
 ---
@@ -8,7 +8,7 @@ import '../../styles/global.css';
 <Layout title="顔モザイクツール - Face Mosaic">
   <div class="dark">
     <div class="min-h-screen bg-slate-950">
-      <Header />
+      <Header currentPath="/tools/face-mosaic" />
       <FaceMosaicShadcn client:only="react" />
     </div>
   </div>
