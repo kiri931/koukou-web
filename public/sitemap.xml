@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://example.com/</loc></url>
+  <url><loc>https://example.com/tools/</loc></url>
+  <url><loc>https://example.com/tools/face-mosaic</loc></url>
+  <url><loc>https://example.com/tools/pdf-merge</loc></url>
+  <url><loc>https://example.com/tools/pdf-viewer</loc></url>
+  <url><loc>https://example.com/tools/pdf-viewer/viewer</loc></url>
+  <url><loc>https://example.com/tools/presentation</loc></url>
+  <url><loc>https://example.com/tools/sekigae</loc></url>
+  <url><loc>https://example.com/tools/sekigae/privacy-policy</loc></url>
+  <url><loc>https://example.com/tools/sekigae/terms-of-use</loc></url>
+  <url><loc>https://example.com/tools/time-schedule</loc></url>
+  <url><loc>https://example.com/tools/typing-japanese</loc></url>
+</urlset>
