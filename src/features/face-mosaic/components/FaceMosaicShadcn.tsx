@@ -230,23 +230,23 @@ export default function FaceMosaicShadcn() {
   const hasRects = detectedRects.length > 0 || manualRects.length > 0;
 
   const StepBadge = ({ n }: { n: number }) => (
-    <Badge className="h-7 w-7 rounded-full bg-indigo-500 text-xs font-extrabold text-white shrink-0 flex items-center justify-center p-0">
+    <Badge className="h-7 w-7 shrink-0 rounded-full bg-primary p-0 text-xs font-extrabold text-primary-foreground flex items-center justify-center">
       {n}
     </Badge>
   );
 
   return (
-    <div className="dark min-h-screen bg-[#0f172a] text-slate-100 font-sans">
-      <div className="mx-auto max-w-5xl px-4 py-8 pb-16 flex flex-col gap-4">
+    <div className="min-h-screen bg-background text-foreground font-sans">
+      <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-8 pb-16">
 
         {/* OpenCV Status — Alert */}
         <Alert
           className={`border ${
             opencvStatus === "ready"
-              ? "bg-green-500/10 border-green-500/30 text-green-400"
+              ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
               : opencvStatus === "error"
-                ? "bg-red-500/10 border-red-500/30 text-red-400"
-                : "bg-indigo-500/10 border-indigo-500/30 text-indigo-300"
+                ? "border-destructive/30 bg-destructive/10 text-destructive"
+                : "border-primary/30 bg-primary/10 text-primary"
           }`}
         >
           {opencvStatus === "ready" ? (
@@ -260,9 +260,9 @@ export default function FaceMosaicShadcn() {
         </Alert>
 
         {/* Step 1: Image Selection */}
-        <Card className="border-slate-700 bg-slate-800 shadow-lg">
+        <Card className="shadow-lg">
           <CardHeader className="pb-0">
-            <CardTitle className="flex items-center gap-3 text-slate-100">
+            <CardTitle className="flex items-center gap-3">
               <StepBadge n={1} />
               画像を選択
             </CardTitle>
@@ -276,25 +276,25 @@ export default function FaceMosaicShadcn() {
               onDragOver={onDragOver}
               onDragLeave={onDragLeave}
               onDrop={onDrop}
-              className={`flex flex-col items-center gap-2 rounded-xl border-2 border-dashed px-6 py-10 text-center cursor-pointer transition-colors ${
+              className={`flex cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed px-6 py-10 text-center transition-colors ${
                 isDragOver
-                  ? "border-indigo-500 bg-indigo-500/5"
-                  : "border-slate-600 hover:border-indigo-500 hover:bg-indigo-500/5"
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover:border-primary/60 hover:bg-muted/40"
               }`}
             >
-              <ImageIcon className="h-14 w-14 text-slate-500" />
-              <p className="text-base font-semibold text-slate-200">画像をここにドラッグ＆ドロップ</p>
-              <p className="text-sm text-slate-400">または</p>
+              <ImageIcon className="h-14 w-14 text-muted-foreground" />
+              <p className="text-base font-semibold">画像をここにドラッグ＆ドロップ</p>
+              <p className="text-sm text-muted-foreground">または</p>
               <Button
                 variant="default"
                 size="sm"
-                className="bg-indigo-500 hover:bg-indigo-600 text-white"
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
                 onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
               >
                 <Upload className="h-4 w-4" />
                 ファイルを選択
               </Button>
-              <p className="text-xs text-slate-500">対応形式: JPEG / PNG / WebP / GIF（最大 20MB）</p>
+              <p className="text-xs text-muted-foreground">対応形式: JPEG / PNG / WebP / GIF（最大 20MB）</p>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -304,13 +304,13 @@ export default function FaceMosaicShadcn() {
               />
             </div>
             {fileError && (
-              <Alert variant="destructive" className="mt-3 bg-red-500/10 border-red-500/30">
+              <Alert variant="destructive" className="mt-3 border-destructive/30 bg-destructive/10">
                 <CircleAlert className="h-4 w-4" />
-                <AlertDescription className="text-red-400">{fileError}</AlertDescription>
+                <AlertDescription>{fileError}</AlertDescription>
               </Alert>
             )}
             {fileName && !fileError && (
-              <Badge variant="outline" className="mt-3 border-slate-600 text-slate-300 gap-1.5 py-1 px-2.5">
+              <Badge variant="outline" className="mt-3 gap-1.5 px-2.5 py-1 text-muted-foreground">
                 <FileImage className="h-3.5 w-3.5" />
                 {fileName}
               </Badge>
@@ -319,9 +319,9 @@ export default function FaceMosaicShadcn() {
         </Card>
 
         {/* Step 2: Face Detection */}
-        <Card className="border-slate-700 bg-slate-800 shadow-lg">
+        <Card className="shadow-lg">
           <CardHeader className="pb-0">
-            <CardTitle className="flex items-center gap-3 text-slate-100">
+            <CardTitle className="flex items-center gap-3">
               <StepBadge n={2} />
               顔を検出
             </CardTitle>
@@ -329,9 +329,9 @@ export default function FaceMosaicShadcn() {
           <CardContent className="flex flex-col gap-5">
             {/* minNeighbors */}
             <div className="flex flex-col gap-2">
-              <Label className="text-slate-200">
+              <Label>
                 minNeighbors
-                <span className="ml-1 text-xs font-normal text-slate-400">（小さいほど多く検出・誤検出も増える）</span>
+                <span className="ml-1 text-xs font-normal text-muted-foreground">（小さいほど多く検出・誤検出も増える）</span>
               </Label>
               <div className="flex items-center gap-3">
                 <Slider
@@ -340,21 +340,21 @@ export default function FaceMosaicShadcn() {
                   step={1}
                   value={[minNeighbors]}
                   onValueChange={(v) => setMinNeighbors(v[0])}
-                  className="flex-1 [&_[data-slot=slider-track]]:bg-slate-700 [&_[data-slot=slider-range]]:bg-indigo-500 [&_[data-slot=slider-thumb]]:border-indigo-500"
+                  className="flex-1 [&_[data-slot=slider-track]]:bg-muted [&_[data-slot=slider-range]]:bg-primary [&_[data-slot=slider-thumb]]:border-primary"
                 />
-                <Badge variant="secondary" className="min-w-[2.5rem] justify-center tabular-nums bg-slate-700 text-indigo-400">
+                <Badge variant="secondary" className="min-w-[2.5rem] justify-center tabular-nums text-primary">
                   {minNeighbors}
                 </Badge>
               </div>
             </div>
 
-            <Separator className="bg-slate-700" />
+            <Separator className="bg-border" />
 
             {/* scaleFactor */}
             <div className="flex flex-col gap-2">
-              <Label className="text-slate-200">
+              <Label>
                 scaleFactor
-                <span className="ml-1 text-xs font-normal text-slate-400">（小さいほど精度高い・処理は遅くなる）</span>
+                <span className="ml-1 text-xs font-normal text-muted-foreground">（小さいほど精度高い・処理は遅くなる）</span>
               </Label>
               <div className="flex items-center gap-3">
                 <Slider
@@ -363,22 +363,22 @@ export default function FaceMosaicShadcn() {
                   step={0.05}
                   value={[scaleFactor]}
                   onValueChange={(v) => setScaleFactor(v[0])}
-                  className="flex-1 [&_[data-slot=slider-track]]:bg-slate-700 [&_[data-slot=slider-range]]:bg-indigo-500 [&_[data-slot=slider-thumb]]:border-indigo-500"
+                  className="flex-1 [&_[data-slot=slider-track]]:bg-muted [&_[data-slot=slider-range]]:bg-primary [&_[data-slot=slider-thumb]]:border-primary"
                 />
-                <Badge variant="secondary" className="min-w-[2.5rem] justify-center tabular-nums bg-slate-700 text-indigo-400">
+                <Badge variant="secondary" className="min-w-[2.5rem] justify-center tabular-nums text-primary">
                   {scaleFactor.toFixed(2)}
                 </Badge>
               </div>
             </div>
 
-            <Separator className="bg-slate-700" />
+            <Separator className="bg-border" />
 
             {/* Detect Button + Status */}
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex flex-wrap items-center gap-3">
               <Button
                 disabled={!opencvReadyRef.current || !imageLoaded || isDetecting}
                 onClick={handleDetect}
-                className="bg-indigo-500 hover:bg-indigo-600 text-white disabled:opacity-40"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
               >
                 {isDetecting ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -392,8 +392,8 @@ export default function FaceMosaicShadcn() {
                   variant="outline"
                   className={`py-1 px-2.5 ${
                     detectedRects.length > 0
-                      ? "border-green-500/30 text-green-400"
-                      : "border-slate-600 text-slate-400"
+                      ? "border-emerald-500/40 text-emerald-700 dark:text-emerald-300"
+                      : "border-border text-muted-foreground"
                   }`}
                 >
                   {detectStatus}
@@ -404,12 +404,12 @@ export default function FaceMosaicShadcn() {
         </Card>
 
         {/* Step 3 + Canvas Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] gap-4 items-start">
+        <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-[320px_1fr]">
 
           {/* Step 3: Effect Selection */}
-          <Card className="border-slate-700 bg-slate-800 shadow-lg">
+          <Card className="shadow-lg">
             <CardHeader className="pb-0">
-              <CardTitle className="flex items-center gap-3 text-slate-100">
+              <CardTitle className="flex items-center gap-3">
                 <StepBadge n={3} />
                 エフェクト選択
               </CardTitle>
@@ -429,10 +429,10 @@ export default function FaceMosaicShadcn() {
                   <Label
                     key={item.value}
                     htmlFor={`effect-${item.value}`}
-                    className={`flex flex-col items-center gap-1.5 rounded-lg border-2 px-3 py-3 cursor-pointer transition-colors ${
+                    className={`flex cursor-pointer flex-col items-center gap-1.5 rounded-lg border-2 px-3 py-3 transition-colors ${
                       effect === item.value
-                        ? "border-indigo-500 bg-indigo-500/10 text-slate-100"
-                        : "border-slate-600 bg-[#0f172a] text-slate-400 hover:border-slate-500"
+                        ? "border-primary bg-primary/10 text-foreground"
+                        : "border-border bg-muted/30 text-muted-foreground hover:border-primary/50 hover:text-foreground"
                     }`}
                   >
                     <RadioGroupItem
@@ -448,9 +448,9 @@ export default function FaceMosaicShadcn() {
 
               {/* Effect Params — Card inner */}
               {effect === "mosaic" && (
-                <Card className="border-slate-700 bg-slate-900/50 shadow-none">
+                <Card className="border-border bg-muted/30 shadow-none">
                   <CardContent className="flex flex-col gap-2 p-3">
-                    <Label className="text-slate-200 text-sm">ピクセルサイズ</Label>
+                    <Label className="text-sm">ピクセルサイズ</Label>
                     <div className="flex items-center gap-3">
                       <Slider
                         min={5}
@@ -458,9 +458,9 @@ export default function FaceMosaicShadcn() {
                         step={1}
                         value={[mosaicSize]}
                         onValueChange={(v) => setMosaicSize(v[0])}
-                        className="flex-1 [&_[data-slot=slider-track]]:bg-slate-700 [&_[data-slot=slider-range]]:bg-indigo-500 [&_[data-slot=slider-thumb]]:border-indigo-500"
+                        className="flex-1 [&_[data-slot=slider-track]]:bg-muted [&_[data-slot=slider-range]]:bg-primary [&_[data-slot=slider-thumb]]:border-primary"
                       />
-                      <Badge variant="secondary" className="min-w-[3rem] justify-center tabular-nums bg-slate-700 text-indigo-400">
+                      <Badge variant="secondary" className="min-w-[3rem] justify-center tabular-nums text-primary">
                         {mosaicSize}px
                       </Badge>
                     </div>
@@ -469,9 +469,9 @@ export default function FaceMosaicShadcn() {
               )}
 
               {effect === "blur" && (
-                <Card className="border-slate-700 bg-slate-900/50 shadow-none">
+                <Card className="border-border bg-muted/30 shadow-none">
                   <CardContent className="flex flex-col gap-2 p-3">
-                    <Label className="text-slate-200 text-sm">ぼかし強度</Label>
+                    <Label className="text-sm">ぼかし強度</Label>
                     <div className="flex items-center gap-3">
                       <Slider
                         min={5}
@@ -479,9 +479,9 @@ export default function FaceMosaicShadcn() {
                         step={2}
                         value={[blurKernel]}
                         onValueChange={(v) => setBlurKernel(v[0])}
-                        className="flex-1 [&_[data-slot=slider-track]]:bg-slate-700 [&_[data-slot=slider-range]]:bg-indigo-500 [&_[data-slot=slider-thumb]]:border-indigo-500"
+                        className="flex-1 [&_[data-slot=slider-track]]:bg-muted [&_[data-slot=slider-range]]:bg-primary [&_[data-slot=slider-thumb]]:border-primary"
                       />
-                      <Badge variant="secondary" className="min-w-[2.5rem] justify-center tabular-nums bg-slate-700 text-indigo-400">
+                      <Badge variant="secondary" className="min-w-[2.5rem] justify-center tabular-nums text-primary">
                         {blurKernel}
                       </Badge>
                     </div>
@@ -489,7 +489,7 @@ export default function FaceMosaicShadcn() {
                 </Card>
               )}
 
-              <Separator className="bg-slate-700" />
+              <Separator className="bg-border" />
 
               {/* Draw Controls */}
               <div className="flex flex-wrap gap-2">
@@ -504,8 +504,8 @@ export default function FaceMosaicShadcn() {
                   }}
                   className={
                     drawMode
-                      ? "bg-indigo-500/10 border border-indigo-500 text-indigo-400 hover:bg-indigo-500/20"
-                      : "border-slate-600 text-slate-300 hover:border-indigo-500 hover:text-indigo-400 bg-slate-800"
+                      ? "border border-primary bg-primary/10 text-primary hover:bg-primary/20"
+                      : "border-border bg-transparent text-muted-foreground hover:border-primary/60 hover:text-foreground"
                   }
                 >
                   <Pencil className="h-3.5 w-3.5" />
@@ -516,7 +516,7 @@ export default function FaceMosaicShadcn() {
                   size="sm"
                   disabled={!selectedRect}
                   onClick={deleteSelected}
-                  className="bg-red-500/10 text-red-400 hover:bg-red-500/20 disabled:opacity-40"
+                  className="disabled:opacity-40"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   削除
@@ -526,7 +526,7 @@ export default function FaceMosaicShadcn() {
                   size="sm"
                   disabled={!hasRects}
                   onClick={resetRects}
-                  className="text-slate-400 border-slate-600 hover:text-slate-200 hover:border-slate-500 bg-transparent disabled:opacity-40"
+                  className="border-border bg-transparent text-muted-foreground hover:border-foreground/30 hover:text-foreground disabled:opacity-40"
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
                   全リセット
@@ -536,8 +536,8 @@ export default function FaceMosaicShadcn() {
           </Card>
 
           {/* Canvas — Card */}
-          <Card className="border-slate-700 bg-slate-800 shadow-lg overflow-hidden relative min-h-[260px] flex items-center justify-center p-0">
-            <CardContent className="relative flex items-center justify-center w-full p-0">
+          <Card className="relative flex min-h-[260px] items-center justify-center overflow-hidden p-0 shadow-lg">
+            <CardContent className="relative flex w-full items-center justify-center p-0">
               <canvas
                 ref={canvasRef}
                 className={`block max-w-full h-auto ${imageLoaded ? "" : "hidden"}`}
@@ -554,7 +554,7 @@ export default function FaceMosaicShadcn() {
                 onTouchEnd={onTouchEnd}
               />
               {!imageLoaded && (
-                <div className="flex flex-col items-center gap-2 py-16 text-slate-500">
+                <div className="flex flex-col items-center gap-2 py-16 text-muted-foreground">
                   <ImageIcon className="h-10 w-10" />
                   <p className="text-sm">画像を選択するとここに表示されます</p>
                 </div>
@@ -564,9 +564,9 @@ export default function FaceMosaicShadcn() {
         </div>
 
         {/* Step 4: Save / Reset */}
-        <Card className="border-slate-700 bg-slate-800 shadow-lg">
+        <Card className="shadow-lg">
           <CardHeader className="pb-0">
-            <CardTitle className="flex items-center gap-3 text-slate-100">
+            <CardTitle className="flex items-center gap-3">
               <StepBadge n={4} />
               保存 / リセット
             </CardTitle>
@@ -577,7 +577,7 @@ export default function FaceMosaicShadcn() {
                 size="lg"
                 disabled={!imageLoaded}
                 onClick={handleSave}
-                className="bg-indigo-500 hover:bg-indigo-600 text-white disabled:opacity-40"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
               >
                 <Download className="h-4 w-4" />
                 画像を保存（PNG）
@@ -586,7 +586,7 @@ export default function FaceMosaicShadcn() {
                 variant="outline"
                 size="lg"
                 onClick={handleGlobalReset}
-                className="text-slate-400 border-slate-600 hover:text-slate-200 hover:border-slate-500 bg-transparent"
+                className="border-border bg-transparent text-muted-foreground hover:border-foreground/30 hover:text-foreground"
               >
                 <RefreshCw className="h-4 w-4" />
                 全体リセット
@@ -596,9 +596,9 @@ export default function FaceMosaicShadcn() {
         </Card>
 
         {/* Privacy Notice — Alert */}
-        <Alert className="bg-indigo-500/5 border-indigo-500/15 text-slate-400">
-          <ShieldCheck className="h-4 w-4 text-indigo-400" />
-          <AlertDescription className="text-xs text-slate-400">
+        <Alert className="border-primary/20 bg-primary/5 text-muted-foreground">
+          <ShieldCheck className="h-4 w-4 text-primary" />
+          <AlertDescription className="text-xs text-muted-foreground">
             画像はブラウザ内でのみ処理され、サーバーへの送信は一切行われません。
           </AlertDescription>
         </Alert>
