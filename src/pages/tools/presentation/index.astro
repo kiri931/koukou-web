@@ -1,0 +1,13 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Header from '../../../components/Header.astro';
+import { PresentationGuide } from '../../../features/presentation';
+import '../../../styles/global.css';
+---
+
+<Layout title="プレゼンテーションガイド - 高校情報">
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <Header />
+    <PresentationGuide client:only="react" />
+  </div>
+</Layout>
