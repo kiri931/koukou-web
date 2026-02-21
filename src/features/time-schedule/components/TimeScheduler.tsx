@@ -167,10 +167,12 @@ function Clock({ tasks, totalTime, elapsedMs, isRunning }: ClockProps) {
 // --- Main Component ---
 
 export default function TimeScheduler() {
-  const { tasks, totalTime, addTask, deleteTask, updateTask, setTotalTime } = useTaskManager();
+  const { tasks, totalTime, addTask, deleteTask, updateTask, moveTask, setTotalTime } = useTaskManager();
   const { isRunning, isPaused, elapsedMs, currentTaskIndex, start, pause, reset } = useTimer(tasks, totalTime);
 
   const [colorPickerOpen, setColorPickerOpen] = useState<string | null>(null);
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
 
   const currentTask = currentTaskIndex >= 0 ? tasks[currentTaskIndex] : null;
   const elapsedMin = Math.floor(elapsedMs / 60000);
@@ -195,7 +197,7 @@ export default function TimeScheduler() {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[auto_1fr]">
+      <div className="flex flex-col gap-6">
         {/* Left: Clock + Controls */}
         <div className="flex flex-col items-center gap-4">
           <Clock
@@ -242,7 +244,7 @@ export default function TimeScheduler() {
           </div>
         </div>
 
-        <Separator orientation="vertical" className="hidden lg:block bg-slate-700" />
+        <Separator className="bg-slate-700" />
 
         {/* Right: Task list */}
         <Card className="border-slate-700 bg-slate-900/50">
@@ -263,8 +265,54 @@ export default function TimeScheduler() {
                   index === currentTaskIndex && isRunning
                     ? 'border-indigo-500/60 bg-indigo-500/10'
                     : 'border-slate-700 bg-slate-800/50'
+                } ${
+                  dragOverId === task.id ? 'ring-2 ring-indigo-500/60 bg-slate-800/80' : ''
+                } ${
+                  draggingId === task.id
+                    ? 'opacity-80 scale-[0.99] shadow-lg shadow-indigo-500/10 border-indigo-500/40'
+                    : ''
                 }`}
+                onDragOver={(e) => {
+                  if (isRunning && !isPaused) return;
+                  e.preventDefault();
+                  if (dragOverId !== task.id) setDragOverId(task.id);
+                }}
+                onDragLeave={() => {
+                  if (dragOverId === task.id) setDragOverId(null);
+                }}
+                onDrop={(e) => {
+                  if (isRunning && !isPaused) return;
+                  e.preventDefault();
+                  const fromId = e.dataTransfer.getData('text/plain') || draggingId;
+                  if (fromId) moveTask(fromId, task.id);
+                  setDragOverId(null);
+                  setDraggingId(null);
+                }}
               >
+                {/* Drag handle */}
+                <button
+                  type="button"
+                  className={`cursor-grab select-none text-slate-400 hover:text-slate-200 active:cursor-grabbing ${
+                    draggingId === task.id ? 'text-indigo-300' : ''
+                  }`}
+                  draggable={!(isRunning && !isPaused)}
+                  onDragStart={(e) => {
+                    if (isRunning && !isPaused) return;
+                    e.dataTransfer.setData('text/plain', task.id);
+                    e.dataTransfer.effectAllowed = 'move';
+                    setDraggingId(task.id);
+                  }}
+                  onDragEnd={() => {
+                    setDraggingId(null);
+                    setDragOverId(null);
+                  }}
+                  title="ドラッグで並べ替え"
+                  aria-label="ドラッグで並べ替え"
+                >
+                  <span className="block h-[2px] w-4 rounded-full bg-current" />
+                  <span className="block h-[2px] w-4 rounded-full bg-current mt-1" />
+                  <span className="block h-[2px] w-4 rounded-full bg-current mt-1" />
+                </button>
                 {/* Color picker */}
                 <div className="relative">
                   <button

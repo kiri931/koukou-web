@@ -65,9 +65,21 @@ export function useTaskManager() {
     );
   }
 
+  function moveTask(fromId: string, toId: string) {
+    setTasks((prev) => {
+      const fromIndex = prev.findIndex((t) => t.id === fromId);
+      const toIndex = prev.findIndex((t) => t.id === toId);
+      if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) return prev;
+      const next = [...prev];
+      const [item] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, item);
+      return next;
+    });
+  }
+
   function setTotalTime(n: number) {
     setTotalTimeState(Math.max(1, n));
   }
 
-  return { tasks, totalTime, addTask, deleteTask, updateTask, setTotalTime };
+  return { tasks, totalTime, addTask, deleteTask, updateTask, moveTask, setTotalTime };
 }
