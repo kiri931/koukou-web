@@ -85,19 +85,19 @@ const { title = 'Astro Basics', description } = Astro.props;
 </html>
 
 <style>
-	html,
-	body {
+	:global(html),
+	:global(body) {
 		margin: 0;
 		width: 100%;
 		height: 100%;
 	}
 
-	body {
+	:global(body) {
 		background: #f8fafc;
 		color: #0f172a;
 	}
 
-	:global(.dark) body {
+	:global(html.dark body) {
 		background: #0f172a;
 		color: #f8fafc;
 	}
