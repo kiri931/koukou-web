@@ -5,8 +5,7 @@ import '../styles/global.css';
 ---
 
 <Layout title="高校情報 - Webツール集">
-  <div class="dark">
-    <div class="min-h-screen bg-slate-950 text-slate-100">
+    <div class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <Header currentPath="/" />
 
       <main class="mx-auto max-w-5xl px-4 py-16">
@@ -15,18 +14,18 @@ import '../styles/global.css';
           <h1 class="mb-4 text-4xl font-bold tracking-tight sm:text-5xl">
             <span class="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">高校情報</span>
           </h1>
-          <p class="mx-auto max-w-2xl text-lg text-slate-400">
+          <p class="mx-auto max-w-2xl text-lg text-slate-600 dark:text-slate-400">
             ブラウザ上で完結するWebツール集。画像処理やデータ変換など、さまざまなツールを提供します。
           </p>
         </section>
 
         <!-- Tools -->
         <section>
-          <h2 class="mb-6 text-sm font-semibold uppercase tracking-wider text-slate-500">Tools</h2>
+          <h2 class="mb-6 text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Tools</h2>
           <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <a
               href="/tools/sekigae"
-              class="group rounded-xl border border-slate-800 bg-slate-900/50 p-6 transition-all hover:border-emerald-500/50 hover:bg-slate-900"
+              class="group rounded-xl border border-slate-200 bg-white p-6 transition-all hover:border-emerald-500/50 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900/50 dark:hover:bg-slate-900"
             >
               <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 transition-colors group-hover:bg-emerald-500/20">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
@@ -36,13 +35,13 @@ import '../styles/global.css';
                   <path d="M9 12h6" />
                 </svg>
               </div>
-              <h3 class="mb-1 font-semibold text-slate-100 group-hover:text-white">席替えアプリ サポート</h3>
-              <p class="text-sm text-slate-400">名簿作成から座席配置、席替え、共有までの使い方とFAQを掲載。</p>
+              <h3 class="mb-1 font-semibold text-slate-900 group-hover:text-slate-950 dark:text-slate-100 dark:group-hover:text-white">席替えアプリ サポート</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400">名簿作成から座席配置、席替え、共有までの使い方とFAQを掲載。</p>
             </a>
 
             <a
               href="/tools/face-mosaic"
-              class="group rounded-xl border border-slate-800 bg-slate-900/50 p-6 transition-all hover:border-indigo-500/50 hover:bg-slate-900"
+              class="group rounded-xl border border-slate-200 bg-white p-6 transition-all hover:border-indigo-500/50 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900/50 dark:hover:bg-slate-900"
             >
               <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400 transition-colors group-hover:bg-indigo-500/20">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
@@ -51,13 +50,13 @@ import '../styles/global.css';
                   <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
                 </svg>
               </div>
-              <h3 class="mb-1 font-semibold text-slate-100 group-hover:text-white">顔モザイクツール</h3>
-              <p class="text-sm text-slate-400">画像内の顔を自動検出し、モザイク・ぼかし・黒塗りで加工できます。</p>
+              <h3 class="mb-1 font-semibold text-slate-900 group-hover:text-slate-950 dark:text-slate-100 dark:group-hover:text-white">顔モザイクツール</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400">画像内の顔を自動検出し、モザイク・ぼかし・黒塗りで加工できます。</p>
             </a>
 
             <a
               href="/tools/time-schedule"
-              class="group rounded-xl border border-slate-800 bg-slate-900/50 p-6 transition-all hover:border-purple-500/50 hover:bg-slate-900"
+              class="group rounded-xl border border-slate-200 bg-white p-6 transition-all hover:border-purple-500/50 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900/50 dark:hover:bg-slate-900"
             >
               <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/10 text-purple-400 transition-colors group-hover:bg-purple-500/20">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
@@ -65,16 +64,15 @@ import '../styles/global.css';
                   <polyline points="12 6 12 12 16 14" />
                 </svg>
               </div>
-              <h3 class="mb-1 font-semibold text-slate-100 group-hover:text-white">タイムスケジューラ</h3>
-              <p class="text-sm text-slate-400">円形クロックでタスクを時間配分し、タイマーで進行を管理できます。</p>
+              <h3 class="mb-1 font-semibold text-slate-900 group-hover:text-slate-950 dark:text-slate-100 dark:group-hover:text-white">タイムスケジューラ</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400">円形クロックでタスクを時間配分し、タイマーで進行を管理できます。</p>
             </a>
           </div>
         </section>
       </main>
 
-      <footer class="border-t border-slate-800 py-8 text-center text-sm text-slate-500">
+      <footer class="border-t border-slate-200 py-8 text-center text-sm text-slate-500 dark:border-slate-800 dark:text-slate-500">
         <p>All processing is done locally in your browser.</p>
       </footer>
     </div>
-  </div>
 </Layout>

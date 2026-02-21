@@ -3,32 +3,30 @@ import Layout from '../../../layouts/Layout.astro';
 import { Header } from '../../../components/Header';
 import SekigaeSubnav from '../../../components/SekigaeSubnav.astro';
 import '../../../styles/global.css';
-import '../../../styles/sekigae.css';
 ---
 
 <Layout
   title="利用規約 | 席替えアプリ"
   description="席替えアプリの利用規約。利用条件、禁止事項、免責、変更、問い合わせ等を定めます。"
 >
-  <div class="dark">
-    <div class="min-h-screen bg-slate-950">
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
       <Header currentPath="/tools/sekigae" />
 
-      <main id="main" class="sekigae-page">
+      <main id="main" class="text-slate-900 dark:text-slate-100">
         <section class="mx-auto max-w-5xl px-4 py-10">
           <div class="mb-8">
-            <h1 class="text-3xl font-bold tracking-tight text-slate-100">利用規約</h1>
-            <p class="mt-3 text-slate-400">当アプリの提供条件および運営者とユーザーの皆さまとの間の権利義務関係を定めます。</p>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">利用規約</h1>
+            <p class="mt-3 text-slate-600 dark:text-slate-400">当アプリの提供条件および運営者とユーザーの皆さまとの間の権利義務関係を定めます。</p>
           </div>
 
           <SekigaeSubnav currentPath="/tools/sekigae/terms-of-use" />
 
-          <section class="sekigae-card mt-6">
-            <div class="p-6 sm:p-8 sekigae-prose">
-              <p class="rounded-lg border border-slate-800 bg-slate-900/60 px-4 py-3 text-sm text-slate-300">
+          <section class="mt-6 rounded-2xl border border-slate-200 bg-white shadow-lg shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-900/60 dark:shadow-slate-950/40">
+            <div class="p-6 sm:p-8 [&_h2]:mt-10 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-slate-900 dark:[&_h2]:text-slate-100 [&_h3]:mt-8 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-slate-800 dark:[&_h3]:text-slate-200 [&_p]:mb-4 [&_p]:text-slate-700 dark:[&_p]:text-slate-300 [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:text-slate-700 dark:[&_ul]:text-slate-300 [&_ol]:mb-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:text-slate-700 dark:[&_ol]:text-slate-300 [&_li]:mb-2 [&_a]:text-indigo-600 [&_a]:underline [&_a]:underline-offset-4 [&_a:hover]:text-indigo-500 dark:[&_a]:text-indigo-300 dark:[&_a:hover]:text-indigo-200 [&_code]:rounded-lg [&_code]:border [&_code]:border-slate-300 [&_code]:bg-slate-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.9em] [&_code]:text-slate-900 dark:[&_code]:border-slate-700 dark:[&_code]:bg-slate-800 dark:[&_code]:text-slate-100 [&_hr]:my-10 [&_hr]:border-slate-200 dark:[&_hr]:border-slate-800 [&_table]:w-full [&_table]:border-collapse [&_table]:text-sm [&_th]:border [&_th]:border-slate-300 [&_th]:bg-slate-100 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:align-top [&_th]:text-slate-800 dark:[&_th]:border-slate-700 dark:[&_th]:bg-slate-800 dark:[&_th]:text-slate-200 [&_td]:border [&_td]:border-slate-300 [&_td]:px-3 [&_td]:py-2 [&_td]:align-top dark:[&_td]:border-slate-700">
+              <p class="rounded-lg border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
                 対象アプリ：席替えアプリ（以下「当アプリ」）
               </p>
-              <p class="rounded-lg border border-slate-800 bg-slate-900/60 px-4 py-3 text-sm text-slate-300">
+              <p class="rounded-lg border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
                 制定日：2026年2月21日
               </p>
 
@@ -106,15 +104,14 @@ import '../../../styles/sekigae.css';
               </ul>
 
               <hr />
-              <p class="text-sm text-slate-400">最終更新日：2026年2月21日</p>
+              <p class="text-sm text-slate-500 dark:text-slate-400">最終更新日：2026年2月21日</p>
             </div>
           </section>
         </section>
       </main>
 
-      <footer class="border-t border-slate-800 py-8 text-center text-sm text-slate-500">
+      <footer class="border-t border-slate-200 py-8 text-center text-sm text-slate-500 dark:border-slate-800 dark:text-slate-500">
         <p>© 席替えアプリ</p>
       </footer>
     </div>
-  </div>
 </Layout>

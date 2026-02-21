@@ -15,9 +15,72 @@ const { title = 'Astro Basics', description } = Astro.props;
 		<meta name="generator" content={Astro.generator} />
 		{description ? <meta name="description" content={description} /> : null}
 		<title>{title}</title>
+		<script is:inline>
+			(() => {
+				const storageKey = "theme";
+				const root = document.documentElement;
+				try {
+					const saved = localStorage.getItem(storageKey);
+					const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+					const theme = saved === "light" || saved === "dark" ? saved : prefersDark ? "dark" : "light";
+					root.classList.toggle("dark", theme === "dark");
+				} catch {
+					root.classList.toggle("dark", window.matchMedia("(prefers-color-scheme: dark)").matches);
+				}
+			})();
+		</script>
 	</head>
 	<body>
 		<slot />
+		<script is:inline>
+			(() => {
+				const storageKey = "theme";
+				const root = document.documentElement;
+
+				const applyTheme = (theme) => {
+					root.classList.toggle("dark", theme === "dark");
+					root.style.colorScheme = theme;
+				};
+
+				const getCurrentTheme = () => (root.classList.contains("dark") ? "dark" : "light");
+
+				const toggleTheme = () => {
+					const nextTheme = getCurrentTheme() === "dark" ? "light" : "dark";
+					applyTheme(nextTheme);
+					try {
+						localStorage.setItem(storageKey, nextTheme);
+					} catch {
+						/* no-op */
+					}
+				};
+
+				document.addEventListener("click", (event) => {
+					const target = event.target;
+					if (!(target instanceof Element)) return;
+					const toggleButton = target.closest("[data-theme-toggle]");
+					if (!toggleButton) return;
+					event.preventDefault();
+					toggleTheme();
+				});
+
+				const initializeTheme = () => {
+					const currentTheme = getCurrentTheme();
+					applyTheme(currentTheme);
+				};
+
+				initializeTheme();
+
+				const media = window.matchMedia("(prefers-color-scheme: dark)");
+				media.addEventListener("change", (event) => {
+					try {
+						if (localStorage.getItem(storageKey)) return;
+					} catch {
+						/* no-op */
+					}
+					applyTheme(event.matches ? "dark" : "light");
+				});
+			})();
+		</script>
 	</body>
 </html>
 
@@ -30,6 +93,12 @@ const { title = 'Astro Basics', description } = Astro.props;
 	}
 
 	body {
+		background: #f8fafc;
+		color: #0f172a;
+	}
+
+	:global(.dark) body {
 		background: #0f172a;
+		color: #f8fafc;
 	}
 </style>
