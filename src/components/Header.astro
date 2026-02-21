@@ -1,0 +1,34 @@
+---
+const currentPath = Astro.url.pathname;
+---
+
+<header class="sticky top-0 z-50 w-full border-b border-slate-700/50 bg-slate-900/80 backdrop-blur-md">
+  <div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
+    <a href="/" class="flex items-center gap-2 text-lg font-semibold text-slate-100 hover:text-white transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 text-indigo-400">
+        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+      </svg>
+      ToolBox
+    </a>
+    <nav class="flex items-center gap-1">
+      <a
+        href="/"
+        class:list={[
+          "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+          currentPath === "/" ? "bg-slate-800 text-white" : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+        ]}
+      >
+        Home
+      </a>
+      <a
+        href="/tools/face-mosaic"
+        class:list={[
+          "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+          currentPath.startsWith("/tools") ? "bg-slate-800 text-white" : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+        ]}
+      >
+        Tools
+      </a>
+    </nav>
+  </div>
+</header>
