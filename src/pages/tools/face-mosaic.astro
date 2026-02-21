@@ -4,5 +4,14 @@ import FaceMosaic from '../../components/tools/FaceMosaic.astro';
 ---
 
 <Layout title="顔モザイクツール - Face Mosaic">
-  <FaceMosaic />
+  <div class="face-mosaic-page">
+    <FaceMosaic />
+  </div>
 </Layout>
+
+<style>
+  .face-mosaic-page {
+    min-height: 100vh;
+    background: #0f172a;
+  }
+</style>
