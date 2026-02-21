@@ -1,17 +1,9 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import FaceMosaic from '../../components/tools/FaceMosaic.astro';
+import { FaceMosaicShadcn } from '../../features/face-mosaic';
+import '../../styles/global.css';
 ---
 
 <Layout title="顔モザイクツール - Face Mosaic">
-  <div class="face-mosaic-page">
-    <FaceMosaic />
-  </div>
+  <FaceMosaicShadcn client:only="react" />
 </Layout>
-
-<style>
-  .face-mosaic-page {
-    min-height: 100vh;
-    background: #0f172a;
-  }
-</style>
