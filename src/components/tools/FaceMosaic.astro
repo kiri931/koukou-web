@@ -100,13 +100,6 @@
             <span class="fm-effect-name">黒塗り</span>
           </span>
         </label>
-        <label class="fm-effect-card">
-          <input type="radio" name="fm-effect" value="border" />
-          <span class="fm-effect-card-inner">
-            <span class="fm-effect-icon">🔲</span>
-            <span class="fm-effect-name">枠線</span>
-          </span>
-        </label>
       </div>
 
       <!-- Mosaic params -->
@@ -128,21 +121,6 @@
         <div class="fm-slider-row">
           <input type="range" id="fm-blur-kernel" min="5" max="51" value="21" step="2" />
           <span class="fm-slider-val" id="fm-blur-kernel-val">21</span>
-        </div>
-      </div>
-
-      <!-- Border params -->
-      <div id="fm-params-border" class="fm-effect-params" hidden>
-        <div class="fm-param-row">
-          <label class="fm-param-label" for="fm-border-color">枠線の色</label>
-          <input type="color" id="fm-border-color" value="#ef4444" class="fm-color-input" />
-        </div>
-        <div class="fm-param-row">
-          <label class="fm-param-label" for="fm-border-width">枠線の太さ</label>
-          <div class="fm-slider-row">
-            <input type="range" id="fm-border-width" min="1" max="10" value="3" step="1" />
-            <span class="fm-slider-val" id="fm-border-width-val">3px</span>
-          </div>
         </div>
       </div>
 
@@ -783,12 +761,8 @@
   const mosaicSizeVal = $('fm-mosaic-size-val');
   const blurKernelInput = $('fm-blur-kernel');
   const blurKernelVal = $('fm-blur-kernel-val');
-  const borderColorInput = $('fm-border-color');
-  const borderWidthInput = $('fm-border-width');
-  const borderWidthVal = $('fm-border-width-val');
   const paramsMosaic = $('fm-params-mosaic');
   const paramsBlur = $('fm-params-blur');
-  const paramsBorder = $('fm-params-border');
 
   const ctx = canvas.getContext('2d');
   const overlayCtx = overlayCanvas.getContext('2d');
@@ -996,7 +970,6 @@
       state.effect = radio.value;
       paramsMosaic.hidden = state.effect !== 'mosaic';
       paramsBlur.hidden = state.effect !== 'blur';
-      paramsBorder.hidden = state.effect !== 'border';
       scheduleRender();
     });
   });
@@ -1010,17 +983,6 @@
   blurKernelInput.addEventListener('input', function () {
     state.blurKernel = parseInt(blurKernelInput.value, 10);
     blurKernelVal.textContent = state.blurKernel;
-    scheduleRender();
-  });
-
-  borderColorInput.addEventListener('input', function () {
-    state.borderColor = borderColorInput.value;
-    scheduleRender();
-  });
-
-  borderWidthInput.addEventListener('input', function () {
-    state.borderWidth = parseInt(borderWidthInput.value, 10);
-    borderWidthVal.textContent = state.borderWidth + 'px';
     scheduleRender();
   });
 
@@ -1391,18 +1353,12 @@
     state.effect = 'mosaic';
     paramsMosaic.hidden = false;
     paramsBlur.hidden = true;
-    paramsBorder.hidden = true;
     mosaicSizeInput.value = 15;
     mosaicSizeVal.textContent = '15px';
     state.mosaicSize = 15;
     blurKernelInput.value = 21;
     blurKernelVal.textContent = '21';
     state.blurKernel = 21;
-    borderColorInput.value = '#ef4444';
-    state.borderColor = '#ef4444';
-    borderWidthInput.value = 3;
-    borderWidthVal.textContent = '3px';
-    state.borderWidth = 3;
     minNeighborsInput.value = 2;
     minNeighborsVal.textContent = '2';
     scaleFactorInput.value = 1.1;
