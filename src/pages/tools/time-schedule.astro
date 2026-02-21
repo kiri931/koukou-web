@@ -1,0 +1,15 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import { TimeScheduler } from '../../features/time-schedule';
+import '../../styles/global.css';
+---
+
+<Layout title="タイムスケジューラ - ToolBox">
+  <div class="dark">
+    <div class="min-h-screen bg-slate-950">
+      <Header />
+      <TimeScheduler client:only="react" />
+    </div>
+  </div>
+</Layout>
