@@ -22,7 +22,7 @@ export function useFaceDetection(
 
     // モバイル端末の高解像度写真はWASMヒープを超えてクラッシュするため、
     // 検出用に縮小したキャンバスを用意し、結果座標をスケールバックする
-    const MAX_DETECT_DIM = 1200;
+    const MAX_DETECT_DIM = 800;
 
     let detectCanvas: HTMLCanvasElement;
     let scaleX = 1;
@@ -85,7 +85,19 @@ export function useFaceDetection(
         setDetectStatus(`${newRects.length} 個の顔を検出しました`);
       }
     } catch (e: any) {
-      setDetectStatus("エラー: " + e.message);
+      const msg: string = e?.message ?? String(e);
+      const isMemoryError =
+        msg.includes("out of bounds") ||
+        msg.includes("dynCall") ||
+        msg.includes("memory") ||
+        msg.includes("OOM");
+      if (isMemoryError) {
+        setDetectStatus(
+          "メモリ不足: 画像が大きすぎて顔検出を実行できませんでした。より小さい画像（推奨: 短辺 1000px 以下）で再試行してください。"
+        );
+      } else {
+        setDetectStatus("エラー: " + msg);
+      }
     } finally {
       setIsDetecting(false);
       // 一時キャンバスをDOMから切り離してGCに渡す
