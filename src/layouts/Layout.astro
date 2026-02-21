@@ -2,11 +2,62 @@
 interface Props {
 	title?: string;
 	description?: string;
+	canonical?: string;
+	ogImage?: string;
+	noindex?: boolean;
 }
-const { title = 'Astro Basics', description } = Astro.props;
+
+const { title = '高校情報', description, canonical, ogImage, noindex } = Astro.props;
+const siteUrl = 'https://koukou-jouhou.org';
+const canonicalUrl = canonical
+	? new URL(canonical, siteUrl).href
+	: new URL(Astro.url.pathname, siteUrl).href;
+const ogImageUrl = ogImage ? new URL(ogImage, siteUrl).href : null;
+const breadcrumbNameMap: Record<string, string> = {
+	tools: 'ツール',
+	'face-mosaic': '顔モザイクツール',
+	'pdf-merge': 'PDFマージ',
+	'pdf-viewer': 'PDF参照モード',
+	viewer: 'PDFビューワー',
+	presentation: 'プレゼンガイド',
+	sekigae: '席替えアプリ',
+	'privacy-policy': 'プライバシーポリシー',
+	'terms-of-use': '利用規約',
+	'time-schedule': 'タイムスケジューラ',
+	'typing-japanese': 'タイピング練習',
+};
+
+const pathSegments = Astro.url.pathname.split('/').filter(Boolean);
+const breadcrumbItems = pathSegments.map((segment, index) => {
+	const name = breadcrumbNameMap[segment] ?? decodeURIComponent(segment);
+	const item = new URL(`/${pathSegments.slice(0, index + 1).join('/')}`, siteUrl).href;
+	return { name, item, position: index + 2 };
+});
+
+const breadcrumbJsonLd =
+	breadcrumbItems.length > 0
+		? {
+				'@context': 'https://schema.org',
+				'@type': 'BreadcrumbList',
+				itemListElement: [
+					{
+						'@type': 'ListItem',
+						position: 1,
+						name: 'ホーム',
+						item: `${siteUrl}/`,
+					},
+					...breadcrumbItems.map((crumb) => ({
+						'@type': 'ListItem',
+						position: crumb.position,
+						name: crumb.name,
+						item: crumb.item,
+					})),
+				],
+		  }
+		: null;
 ---
 <!doctype html>
-<html lang="en">
+<html lang="ja">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
@@ -14,6 +65,32 @@ const { title = 'Astro Basics', description } = Astro.props;
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
 		{description ? <meta name="description" content={description} /> : null}
+		<link rel="canonical" href={canonicalUrl} />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={canonicalUrl} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description ?? ''} />
+		<meta property="og:site_name" content="高校情報" />
+		<meta property="og:locale" content="ja_JP" />
+		{ogImageUrl ? <meta property="og:image" content={ogImageUrl} /> : null}
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:title" content={title} />
+		{description ? <meta name="twitter:description" content={description} /> : null}
+		{noindex ? <meta name="robots" content="noindex, nofollow" /> : null}
+		<script
+			type="application/ld+json"
+			set:html={JSON.stringify({
+				"@context": "https://schema.org",
+				"@type": "WebSite",
+				name: "高校情報",
+				url: siteUrl,
+				description: "高校生向けWebツール集",
+				inLanguage: "ja-JP",
+			})}
+		/>
+		{breadcrumbJsonLd ? (
+			<script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+		) : null}
 		<title>{title}</title>
 		<script is:inline>
 			(() => {

@@ -94,4 +94,37 @@ import '../../../styles/global.css';
         <p>© 席替えアプリ</p>
       </footer>
     </div>
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: "生徒名などのデータは外部に送信されますか？",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "原則として、名簿や座席情報は端末内に保存されます。共有（PDF/CSV）を行う場合のみ、ユーザーの操作により外部アプリへ送信されます。",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "広告を消せますか？",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "アプリ内課金でバナー広告を削除できる場合があります。アプリ内の案内をご確認ください。",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "不具合や要望を伝えたい",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "下の「お問い合わせ」からご連絡ください。再現手順（どの画面で何をしたか）と、端末/iOSバージョンがあると助かります。",
+            },
+          },
+        ],
+      })}
+    />
 </Layout>

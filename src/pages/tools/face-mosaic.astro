@@ -5,9 +5,26 @@ import { FaceMosaicShadcn } from '../../features/face-mosaic';
 import '../../styles/global.css';
 ---
 
-<Layout title="顔モザイクツール - Face Mosaic">
+<Layout
+  title="顔モザイクツール - Face Mosaic"
+  description="顔モザイクツール。OpenCV.jsによるブラウザ内完結の自動顔検出・モザイク処理。画像データはサーバーに送信されず、完全プライバシー対応。"
+>
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
       <Header currentPath="/tools/face-mosaic" />
+      <h1 class="sr-only">顔モザイクツール</h1>
       <FaceMosaicShadcn client:only="react" />
     </div>
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: "顔モザイクツール",
+        applicationCategory: "UtilitiesApplication",
+        operatingSystem: "Web Browser",
+        offers: { "@type": "Offer", price: "0", priceCurrency: "JPY" },
+        inLanguage: "ja-JP",
+        url: "https://koukou-jouhou.org/tools/face-mosaic",
+      })}
+    />
 </Layout>

@@ -5,9 +5,25 @@ import { TimeScheduler } from '../../features/time-schedule';
 import '../../styles/global.css';
 ---
 
-<Layout title="タイムスケジューラ - 高校情報">
+<Layout
+  title="タイムスケジューラ - 高校情報"
+  description="円形タイムスケジューラ。視覚的な円形クロックでタスクと時間を管理。タイマー機能付き。データはブラウザのlocalStorageに保存されます。"
+>
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
       <Header />
       <TimeScheduler client:only="react" />
     </div>
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: "タイムスケジューラ",
+        applicationCategory: "UtilitiesApplication",
+        operatingSystem: "Web Browser",
+        offers: { "@type": "Offer", price: "0", priceCurrency: "JPY" },
+        inLanguage: "ja-JP",
+        url: "https://koukou-jouhou.org/tools/time-schedule",
+      })}
+    />
 </Layout>

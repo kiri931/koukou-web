@@ -5,9 +5,25 @@ import { PdfReferenceMode } from '../../../features/pdf-viewer';
 import '../../../styles/global.css';
 ---
 
-<Layout title="PDF参照モード - 高校情報">
+<Layout
+  title="PDF参照モード - 高校情報"
+  description="PDF参照モード。ITパスポートなどの試験問題PDFと解答PDFを並べて参照。ブラウザ上で動作するPDF照合ツール。"
+>
   <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
     <Header />
     <PdfReferenceMode client:only="react" />
   </div>
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      name: "PDF参照モード",
+      applicationCategory: "UtilitiesApplication",
+      operatingSystem: "Web Browser",
+      offers: { "@type": "Offer", price: "0", priceCurrency: "JPY" },
+      inLanguage: "ja-JP",
+      url: "https://koukou-jouhou.org/tools/pdf-viewer",
+    })}
+  />
 </Layout>

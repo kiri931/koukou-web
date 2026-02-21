@@ -5,9 +5,25 @@ import { PdfMerge } from '../../features/pdf-merge';
 import '../../styles/global.css';
 ---
 
-<Layout title="PDFマージ - ツール">
+<Layout
+  title="PDFマージ - ツール"
+  description="PDFマージツール。複数のPDFファイルをブラウザ上で結合・並び替え。サーバー不要、ファイルはローカル処理されます。"
+>
   <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
     <Header currentPath="/tools/pdf-merge" />
     <PdfMerge client:only="react" />
   </div>
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      name: "PDFマージ",
+      applicationCategory: "UtilitiesApplication",
+      operatingSystem: "Web Browser",
+      offers: { "@type": "Offer", price: "0", priceCurrency: "JPY" },
+      inLanguage: "ja-JP",
+      url: "https://koukou-jouhou.org/tools/pdf-merge",
+    })}
+  />
 </Layout>

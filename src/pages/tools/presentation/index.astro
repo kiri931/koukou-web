@@ -5,9 +5,25 @@ import { PresentationGuide } from '../../../features/presentation';
 import '../../../styles/global.css';
 ---
 
-<Layout title="プレゼンテーションガイド - 高校情報">
+<Layout
+  title="プレゼンテーションガイド - 高校情報"
+  description="プレゼンテーションガイド。タイマー・評価ルーブリック・チェックリスト付き。10/20/30ルールなどプレゼンの基本原則も解説。授業発表に役立ちます。"
+>
   <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
     <Header />
     <PresentationGuide client:only="react" />
   </div>
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      name: "プレゼンテーションガイド",
+      applicationCategory: "UtilitiesApplication",
+      operatingSystem: "Web Browser",
+      offers: { "@type": "Offer", price: "0", priceCurrency: "JPY" },
+      inLanguage: "ja-JP",
+      url: "https://koukou-jouhou.org/tools/presentation",
+    })}
+  />
 </Layout>
