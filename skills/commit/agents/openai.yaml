@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Commit Assistant"
+  short_description: "Generate and run consistent Git commits"
+  default_prompt: "Use $commit to inspect local changes, draft a history-aligned commit message, and run the commit command."
