@@ -239,6 +239,15 @@ export default function FaceMosaicShadcn() {
     <div className="min-h-screen bg-background text-foreground font-sans">
       <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-8 pb-16">
 
+        {/* Privacy Notice */}
+        <Alert className="border-emerald-500/30 bg-emerald-500/10">
+          <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+          <AlertTitle className="text-emerald-700 dark:text-emerald-300">画像はサーバーに送信されません</AlertTitle>
+          <AlertDescription className="text-emerald-700/80 dark:text-emerald-300/80 text-xs">
+            アップロードした画像はすべてお使いのブラウザ内でのみ処理されます。インターネット経由でサーバーに送信されることは一切ありません。
+          </AlertDescription>
+        </Alert>
+
         {/* OpenCV Status — Alert */}
         <Alert
           className={`border ${
@@ -374,30 +383,39 @@ export default function FaceMosaicShadcn() {
             <Separator className="bg-border" />
 
             {/* Detect Button + Status */}
-            <div className="flex flex-wrap items-center gap-3">
-              <Button
-                disabled={!opencvReadyRef.current || !imageLoaded || isDetecting}
-                onClick={handleDetect}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
-              >
-                {isDetecting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <ScanFace className="h-4 w-4" />
-                )}
-                顔を検出
-              </Button>
-              {detectStatus && (
-                <Badge
-                  variant="outline"
-                  className={`py-1 px-2.5 ${
-                    detectedRects.length > 0
-                      ? "border-emerald-500/40 text-emerald-700 dark:text-emerald-300"
-                      : "border-border text-muted-foreground"
-                  }`}
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-wrap items-center gap-3">
+                <Button
+                  disabled={!opencvReadyRef.current || !imageLoaded || isDetecting}
+                  onClick={handleDetect}
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
                 >
-                  {detectStatus}
-                </Badge>
+                  {isDetecting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ScanFace className="h-4 w-4" />
+                  )}
+                  顔を検出
+                </Button>
+                {detectStatus && !detectStatus.startsWith("エラー:") && !detectStatus.startsWith("メモリ不足:") && (
+                  <Badge
+                    variant="outline"
+                    className={`py-1 px-2.5 ${
+                      detectedRects.length > 0
+                        ? "border-emerald-500/40 text-emerald-700 dark:text-emerald-300"
+                        : "border-border text-muted-foreground"
+                    }`}
+                  >
+                    {detectStatus}
+                  </Badge>
+                )}
+              </div>
+              {detectStatus && (detectStatus.startsWith("エラー:") || detectStatus.startsWith("メモリ不足:")) && (
+                <Alert variant="destructive" className="border-destructive/30 bg-destructive/10">
+                  <CircleAlert className="h-4 w-4" />
+                  <AlertTitle>検出に失敗しました</AlertTitle>
+                  <AlertDescription className="text-sm">{detectStatus}</AlertDescription>
+                </Alert>
               )}
             </div>
           </CardContent>
@@ -595,13 +613,6 @@ export default function FaceMosaicShadcn() {
           </CardContent>
         </Card>
 
-        {/* Privacy Notice — Alert */}
-        <Alert className="border-primary/20 bg-primary/5 text-muted-foreground">
-          <ShieldCheck className="h-4 w-4 text-primary" />
-          <AlertDescription className="text-xs text-muted-foreground">
-            画像はブラウザ内でのみ処理され、サーバーへの送信は一切行われません。
-          </AlertDescription>
-        </Alert>
       </div>
     </div>
   );
