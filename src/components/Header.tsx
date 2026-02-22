@@ -1,19 +1,67 @@
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
   currentPath?: string;
 }
 
+const toolMenuSections = [
+  {
+    label: "STUDY",
+    items: [
+      { href: "/tools/typing-japanese", label: "タイピング練習" },
+      { href: "/study/equation-transformation/", label: "等式の変形テスト" },
+      { href: "/tools/presentation", label: "プレゼンガイド" },
+      { href: "/tools/pdf-viewer", label: "PDF参照モード" },
+      { href: "/tools/time-schedule", label: "タイムスケジューラ" },
+    ],
+  },
+  {
+    label: "TOOLS",
+    items: [
+      { href: "/tools/face-mosaic", label: "顔モザイクツール" },
+      { href: "/tools/pdf-merge", label: "PDFマージ" },
+    ],
+  },
+  {
+    label: "SUPPORT",
+    items: [{ href: "/tools/sekigae", label: "席替えアプリ サポート" }],
+  },
+] as const;
+
 const navItems = [
   { href: "/", label: "Home", match: (path: string) => path === "/" },
   {
-    href: "/tools/face-mosaic",
+    href: "/tools/",
     label: "Tools",
-    match: (path: string) => path.startsWith("/tools"),
+    match: (path: string) => path.startsWith("/tools") || path.startsWith("/study"),
   },
 ];
 
+const normalizePath = (path: string) => path.replace(/\/+$/, "") || "/";
+
 function Header({ currentPath = "/" }: HeaderProps) {
+  const normalizedCurrentPath = normalizePath(currentPath);
+  const [toolsOpen, setToolsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setToolsOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setToolsOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/85 backdrop-blur-md dark:border-slate-700/50 dark:bg-slate-900/80">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
@@ -37,20 +85,84 @@ function Header({ currentPath = "/" }: HeaderProps) {
         </a>
         <div className="flex items-center gap-2">
           <nav className="flex items-center gap-1">
-            {navItems.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                  item.match(currentPath)
-                    ? "bg-slate-900 text-white dark:bg-slate-800"
-                    : "text-slate-600 hover:bg-slate-200/70 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-slate-200"
-                )}
-              >
-                {item.label}
-              </a>
-            ))}
+            {navItems.map((item) =>
+              item.label === "Tools" ? (
+                <div key={item.href} className="relative" ref={dropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setToolsOpen(!toolsOpen)}
+                    aria-haspopup="true"
+                    aria-expanded={toolsOpen}
+                    className={cn(
+                      "inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                      item.match(normalizedCurrentPath)
+                        ? "bg-slate-900 text-white dark:bg-slate-800"
+                        : "text-slate-600 hover:bg-slate-200/70 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-slate-200"
+                    )}
+                  >
+                    {item.label}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className={cn("h-3.5 w-3.5 transition-transform", toolsOpen && "rotate-180")}
+                    >
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                  </button>
+
+                  {toolsOpen && (
+                    <div className="absolute left-0 top-full z-50 pt-2">
+                      <div className="w-[min(92vw,42rem)] rounded-xl border border-slate-200 bg-white p-4 shadow-xl shadow-slate-900/10 dark:border-slate-700 dark:bg-slate-900">
+                        <div className="grid gap-4 sm:grid-cols-3">
+                          {toolMenuSections.map((section) => (
+                            <div key={section.label}>
+                              <p className="mb-2 text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400">
+                                {section.label}
+                              </p>
+                              <div className="space-y-1">
+                                {section.items.map((menuItem) => (
+                                  <a
+                                    key={menuItem.href}
+                                    href={menuItem.href}
+                                    onClick={() => setToolsOpen(false)}
+                                    className={cn(
+                                      "block rounded-md px-2 py-1.5 text-sm transition-colors",
+                                      normalizedCurrentPath === normalizePath(menuItem.href)
+                                        ? "bg-slate-900 text-white dark:bg-slate-800"
+                                        : "text-slate-700 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+                                    )}
+                                  >
+                                    {menuItem.label}
+                                  </a>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                    item.match(normalizedCurrentPath)
+                      ? "bg-slate-900 text-white dark:bg-slate-800"
+                      : "text-slate-600 hover:bg-slate-200/70 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-slate-200"
+                  )}
+                >
+                  {item.label}
+                </a>
+              )
+            )}
           </nav>
           <button
             type="button"

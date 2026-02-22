@@ -10,7 +10,7 @@ import '../../styles/global.css';
   description="PDFマージツール。複数のPDFファイルをブラウザ上で結合・並び替え。サーバー不要、ファイルはローカル処理されます。"
 >
   <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
-    <Header currentPath="/tools/pdf-merge" />
+    <Header client:load currentPath="/tools/pdf-merge" />
     <PdfMerge client:only="react" />
   </div>
   <script

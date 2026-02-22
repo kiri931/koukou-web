@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import Header from '../../components/Header.astro';
+import { Header } from '../../components/Header';
 import '../../styles/global.css';
 ---
 
@@ -9,7 +9,7 @@ import '../../styles/global.css';
   description="高校生向けWebツール一覧。すべてブラウザ上で動作し、個人情報のサーバー送信なし。顔モザイク・PDFマージ・タイピング練習・席替えアプリなど。"
 >
     <div class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
-      <Header />
+      <Header client:load currentPath="/tools" />
 
       <main class="mx-auto max-w-5xl px-4 py-16">
         <section class="mb-10">

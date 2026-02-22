@@ -10,7 +10,7 @@ import '../../styles/global.css';
   description="顔モザイクツール。OpenCV.jsによるブラウザ内完結の自動顔検出・モザイク処理。画像データはサーバーに送信されず、完全プライバシー対応。"
 >
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <Header currentPath="/tools/face-mosaic" />
+      <Header client:load currentPath="/tools/face-mosaic" />
       <h1 class="sr-only">顔モザイクツール</h1>
       <FaceMosaicShadcn client:only="react" />
     </div>
