@@ -1,0 +1,33 @@
+{
+  "schema": "dataset-json-v1",
+  "datasetId": "sample-it-basic",
+  "title": "情報基礎サンプル",
+  "description": "動作確認用の最小データセット",
+  "tags": ["sample", "it"],
+  "cards": [
+    {
+      "id": "cpu",
+      "topic": "ハードウェア",
+      "question": "コンピュータの演算や制御を行う中枢装置を何という？",
+      "answers": ["cpu", "中央処理装置"],
+      "explanation": "CPU は Central Processing Unit の略で、演算と制御を担当します。",
+      "tags": ["hardware"]
+    },
+    {
+      "id": "ram",
+      "topic": "ハードウェア",
+      "question": "電源を切ると内容が消える主記憶装置の代表例は？",
+      "answers": ["ram"],
+      "explanation": "RAM は揮発性メモリで、実行中データの一時保持に使います。",
+      "tags": ["memory"]
+    },
+    {
+      "id": "os",
+      "topic": "ソフトウェア",
+      "question": "ハードウェア資源を管理し、アプリ実行基盤となる基本ソフトを何という？",
+      "answers": ["os", "オペレーティングシステム"],
+      "explanation": "OS はハードウェア制御やプロセス管理などを担います。",
+      "tags": ["software"]
+    }
+  ]
+}

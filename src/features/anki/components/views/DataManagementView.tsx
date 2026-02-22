@@ -1,0 +1,449 @@
+import { useEffect, useMemo, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import type { Card as AnkiCard, DatasetSummary } from '../../types';
+
+type EditingCard = (Partial<AnkiCard> & { isNew: boolean }) | null;
+
+type Props = {
+  datasets: DatasetSummary[];
+  onImportDataset: (text: string) => Promise<void>;
+  onImportBackup: (text: string) => Promise<void>;
+  onExportBackup: () => Promise<void>;
+  onDeleteDataset: (datasetId: string) => Promise<void>;
+  onGetCards: (datasetId: string) => Promise<AnkiCard[]>;
+  onSaveCard: (datasetId: string, card: AnkiCard) => Promise<void>;
+  onDeleteCard: (datasetId: string, cardId: string) => Promise<void>;
+};
+
+function emptyNewCard(): EditingCard {
+  return {
+    isNew: true,
+    id: `card-${Date.now()}`,
+    question: '',
+    answers: [],
+    topic: '',
+    explanation: '',
+    tags: [],
+  };
+}
+
+export default function DataManagementView(props: Props) {
+  const {
+    datasets,
+    onImportDataset,
+    onImportBackup,
+    onExportBackup,
+    onDeleteDataset,
+    onGetCards,
+    onSaveCard,
+    onDeleteCard,
+  } = props;
+  const [busy, setBusy] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const [expandedDatasetId, setExpandedDatasetId] = useState<string | null>(null);
+  const [datasetCards, setDatasetCards] = useState<AnkiCard[]>([]);
+  const [editingCard, setEditingCard] = useState<EditingCard>(null);
+  const [answersText, setAnswersText] = useState('');
+  const [tagsText, setTagsText] = useState('');
+
+  useEffect(() => {
+    if (expandedDatasetId && !datasets.some((dataset) => dataset.datasetId === expandedDatasetId)) {
+      setExpandedDatasetId(null);
+      setDatasetCards([]);
+      setEditingCard(null);
+    }
+  }, [datasets, expandedDatasetId]);
+
+  const expandedDataset = useMemo(
+    () => datasets.find((dataset) => dataset.datasetId === expandedDatasetId) ?? null,
+    [datasets, expandedDatasetId],
+  );
+
+  const readFile = async (file: File | null) => {
+    if (!file) return null;
+    return file.text();
+  };
+
+  const loadCards = async (datasetId: string) => {
+    const cards = await onGetCards(datasetId);
+    setDatasetCards(cards);
+  };
+
+  const startEdit = (card: AnkiCard) => {
+    setEditingCard({ ...card, isNew: false });
+    setAnswersText(card.answers.join(', '));
+    setTagsText((card.tags ?? []).join(', '));
+  };
+
+  const startAdd = () => {
+    const next = emptyNewCard();
+    setEditingCard(next);
+    setAnswersText('');
+    setTagsText('');
+  };
+
+  const resetEditor = () => {
+    setEditingCard(null);
+    setAnswersText('');
+    setTagsText('');
+  };
+
+  const saveEditingCard = async () => {
+    if (!expandedDatasetId || !editingCard) return;
+    const question = (editingCard.question ?? '').trim();
+    const answers = answersText.split(',').map((s) => s.trim()).filter(Boolean);
+    const tags = tagsText.split(',').map((s) => s.trim()).filter(Boolean);
+
+    if (!question) {
+      setError('質問は必須です');
+      return;
+    }
+    if (answers.length === 0) {
+      setError('正答は1つ以上必要です');
+      return;
+    }
+
+    const nowIso = new Date().toISOString();
+    const payload: AnkiCard = {
+      id: (editingCard.id ?? `card-${Date.now()}`).trim(),
+      question,
+      answers,
+      topic: (editingCard.topic ?? '').trim(),
+      explanation: (editingCard.explanation ?? '').trim(),
+      tags,
+      createdAt: editingCard.createdAt ?? nowIso,
+      updatedAt: nowIso,
+    };
+
+    if (!payload.id) {
+      setError('カードIDの生成に失敗しました');
+      return;
+    }
+
+    setError(null);
+    setMessage(null);
+    try {
+      setBusy('save-card');
+      await onSaveCard(expandedDatasetId, payload);
+      await loadCards(expandedDatasetId);
+      setMessage(editingCard.isNew ? 'カードを追加しました。' : 'カードを更新しました。');
+      resetEditor();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'カード保存に失敗しました');
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>データ管理</CardTitle>
+          <CardDescription>データセットJSONのインポート、バックアップのエクスポート/インポートを行います。</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium" htmlFor="dataset-import">データセットJSONをインポート</label>
+            <input
+              id="dataset-import"
+              type="file"
+              accept="application/json,.json"
+              className="block w-full text-sm"
+              onChange={async (event) => {
+                setError(null);
+                setMessage(null);
+                try {
+                  const text = await readFile(event.target.files?.[0] ?? null);
+                  if (!text) return;
+                  setBusy('dataset-import');
+                  await onImportDataset(text);
+                  setMessage('データセットをインポートしました。');
+                } catch (err) {
+                  setError(err instanceof Error ? err.message : 'インポートに失敗しました');
+                } finally {
+                  setBusy(null);
+                  event.currentTarget.value = '';
+                }
+              }}
+            />
+            <p className="text-xs text-slate-500">`public/sample-dataset.json` を使って動作確認できます。</p>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="space-y-2 rounded-lg border p-4">
+              <p className="font-medium">バックアップをエクスポート</p>
+              <p className="text-sm text-slate-500">全データ（学習履歴・設定含む）をJSONで保存します。</p>
+              <Button
+                variant="outline"
+                disabled={busy === 'backup-export'}
+                onClick={async () => {
+                  setError(null);
+                  setMessage(null);
+                  try {
+                    setBusy('backup-export');
+                    await onExportBackup();
+                    setMessage('バックアップをエクスポートしました。');
+                  } catch (err) {
+                    setError(err instanceof Error ? err.message : 'エクスポートに失敗しました');
+                  } finally {
+                    setBusy(null);
+                  }
+                }}
+              >
+                バックアップ出力
+              </Button>
+            </div>
+
+            <div className="space-y-2 rounded-lg border p-4">
+              <p className="font-medium">バックアップをインポート</p>
+              <p className="text-sm text-slate-500">既存DBを置き換えて復元します。</p>
+              <input
+                type="file"
+                accept="application/json,.json"
+                className="block w-full text-sm"
+                onChange={async (event) => {
+                  setError(null);
+                  setMessage(null);
+                  try {
+                    const text = await readFile(event.target.files?.[0] ?? null);
+                    if (!text) return;
+                    setBusy('backup-import');
+                    await onImportBackup(text);
+                    setMessage('バックアップをインポートしました。');
+                    if (expandedDatasetId) {
+                      await loadCards(expandedDatasetId);
+                    }
+                  } catch (err) {
+                    setError(err instanceof Error ? err.message : 'バックアップ復元に失敗しました');
+                  } finally {
+                    setBusy(null);
+                    event.currentTarget.value = '';
+                  }
+                }}
+              />
+            </div>
+          </div>
+
+          {message && <p className="text-sm text-green-600">{message}</p>}
+          {error && <p className="text-sm text-red-500">{error}</p>}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>データセット一覧</CardTitle>
+          <CardDescription>カード管理・データセット削除を行えます。</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {datasets.length === 0 && <p className="text-sm text-slate-500">データセットはありません。</p>}
+          {datasets.map((dataset) => {
+            const isExpanded = expandedDatasetId === dataset.datasetId;
+            return (
+              <div key={dataset.datasetId} className="rounded-lg border p-3">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                  <div className="space-y-1">
+                    <p className="font-medium">{dataset.title}</p>
+                    <div className="flex flex-wrap gap-2 text-xs">
+                      <Badge variant="outline">{dataset.cardCount} cards</Badge>
+                      <Badge variant="outline">{dataset.datasetId}</Badge>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={async () => {
+                        setError(null);
+                        setMessage(null);
+                        try {
+                          if (isExpanded) {
+                            setExpandedDatasetId(null);
+                            setDatasetCards([]);
+                            resetEditor();
+                            return;
+                          }
+                          setBusy(`manage:${dataset.datasetId}`);
+                          setExpandedDatasetId(dataset.datasetId);
+                          resetEditor();
+                          await loadCards(dataset.datasetId);
+                        } catch (err) {
+                          setError(err instanceof Error ? err.message : 'カード一覧の取得に失敗しました');
+                          setExpandedDatasetId(null);
+                        } finally {
+                          setBusy(null);
+                        }
+                      }}
+                      disabled={busy === `manage:${dataset.datasetId}`}
+                    >
+                      {isExpanded ? '閉じる' : 'カードを管理'}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
+                      onClick={async () => {
+                        if (!window.confirm(`「${dataset.title}」を削除しますか？`)) return;
+                        setError(null);
+                        setMessage(null);
+                        try {
+                          setBusy(`delete:${dataset.datasetId}`);
+                          await onDeleteDataset(dataset.datasetId);
+                          setMessage('データセットを削除しました。');
+                          if (isExpanded) {
+                            setExpandedDatasetId(null);
+                            setDatasetCards([]);
+                            resetEditor();
+                          }
+                        } catch (err) {
+                          setError(err instanceof Error ? err.message : '削除に失敗しました');
+                        } finally {
+                          setBusy(null);
+                        }
+                      }}
+                      disabled={busy === `delete:${dataset.datasetId}`}
+                    >
+                      削除
+                    </Button>
+                  </div>
+                </div>
+
+                {isExpanded && (
+                  <div className="mt-4 space-y-4 border-t pt-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-sm font-medium">カード一覧 ({datasetCards.length})</p>
+                      <div className="flex gap-2">
+                        <Button variant="outline" onClick={() => void loadCards(dataset.datasetId)}>
+                          再読み込み
+                        </Button>
+                        <Button className="bg-green-600 text-white hover:bg-green-700" onClick={startAdd}>
+                          + カードを追加
+                        </Button>
+                      </div>
+                    </div>
+
+                    {datasetCards.length === 0 ? (
+                      <p className="text-sm text-slate-500">カードはありません。</p>
+                    ) : (
+                      <div className="overflow-x-auto rounded-lg border">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b bg-slate-50 text-left dark:bg-slate-900/40">
+                              <th className="px-3 py-2">質問</th>
+                              <th className="px-3 py-2">正答例</th>
+                              <th className="px-3 py-2">操作</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {datasetCards.map((card) => (
+                              <tr key={card.id} className="border-b last:border-b-0 align-top">
+                                <td className="px-3 py-2 whitespace-pre-wrap">{card.question}</td>
+                                <td className="px-3 py-2">{card.answers[0] ?? '-'}</td>
+                                <td className="px-3 py-2">
+                                  <div className="flex flex-wrap gap-2">
+                                    <Button variant="outline" size="sm" onClick={() => startEdit(card)}>編集</Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
+                                      onClick={async () => {
+                                        if (!window.confirm('このカードを削除しますか？')) return;
+                                        setError(null);
+                                        setMessage(null);
+                                        try {
+                                          setBusy(`delete-card:${card.id}`);
+                                          await onDeleteCard(dataset.datasetId, card.id);
+                                          await loadCards(dataset.datasetId);
+                                          if (editingCard && editingCard.id === card.id) {
+                                            resetEditor();
+                                          }
+                                          setMessage('カードを削除しました。');
+                                        } catch (err) {
+                                          setError(err instanceof Error ? err.message : 'カード削除に失敗しました');
+                                        } finally {
+                                          setBusy(null);
+                                        }
+                                      }}
+                                      disabled={busy === `delete-card:${card.id}`}
+                                    >
+                                      削除
+                                    </Button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+
+                    {editingCard && expandedDataset && (
+                      <div className="space-y-4 rounded-lg border bg-slate-50 p-4 dark:bg-slate-900/30">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="font-medium">{editingCard.isNew ? 'カードを追加' : 'カードを編集'}</p>
+                          <Badge variant="outline">{expandedDataset.title}</Badge>
+                        </div>
+
+                        <div className="grid gap-4 md:grid-cols-2">
+                          <div className="space-y-2 md:col-span-2">
+                            <Label htmlFor="card-question">質問（必須）</Label>
+                            <textarea
+                              id="card-question"
+                              className="min-h-24 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                              value={editingCard.question ?? ''}
+                              onChange={(event) => setEditingCard((prev) => (prev ? { ...prev, question: event.target.value } : prev))}
+                            />
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label htmlFor="card-answers">正答（必須 / カンマ区切り）</Label>
+                            <Input id="card-answers" value={answersText} onChange={(event) => setAnswersText(event.target.value)} />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="card-topic">トピック</Label>
+                            <Input
+                              id="card-topic"
+                              value={editingCard.topic ?? ''}
+                              onChange={(event) => setEditingCard((prev) => (prev ? { ...prev, topic: event.target.value } : prev))}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="card-tags">タグ（カンマ区切り）</Label>
+                            <Input id="card-tags" value={tagsText} onChange={(event) => setTagsText(event.target.value)} />
+                          </div>
+
+                          <div className="space-y-2 md:col-span-2">
+                            <Label htmlFor="card-explanation">解説</Label>
+                            <textarea
+                              id="card-explanation"
+                              className="min-h-24 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                              value={editingCard.explanation ?? ''}
+                              onChange={(event) => setEditingCard((prev) => (prev ? { ...prev, explanation: event.target.value } : prev))}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2">
+                          <Button onClick={saveEditingCard} disabled={busy === 'save-card'} className="bg-green-600 text-white hover:bg-green-700">
+                            保存
+                          </Button>
+                          <Button variant="outline" onClick={resetEditor}>キャンセル</Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
