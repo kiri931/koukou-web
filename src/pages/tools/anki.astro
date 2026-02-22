@@ -1,0 +1,13 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { Header } from '../../components/Header';
+import { AnkiApp } from '../../features/anki';
+import '../../styles/global.css';
+---
+
+<Layout title="覚える君 - 高校情報">
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <Header currentPath="/tools/anki" />
+    <AnkiApp client:only="react" />
+  </div>
+</Layout>
