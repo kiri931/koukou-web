@@ -117,8 +117,8 @@ function Header({ currentPath = "/" }: HeaderProps) {
 
                   {toolsOpen && (
                     <div className="absolute left-0 top-full z-50 pt-2">
-                      <div className="w-[min(92vw,42rem)] rounded-xl border border-slate-200 bg-white p-4 shadow-xl shadow-slate-900/10 dark:border-slate-700 dark:bg-slate-900">
-                        <div className="grid gap-4 sm:grid-cols-3">
+                      <div className="w-[min(92vw,24rem)] rounded-xl border border-slate-200 bg-white p-4 shadow-xl shadow-slate-900/10 dark:border-slate-700 dark:bg-slate-900">
+                        <div className="grid gap-4 grid-cols-1">
                           {toolMenuSections.map((section) => (
                             <div key={section.label}>
                               <p className="mb-2 text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400">
