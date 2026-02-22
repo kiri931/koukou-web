@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import Header from '../../components/Header.astro';
+import { Header } from '../../components/Header';
 import { TimeScheduler } from '../../features/time-schedule';
 import '../../styles/global.css';
 ---
@@ -10,7 +10,7 @@ import '../../styles/global.css';
   description="円形タイムスケジューラ。視覚的な円形クロックでタスクと時間を管理。タイマー機能付き。データはブラウザのlocalStorageに保存されます。"
 >
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <Header />
+      <Header client:load currentPath="/tools/time-schedule" />
       <TimeScheduler client:only="react" />
     </div>
     <script
