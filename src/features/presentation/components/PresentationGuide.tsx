@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTimer } from '../hooks/useTimer';
 
 const EVAL_COPIES_KEY = 'presentation.evalCopies';
+const CHECK_ITEMS_KEY = 'presentation.checkedItems';
 const CHECK_ITEMS = [
   '最初の30秒でテーマと目的を明確に伝える',
   '1スライド1メッセージを守る',
@@ -29,6 +30,8 @@ const SPEECH_RUBRIC = [
   { criterion: '説明力', levels: ['具体例が適切で理解しやすい', '概ね理解できる', '説明が抽象的', '説明不足で伝わらない'] },
   { criterion: '質疑応答', levels: ['的確に回答し発展させる', '概ね対応できる', '回答が曖昧', '回答困難'] },
 ];
+
+const EVAL_FORM_ITEMS = [...SLIDE_RUBRIC, ...SPEECH_RUBRIC].map((row) => row.criterion);
 
 function formatSeconds(sec: number) {
   const safe = Math.max(0, sec);
@@ -86,6 +89,12 @@ export default function PresentationGuide() {
   const [evalCopies, setEvalCopies] = useState(20);
   const [checkedItems, setCheckedItems] = useState<boolean[]>(new Array(6).fill(false));
   const [isPrintEvalMode, setIsPrintEvalMode] = useState(false);
+  const [customMinutes, setCustomMinutes] = useState('5');
+  const [isTimerMinimized, setIsTimerMinimized] = useState(false);
+  const [evalScores, setEvalScores] = useState<Record<string, number>>(
+    () => Object.fromEntries(EVAL_FORM_ITEMS.map((item) => [item, 0])) as Record<string, number>
+  );
+  const prevTimerDoneRef = useRef(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -97,14 +106,77 @@ export default function PresentationGuide() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    const saved = window.localStorage.getItem(CHECK_ITEMS_KEY);
+    if (!saved) return;
+    try {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length === CHECK_ITEMS.length) {
+        setCheckedItems(parsed.map((v) => Boolean(v)));
+      }
+    } catch {
+      // ignore broken localStorage values
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
     window.localStorage.setItem(EVAL_COPIES_KEY, String(evalCopies));
   }, [evalCopies]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem(CHECK_ITEMS_KEY, JSON.stringify(checkedItems));
+  }, [checkedItems]);
 
   useEffect(() => {
     const onAfterPrint = () => setIsPrintEvalMode(false);
     window.addEventListener('afterprint', onAfterPrint);
     return () => window.removeEventListener('afterprint', onAfterPrint);
   }, []);
+
+  useEffect(() => {
+    if (timerMode !== 'countdown') return;
+    setCustomMinutes(String(Math.max(1, Math.floor(baseSeconds / 60))));
+  }, [baseSeconds, timerMode]);
+
+  useEffect(() => {
+    if (!timerDone || prevTimerDoneRef.current) {
+      prevTimerDoneRef.current = timerDone;
+      return;
+    }
+
+    prevTimerDoneRef.current = true;
+
+    if (typeof window === 'undefined') return;
+    try {
+      const AudioCtx = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const oscillator = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      oscillator.type = 'sine';
+      oscillator.frequency.value = 880;
+      gain.gain.setValueAtTime(0.001, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+
+      oscillator.connect(gain);
+      gain.connect(ctx.destination);
+      oscillator.start();
+      oscillator.stop(ctx.currentTime + 0.45);
+      void oscillator.onended;
+    } catch {
+      // Audio may be blocked by browser policy/device settings.
+    }
+  }, [timerDone, timerMode]);
+
+  const completedCheckCount = checkedItems.filter(Boolean).length;
+  const isCountdownWarning = timerMode === 'countdown' && displaySeconds > 0 && displaySeconds <= 30;
+  const countdownProgressPercent =
+    timerMode === 'countdown' && baseSeconds > 0
+      ? Math.max(0, Math.min(100, (displaySeconds / baseSeconds) * 100))
+      : 0;
 
   const evalCopiesView = useMemo(() => Array.from({ length: evalCopies }), [evalCopies]);
 
@@ -141,55 +213,138 @@ export default function PresentationGuide() {
           </div>
         </section>
 
-        <section className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
-          <h2 className="mb-3 text-xl font-semibold">タイマー</h2>
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant={timerMode === 'countdown' ? 'default' : 'outline'}
-              className={timerMode === 'countdown' ? 'bg-amber-600 text-white hover:bg-amber-500' : ''}
-              onClick={() => setMode('countdown')}
-            >
-              カウントダウン
-            </Button>
-            <Button
-              variant={timerMode === 'stopwatch' ? 'default' : 'outline'}
-              className={timerMode === 'stopwatch' ? 'bg-amber-600 text-white hover:bg-amber-500' : ''}
-              onClick={() => setMode('stopwatch')}
-            >
-              ストップウォッチ
-            </Button>
-          </div>
-
-          {timerMode === 'countdown' && (
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              {presets.map((sec) => (
-                <Button
-                  key={sec}
-                  variant="outline"
-                  size="sm"
-                  className={baseSeconds === sec ? 'border-amber-500 text-amber-700 dark:text-amber-300' : ''}
-                  onClick={() => setCountdownSeconds(sec)}
-                >
-                  {Math.floor(sec / 60)}分
-                </Button>
-              ))}
-              <span className="ml-2 text-sm text-slate-500 dark:text-slate-400">現在: {Math.floor(baseSeconds / 60)}分</span>
+        <section
+          id="timer"
+          className={`sticky top-20 z-10 mb-6 rounded-xl border border-slate-200 bg-white shadow-sm print:static md:top-24 dark:border-slate-800 dark:bg-slate-900/95 ${
+            isTimerMinimized ? 'p-3' : 'p-5'
+          }`}
+        >
+          {isTimerMinimized ? (
+            <div className="-mx-1 overflow-x-auto px-1">
+              <div className="flex min-w-max items-center gap-2 whitespace-nowrap sm:gap-3">
+                <h2 className="shrink-0 pr-1 text-sm font-semibold text-slate-700 dark:text-slate-200 sm:text-base">タイマー</h2>
+                <span className="h-5 w-px shrink-0 bg-slate-200 dark:bg-slate-700" aria-hidden="true" />
+                <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">{timerMode === 'countdown' ? 'CD' : 'SW'}</span>
+              <p
+                className={`shrink-0 px-1 font-mono text-xl font-bold tracking-wider sm:text-2xl ${
+                  isCountdownWarning ? 'text-red-600 dark:text-red-400' : ''
+                }`}
+              >
+                {formatSeconds(displaySeconds)}
+              </p>
+              {!running ? (
+                <Button size="sm" className="h-8 shrink-0 bg-amber-600 px-3 text-white hover:bg-amber-500" onClick={start}>開始</Button>
+              ) : (
+                <Button size="sm" variant="outline" className="h-8 shrink-0 px-3" onClick={stop}>停止</Button>
+              )}
+                <span className="h-5 w-px shrink-0 bg-slate-200 dark:bg-slate-700" aria-hidden="true" />
+                <Button size="sm" variant="outline" className="h-8 shrink-0 px-3" onClick={reset}>リセット</Button>
+                <Button size="sm" variant="outline" className="h-8 shrink-0 px-3" onClick={() => setIsTimerMinimized(false)}>展開</Button>
+              </div>
             </div>
+          ) : (
+            <>
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <h2 className="text-xl font-semibold">タイマー</h2>
+                <Button variant="outline" size="sm" onClick={() => setIsTimerMinimized(true)}>
+                  最小化
+                </Button>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  variant={timerMode === 'countdown' ? 'default' : 'outline'}
+                  className={timerMode === 'countdown' ? 'bg-amber-600 text-white hover:bg-amber-500' : ''}
+                  onClick={() => setMode('countdown')}
+                >
+                  カウントダウン
+                </Button>
+                <Button
+                  variant={timerMode === 'stopwatch' ? 'default' : 'outline'}
+                  className={timerMode === 'stopwatch' ? 'bg-amber-600 text-white hover:bg-amber-500' : ''}
+                  onClick={() => setMode('stopwatch')}
+                >
+                  ストップウォッチ
+                </Button>
+              </div>
+
+              {timerMode === 'countdown' && (
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  {presets.map((sec) => (
+                    <Button
+                      key={sec}
+                      variant="outline"
+                      size="sm"
+                      className={baseSeconds === sec ? 'border-amber-500 text-amber-700 dark:text-amber-300' : ''}
+                      onClick={() => setCountdownSeconds(sec)}
+                    >
+                      {Math.floor(sec / 60)}分
+                    </Button>
+                  ))}
+                  <div className="ml-2 flex items-center gap-2">
+                    <label htmlFor="custom-minutes" className="text-sm text-slate-600 dark:text-slate-300">カスタム</label>
+                    <Input
+                      id="custom-minutes"
+                      type="number"
+                      min={1}
+                      max={360}
+                      className="h-8 w-20"
+                      value={customMinutes}
+                      onChange={(e) => setCustomMinutes(e.target.value)}
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const minutes = Math.max(1, Math.min(360, Number(customMinutes) || 1));
+                        setCountdownSeconds(minutes * 60);
+                        setCustomMinutes(String(minutes));
+                      }}
+                    >
+                      設定
+                    </Button>
+                    <span className="text-sm text-slate-500 dark:text-slate-400">現在: {Math.floor(baseSeconds / 60)}分</span>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
-          <div className="mt-4 text-center">
-            <p className="font-mono text-5xl font-bold tracking-wider">{formatSeconds(displaySeconds)}</p>
-            {timerDone && <p className="mt-2 text-sm font-semibold text-amber-600 dark:text-amber-400">時間になりました</p>}
-          </div>
+          {!isTimerMinimized && (
+            <>
+              <div className="mt-4 text-center">
+                <p
+                  className={`font-mono text-5xl font-bold tracking-wider ${
+                    isCountdownWarning ? 'text-red-600 dark:text-red-400' : ''
+                  }`}
+                >
+                  {formatSeconds(displaySeconds)}
+                </p>
+                {timerMode === 'countdown' && (
+                  <div className="mx-auto mt-3 h-2 w-full max-w-xl overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                    <div
+                      className={`h-full rounded-full transition-all ${
+                        isCountdownWarning ? 'bg-red-500' : 'bg-amber-500'
+                      }`}
+                      style={{ width: `${countdownProgressPercent}%` }}
+                    />
+                  </div>
+                )}
+                {timerDone && <p className="mt-2 text-sm font-semibold text-amber-600 dark:text-amber-400">時間になりました（音で通知）</p>}
+                {isCountdownWarning && !timerDone && (
+                  <p className="mt-2 text-sm font-semibold text-red-600 dark:text-red-400">残り30秒です</p>
+                )}
+              </div>
 
-          <div className="mt-4 flex flex-wrap justify-center gap-2">
-            {!running ? (
-              <Button className="bg-amber-600 text-white hover:bg-amber-500" onClick={start}>開始</Button>
-            ) : (
-              <Button variant="outline" onClick={stop}>停止</Button>
-            )}
-            <Button variant="outline" onClick={reset}>リセット</Button>
-          </div>
+              <div className="mt-4 flex flex-wrap justify-center gap-2">
+                {!running ? (
+                  <Button className="bg-amber-600 text-white hover:bg-amber-500" onClick={start}>開始</Button>
+                ) : (
+                  <Button variant="outline" onClick={stop}>停止</Button>
+                )}
+                <Button variant="outline" onClick={reset}>リセット</Button>
+              </div>
+            </>
+          )}
         </section>
 
         <section className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
@@ -210,7 +365,7 @@ export default function PresentationGuide() {
           </div>
         </section>
 
-        <section className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+        <section id="rule-102030" className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
           <h2 className="mb-3 text-xl font-semibold">10/20/30ルール</h2>
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-700">
@@ -229,6 +384,9 @@ export default function PresentationGuide() {
               <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">後方席でも読めるサイズを基準にする。</p>
             </div>
           </div>
+          <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
+            Guy Kawasaki によるビジネス向けの目安です。高校の授業発表では 3〜7分・5〜8枚 が多いため、例えば 7分発表なら 7枚前後を目安に調整してください。
+          </p>
         </section>
 
         <section className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
@@ -250,11 +408,19 @@ export default function PresentationGuide() {
           </ol>
         </section>
 
-        <section className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+        <section id="checklist" className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
           <h2 className="mb-3 text-xl font-semibold">発表チェックリスト</h2>
+          <p className="mb-3 text-sm text-slate-600 dark:text-slate-400">{completedCheckCount}/{CHECK_ITEMS.length} 完了</p>
           <div className="space-y-2">
             {CHECK_ITEMS.map((item, index) => (
-              <label key={item} className="flex cursor-pointer items-center gap-2 rounded-md border border-slate-200 px-3 py-2 dark:border-slate-700">
+              <label
+                key={item}
+                className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 transition-colors ${
+                  checkedItems[index]
+                    ? 'border-emerald-300 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/20'
+                    : 'border-slate-200 dark:border-slate-700'
+                }`}
+              >
                 <input
                   type="checkbox"
                   checked={checkedItems[index]}
@@ -262,7 +428,7 @@ export default function PresentationGuide() {
                     setCheckedItems((prev) => prev.map((v, i) => (i === index ? !v : v)))
                   }
                 />
-                <span>{item}</span>
+                <span className={checkedItems[index] ? 'text-slate-500 line-through dark:text-slate-400' : ''}>{item}</span>
               </label>
             ))}
           </div>
@@ -273,9 +439,10 @@ export default function PresentationGuide() {
           <RubricTable title="評価ルーブリック②（発表）" rows={SPEECH_RUBRIC} />
         </div>
 
-        <section className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+        <section id="evaluation-form" className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
           <h2 className="mb-3 text-xl font-semibold">自己/相互評価フォーム</h2>
           <p className="mb-3 text-sm text-slate-600 dark:text-slate-400">発表後に各観点を4段階でチェックし、コメントを1つ記入します。</p>
+          <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">採点の目安: 4=優秀 / 3=良好 / 2=改善要 / 1=不十分</p>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-sm">
               <thead>
@@ -288,11 +455,27 @@ export default function PresentationGuide() {
                 </tr>
               </thead>
               <tbody>
-                {['構成', 'デザイン', '話し方', '時間管理', '質疑応答'].map((item) => (
+                {EVAL_FORM_ITEMS.map((item) => (
                   <tr key={item}>
                     <td className="border border-slate-200 px-3 py-2 dark:border-slate-700">{item}</td>
                     {[4, 3, 2, 1].map((num) => (
-                      <td key={num} className="border border-slate-200 px-3 py-2 text-center dark:border-slate-700">□</td>
+                      <td key={num} className="border border-slate-200 px-3 py-2 text-center dark:border-slate-700">
+                        <label className="inline-flex cursor-pointer items-center justify-center">
+                          <input
+                            type="radio"
+                            name={`eval-${item}`}
+                            className="h-4 w-4"
+                            checked={evalScores[item] === num}
+                            onChange={() =>
+                              setEvalScores((prev) => ({
+                                ...prev,
+                                [item]: num,
+                              }))
+                            }
+                          />
+                          <span className="sr-only">{item} {num}点</span>
+                        </label>
+                      </td>
                     ))}
                   </tr>
                 ))}
@@ -308,8 +491,8 @@ export default function PresentationGuide() {
           <h2 className="mb-2 text-xl font-semibold">参考資料</h2>
           <ul className="list-disc space-y-1 pl-5 text-slate-700 dark:text-slate-300">
             <li><a className="text-amber-700 underline underline-offset-4 dark:text-amber-300" href="https://www.canva.com/ja_jp/learn/presentation-design/" target="_blank" rel="noopener noreferrer">Canva プレゼンデザインガイド</a></li>
-            <li><a className="text-amber-700 underline underline-offset-4 dark:text-amber-300" href="https://speakingaboutpresenting.com/" target="_blank" rel="noopener noreferrer">Speaking about Presenting</a></li>
-            <li><a className="text-amber-700 underline underline-offset-4 dark:text-amber-300" href="https://www.garrreynolds.com/preso-tips/design/" target="_blank" rel="noopener noreferrer">Presentation Zen Tips</a></li>
+            <li><a className="text-amber-700 underline underline-offset-4 dark:text-amber-300" href="https://speakingaboutpresenting.com/" target="_blank" rel="noopener noreferrer">[英語] Speaking about Presenting</a></li>
+            <li><a className="text-amber-700 underline underline-offset-4 dark:text-amber-300" href="https://www.garrreynolds.com/preso-tips/design/" target="_blank" rel="noopener noreferrer">[英語] Presentation Zen Tips</a></li>
           </ul>
         </section>
       </div>
@@ -319,6 +502,7 @@ export default function PresentationGuide() {
           <div key={index} className="pr-copy mx-auto mb-4 max-w-3xl rounded-lg border border-slate-300 p-6 text-black break-after-page">
             <h2 className="text-xl font-bold">自己/相互評価フォーム</h2>
             <p className="mt-1 text-sm">No.{index + 1} / 氏名: ____________________ / 発表者: ____________________</p>
+            <p className="mt-2 text-xs">採点の目安: 4=優秀 / 3=良好 / 2=改善要 / 1=不十分</p>
             <table className="mt-4 w-full border-collapse text-sm">
               <thead>
                 <tr>
@@ -330,7 +514,7 @@ export default function PresentationGuide() {
                 </tr>
               </thead>
               <tbody>
-                {['構成', 'デザイン', '話し方', '時間管理', '質疑応答'].map((item) => (
+                {EVAL_FORM_ITEMS.map((item) => (
                   <tr key={item}>
                     <td className="border border-slate-400 px-2 py-2">{item}</td>
                     <td className="border border-slate-400 px-2 py-2 text-center">□</td>
