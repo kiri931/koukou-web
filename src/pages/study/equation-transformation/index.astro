@@ -1,0 +1,14 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { Header } from "../../../components/Header";
+import { EquationTransformation } from "../../../features/equation-transformation";
+import "../../../styles/global.css";
+---
+
+<Layout title="等式の変形テスト - 高校情報">
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <Header currentPath="/study/equation-transformation" />
+    <EquationTransformation client:only="react" />
+  </div>
+</Layout>
+
