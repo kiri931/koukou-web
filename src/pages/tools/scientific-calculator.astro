@@ -1,0 +1,30 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { Header } from '../../components/Header';
+import { ScientificCalculator } from '../../features/scientific-calculator';
+import '../../styles/global.css';
+---
+
+<Layout
+  title="関数電卓 - ツール"
+  description="日本のビジネス計算実務検定向けに必要な関数・組合せ・統計処理を備えた関数電卓。角度モード切替、DMS入力、統計パネルをブラウザだけで利用できます。"
+>
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <Header client:load currentPath="/tools/scientific-calculator" />
+    <h1 class="sr-only">関数電卓</h1>
+    <ScientificCalculator client:only="react" />
+  </div>
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: '関数電卓',
+      applicationCategory: 'UtilitiesApplication',
+      operatingSystem: 'Web Browser',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+      inLanguage: 'ja-JP',
+      url: 'https://koukou-jouhou.org/tools/scientific-calculator',
+    })}
+  />
+</Layout>
