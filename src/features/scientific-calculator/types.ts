@@ -27,6 +27,8 @@ export interface ButtonDef {
   shiftAction?: string;
   variant: CalcButtonVariant;
   wide?: boolean;
+  description?: string;
+  shiftDescription?: string;
 }
 
 export interface StatisticsSummary {
