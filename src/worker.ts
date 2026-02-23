@@ -1,7 +1,7 @@
 interface Env {
   ASSETS: Fetcher;
   RESEND_API_KEY: string;
-  SUPPORT_EMAIL: string;
+  RESEND_TO_EMAIL: string;
   RESEND_FROM_EMAIL?: string;
 }
 
@@ -44,7 +44,7 @@ async function handleSupportRequest(request: Request, env: Env): Promise<Respons
     },
     body: JSON.stringify({
       from: `機能リクエスト <${fromEmail}>`,
-      to: env.SUPPORT_EMAIL,
+      to: env.RESEND_TO_EMAIL,
       reply_to: email || undefined,
       subject: `[機能リクエスト] ${category}`,
       text: [
