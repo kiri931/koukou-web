@@ -1,0 +1,282 @@
+[
+  {
+    "question": "print(\"hello\")",
+    "answers": [
+      "print(\"hello\")"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "if x > 0:",
+    "answers": [
+      "if x > 0:"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "for i in range(5):",
+    "answers": [
+      "for i in range(5):"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "def hello():",
+    "answers": [
+      "def hello():"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "x.append(4)",
+    "answers": [
+      "x.append(4)"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "import os",
+    "answers": [
+      "import os"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "return x + y",
+    "answers": [
+      "return x + y"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "while True:",
+    "answers": [
+      "while True:"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "data.get(\"id\")",
+    "answers": [
+      "data.get(\"id\")"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "items = [1, 2, 3]",
+    "answers": [
+      "items = [1, 2, 3]"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "console.log(\"hello\")",
+    "answers": [
+      "console.log(\"hello\")"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "let x = 5;",
+    "answers": [
+      "let x = 5;"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "const name = \"world\";",
+    "answers": [
+      "const name = \"world\";"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "if (x > 0) {",
+    "answers": [
+      "if (x > 0) {"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "function add(a, b) {",
+    "answers": [
+      "function add(a, b) {"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "arr.push(4);",
+    "answers": [
+      "arr.push(4);"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "return a + b;",
+    "answers": [
+      "return a + b;"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "for (let i = 0; i < 5; i++) {",
+    "answers": [
+      "for (let i = 0; i < 5; i++) {"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "obj?.name",
+    "answers": [
+      "obj?.name"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "value ?? 0",
+    "answers": [
+      "value ?? 0"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "<html>",
+    "answers": [
+      "<html>"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "<body>",
+    "answers": [
+      "<body>"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "<div>",
+    "answers": [
+      "<div>"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "<p>Hello</p>",
+    "answers": [
+      "<p>Hello</p>"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "<h1>Title</h1>",
+    "answers": [
+      "<h1>Title</h1>"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "<img src=\"cat.png\" />",
+    "answers": [
+      "<img src=\"cat.png\" />"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "<a href=\"#\">Link</a>",
+    "answers": [
+      "<a href=\"#\">Link</a>"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "<input type=\"text\" />",
+    "answers": [
+      "<input type=\"text\" />"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "<ul>",
+    "answers": [
+      "<ul>"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "<li>Item</li>",
+    "answers": [
+      "<li>Item</li>"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "color: #fff;",
+    "answers": [
+      "color: #fff;"
+    ],
+    "language": "css"
+  },
+  {
+    "question": "margin: 0 auto;",
+    "answers": [
+      "margin: 0 auto;"
+    ],
+    "language": "css"
+  },
+  {
+    "question": "padding: 10px;",
+    "answers": [
+      "padding: 10px;"
+    ],
+    "language": "css"
+  },
+  {
+    "question": "font-size: 16px;",
+    "answers": [
+      "font-size: 16px;"
+    ],
+    "language": "css"
+  },
+  {
+    "question": "display: flex;",
+    "answers": [
+      "display: flex;"
+    ],
+    "language": "css"
+  },
+  {
+    "question": "justify-content: center;",
+    "answers": [
+      "justify-content: center;"
+    ],
+    "language": "css"
+  },
+  {
+    "question": "align-items: center;",
+    "answers": [
+      "align-items: center;"
+    ],
+    "language": "css"
+  },
+  {
+    "question": "border: 1px solid #ddd;",
+    "answers": [
+      "border: 1px solid #ddd;"
+    ],
+    "language": "css"
+  },
+  {
+    "question": "background: #f5f5f5;",
+    "answers": [
+      "background: #f5f5f5;"
+    ],
+    "language": "css"
+  },
+  {
+    "question": "width: 100%;",
+    "answers": [
+      "width: 100%;"
+    ],
+    "language": "css"
+  }
+]
