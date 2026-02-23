@@ -5,9 +5,25 @@ import { EquationTransformation } from "../../../features/equation-transformatio
 import "../../../styles/global.css";
 ---
 
-<Layout title="等式の変形テスト - 高校情報">
+<Layout
+  title="等式の変形テスト - 高校情報"
+  description="等式の変形テスト。高校数学の方程式・不等式を変形するドリル形式の学習ツール。ブラウザ上で動作。"
+>
   <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
     <Header client:load currentPath="/study/equation-transformation" />
     <EquationTransformation client:only="react" />
   </div>
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: '等式の変形テスト',
+      applicationCategory: 'EducationalApplication',
+      operatingSystem: 'Web Browser',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+      inLanguage: 'ja-JP',
+      url: 'https://koukou-jouhou.org/study/equation-transformation',
+    })}
+  />
 </Layout>

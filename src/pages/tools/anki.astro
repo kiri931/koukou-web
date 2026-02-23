@@ -5,9 +5,25 @@ import { AnkiApp } from '../../features/anki';
 import '../../styles/global.css';
 ---
 
-<Layout title="覚える君 - 高校情報">
+<Layout
+  title="覚える君 - 高校情報"
+  description="単語カードで記憶定着をサポートする暗記ツール。表裏形式のカードを作成・管理できます。ブラウザ上で動作。"
+>
   <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
     <Header currentPath="/tools/anki" />
     <AnkiApp client:only="react" />
   </div>
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: '覚える君',
+      applicationCategory: 'EducationalApplication',
+      operatingSystem: 'Web Browser',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+      inLanguage: 'ja-JP',
+      url: 'https://koukou-jouhou.org/tools/anki',
+    })}
+  />
 </Layout>
