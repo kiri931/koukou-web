@@ -1,10 +1,12 @@
+import { forwardRef, type ButtonHTMLAttributes, type MouseEvent } from 'react';
 import { cn } from '@/lib/utils';
 import type { ButtonDef } from '../types';
 
-interface CalcButtonProps {
+interface CalcButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> {
   button: ButtonDef;
   shiftActive: boolean;
   onPress: (action: string) => void;
+  onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
 }
 
 const variantClassMap: Record<ButtonDef['variant'], string> = {
@@ -16,24 +18,55 @@ const variantClassMap: Record<ButtonDef['variant'], string> = {
   memory: 'bg-emerald-100 text-emerald-900 hover:bg-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-200 dark:hover:bg-emerald-500/25',
 };
 
-export default function CalcButton({ button, shiftActive, onPress }: CalcButtonProps) {
+const CalcButton = forwardRef<HTMLButtonElement, CalcButtonProps>(function CalcButton(
+  { button, shiftActive, onPress, onClick, className, ...buttonProps },
+  ref
+) {
   const label = shiftActive && button.shiftLabel ? button.shiftLabel : button.label;
   const action = shiftActive && button.shiftAction ? button.shiftAction : button.action;
   const isShiftKey = button.action === 'toggle-shift';
+  const hasShiftAlt = !isShiftKey && Boolean(button.shiftAction || button.shiftLabel);
+  const showShiftSubLabel = hasShiftAlt && shiftActive && label !== button.label;
+
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    onClick?.(event);
+    if (event.defaultPrevented) return;
+    onPress(action);
+  };
 
   return (
     <button
+      ref={ref}
       type="button"
-      onClick={() => onPress(action)}
+      onClick={handleClick}
       className={cn(
-        'h-12 rounded-lg border border-white/50 px-2 text-sm font-semibold shadow-sm transition active:translate-y-px sm:h-14 sm:text-base',
+        'relative h-12 rounded-lg border border-white/50 px-2 text-sm font-semibold shadow-sm transition active:translate-y-px sm:h-14 sm:text-base',
         variantClassMap[button.variant],
         button.wide && 'col-span-2',
-        isShiftKey && shiftActive && 'ring-2 ring-violet-400 ring-offset-1 dark:ring-violet-300'
+        showShiftSubLabel && 'py-1',
+        isShiftKey && shiftActive && 'ring-2 ring-violet-400 ring-offset-1 dark:ring-violet-300',
+        className
       )}
       aria-pressed={isShiftKey ? shiftActive : undefined}
+      {...buttonProps}
     >
-      {label}
+      {hasShiftAlt && (
+        <span
+          aria-hidden="true"
+          className={cn(
+            'absolute right-1.5 top-1.5 size-1.5 rounded-full bg-current opacity-45',
+            shiftActive && 'opacity-80'
+          )}
+        />
+      )}
+      <span className={cn('block leading-none', showShiftSubLabel && 'flex flex-col items-center gap-1')}>
+        <span className={cn('block', showShiftSubLabel && 'text-xs sm:text-sm')}>{label}</span>
+        {showShiftSubLabel && (
+          <span className="block text-[10px] font-medium opacity-70 sm:text-xs">{button.label}</span>
+        )}
+      </span>
     </button>
   );
-}
+});
+
+export default CalcButton;
