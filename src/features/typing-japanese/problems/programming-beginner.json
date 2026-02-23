@@ -1,0 +1,282 @@
+[
+  {
+    "question": "x = 5",
+    "answers": [
+      "x = 5"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "a + b",
+    "answers": [
+      "a + b"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "a - b",
+    "answers": [
+      "a - b"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "a * b",
+    "answers": [
+      "a * b"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "a / b",
+    "answers": [
+      "a / b"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "x == 5",
+    "answers": [
+      "x == 5"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "x != 5",
+    "answers": [
+      "x != 5"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "x > 0",
+    "answers": [
+      "x > 0"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "x < 10",
+    "answers": [
+      "x < 10"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "x >= 0",
+    "answers": [
+      "x >= 0"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "x <= 10",
+    "answers": [
+      "x <= 10"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "x += 1",
+    "answers": [
+      "x += 1"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "x -= 1",
+    "answers": [
+      "x -= 1"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "x *= 2",
+    "answers": [
+      "x *= 2"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "x /= 2",
+    "answers": [
+      "x /= 2"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "10 % 3",
+    "answers": [
+      "10 % 3"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "2 ** 8",
+    "answers": [
+      "2 ** 8"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "[1, 2, 3]",
+    "answers": [
+      "[1, 2, 3]"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "(1, 2, 3)",
+    "answers": [
+      "(1, 2, 3)"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "x = []",
+    "answers": [
+      "x = []"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "x = {}",
+    "answers": [
+      "x = {}"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "x = ()",
+    "answers": [
+      "x = ()"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "\"hello\"",
+    "answers": [
+      "\"hello\""
+    ],
+    "language": "common"
+  },
+  {
+    "question": "'world'",
+    "answers": [
+      "'world'"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "# comment",
+    "answers": [
+      "# comment"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "// comment",
+    "answers": [
+      "// comment"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "True",
+    "answers": [
+      "True"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "False",
+    "answers": [
+      "False"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "None",
+    "answers": [
+      "None"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "null",
+    "answers": [
+      "null"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "./index.js",
+    "answers": [
+      "./index.js"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "../src/",
+    "answers": [
+      "../src/"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "index.html",
+    "answers": [
+      "index.html"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "style.css",
+    "answers": [
+      "style.css"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "name = \"A\"",
+    "answers": [
+      "name = \"A\""
+    ],
+    "language": "common"
+  },
+  {
+    "question": "total = price * 2",
+    "answers": [
+      "total = price * 2"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "is_ok = x > 0",
+    "answers": [
+      "is_ok = x > 0"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "items[0]",
+    "answers": [
+      "items[0]"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "user.name",
+    "answers": [
+      "user.name"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "func()",
+    "answers": [
+      "func()"
+    ],
+    "language": "common"
+  }
+]

@@ -1,0 +1,212 @@
+[
+  {
+    "question": "print(\"Hello, World!\")",
+    "answers": [
+      "print(\"Hello, World!\")"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "for i in range(1, 11):",
+    "answers": [
+      "for i in range(1, 11):"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "if __name__ == \"__main__\":",
+    "answers": [
+      "if __name__ == \"__main__\":"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "class MyClass:",
+    "answers": [
+      "class MyClass:"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "def __init__(self, name):",
+    "answers": [
+      "def __init__(self, name):"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "result = [x * 2 for x in nums]",
+    "answers": [
+      "result = [x * 2 for x in nums]"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "with open(\"data.txt\", \"r\") as f:",
+    "answers": [
+      "with open(\"data.txt\", \"r\") as f:"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "try:",
+    "answers": [
+      "try:"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "except ValueError as e:",
+    "answers": [
+      "except ValueError as e:"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "lambda x: x + 1",
+    "answers": [
+      "lambda x: x + 1"
+    ],
+    "language": "python"
+  },
+  {
+    "question": "arr.forEach((item) => console.log(item));",
+    "answers": [
+      "arr.forEach((item) => console.log(item));"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "const doubled = arr.map((x) => x * 2);",
+    "answers": [
+      "const doubled = arr.map((x) => x * 2);"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "async function fetchData(url) {",
+    "answers": [
+      "async function fetchData(url) {"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "await fetch(\"/api/items\");",
+    "answers": [
+      "await fetch(\"/api/items\");"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "const [count, setCount] = useState(0);",
+    "answers": [
+      "const [count, setCount] = useState(0);"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "const user = { id: 1, name: \"A\" };",
+    "answers": [
+      "const user = { id: 1, name: \"A\" };"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "export default function App() {",
+    "answers": [
+      "export default function App() {"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "document.querySelector(\"#app\");",
+    "answers": [
+      "document.querySelector(\"#app\");"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "Promise.all([fetchA(), fetchB()]);",
+    "answers": [
+      "Promise.all([fetchA(), fetchB()]);"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "items.filter((x) => x.active);",
+    "answers": [
+      "items.filter((x) => x.active);"
+    ],
+    "language": "javascript"
+  },
+  {
+    "question": "<div class=\"container\">",
+    "answers": [
+      "<div class=\"container\">"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "<section id=\"main\">",
+    "answers": [
+      "<section id=\"main\">"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "<a href=\"#\">Link</a>",
+    "answers": [
+      "<a href=\"#\">Link</a>"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "<!-- comment -->",
+    "answers": [
+      "<!-- comment -->"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "<meta charset=\"UTF-8\" />",
+    "answers": [
+      "<meta charset=\"UTF-8\" />"
+    ],
+    "language": "html"
+  },
+  {
+    "question": ".container { display: flex; }",
+    "answers": [
+      ".container { display: flex; }"
+    ],
+    "language": "css"
+  },
+  {
+    "question": "@media (max-width: 768px) {",
+    "answers": [
+      "@media (max-width: 768px) {"
+    ],
+    "language": "css"
+  },
+  {
+    "question": "grid-template-columns: repeat(3, 1fr);",
+    "answers": [
+      "grid-template-columns: repeat(3, 1fr);"
+    ],
+    "language": "css"
+  },
+  {
+    "question": "transform: translate(-50%, -50%);",
+    "answers": [
+      "transform: translate(-50%, -50%);"
+    ],
+    "language": "css"
+  },
+  {
+    "question": "box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);",
+    "answers": [
+      "box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);"
+    ],
+    "language": "css"
+  }
+]
