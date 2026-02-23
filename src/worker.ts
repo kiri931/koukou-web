@@ -46,7 +46,7 @@ async function handleSupportRequest(request: Request, env: Env): Promise<Respons
       from: `機能リクエスト <${fromEmail}>`,
       to: env.RESEND_TO_EMAIL,
       reply_to: email || undefined,
-      subject: `[機能リクエスト] ${category}`,
+      subject: `問い合わせフォームより：${category}`,
       text: [
         `カテゴリ: ${category}`,
         `返信先: ${email || "（未入力）"}`,
