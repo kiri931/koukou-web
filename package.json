@@ -31,6 +31,7 @@
     "tailwindcss": "^4.2.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260228.0",
     "@storybook/addon-docs": "^10.2.10",
     "@storybook/addon-themes": "^10.2.10",
     "@storybook/react": "^10.2.10",

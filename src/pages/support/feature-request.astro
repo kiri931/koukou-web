@@ -1,0 +1,19 @@
+---
+import { Header } from "../../components/Header";
+import { SupportForm } from "../../features/support/SupportForm";
+import Layout from "../../layouts/Layout.astro";
+import "../../styles/global.css";
+---
+
+<Layout
+  title="機能リクエスト - 高校情報"
+  description="高校情報サイトへの機能追加リクエスト・改善提案を送信するフォームです。"
+>
+  <div class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+    <Header client:load currentPath="/support/feature-request" />
+
+    <main class="mx-auto max-w-5xl px-4 py-12 sm:py-16">
+      <SupportForm client:only="react" />
+    </main>
+  </div>
+</Layout>

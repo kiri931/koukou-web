@@ -25,7 +25,10 @@ const toolMenuSections = [
   },
   {
     label: "SUPPORT",
-    items: [{ href: "/tools/sekigae", label: "席替えアプリ サポート" }],
+    items: [
+      { href: "/tools/sekigae", label: "席替えアプリ サポート" },
+      { href: "/support/feature-request", label: "機能リクエスト" },
+    ],
   },
 ] as const;
 
@@ -34,7 +37,10 @@ const navItems = [
   {
     href: "/tools/",
     label: "Tools",
-    match: (path: string) => path.startsWith("/tools") || path.startsWith("/study"),
+    match: (path: string) =>
+      path.startsWith("/tools") ||
+      path.startsWith("/study") ||
+      path.startsWith("/support"),
   },
 ];
 
