@@ -2,62 +2,82 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://koukou-jouhou.org/</loc>
-    <lastmod>2026-02-21</lastmod>
+    <lastmod>2026-02-23</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://koukou-jouhou.org/tools/</loc>
-    <lastmod>2026-02-21</lastmod>
+    <lastmod>2026-02-23</lastmod>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://koukou-jouhou.org/tools/face-mosaic</loc>
-    <lastmod>2026-02-21</lastmod>
+    <lastmod>2026-02-23</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://koukou-jouhou.org/tools/anki</loc>
+    <lastmod>2026-02-23</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://koukou-jouhou.org/tools/pdf-merge</loc>
-    <lastmod>2026-02-21</lastmod>
+    <lastmod>2026-02-23</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://koukou-jouhou.org/tools/pdf-viewer</loc>
-    <lastmod>2026-02-21</lastmod>
+    <lastmod>2026-02-23</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://koukou-jouhou.org/tools/pdf-viewer/viewer</loc>
-    <lastmod>2026-02-21</lastmod>
+    <lastmod>2026-02-23</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://koukou-jouhou.org/tools/presentation</loc>
-    <lastmod>2026-02-21</lastmod>
+    <lastmod>2026-02-23</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://koukou-jouhou.org/tools/scientific-calculator</loc>
+    <lastmod>2026-02-23</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://koukou-jouhou.org/tools/sekigae</loc>
-    <lastmod>2026-02-21</lastmod>
+    <lastmod>2026-02-23</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://koukou-jouhou.org/tools/sekigae/privacy-policy</loc>
-    <lastmod>2026-02-21</lastmod>
+    <lastmod>2026-02-23</lastmod>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://koukou-jouhou.org/tools/sekigae/terms-of-use</loc>
-    <lastmod>2026-02-21</lastmod>
+    <lastmod>2026-02-23</lastmod>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://koukou-jouhou.org/tools/time-schedule</loc>
-    <lastmod>2026-02-21</lastmod>
+    <lastmod>2026-02-23</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://koukou-jouhou.org/tools/typing-japanese</loc>
-    <lastmod>2026-02-21</lastmod>
+    <lastmod>2026-02-23</lastmod>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://koukou-jouhou.org/study/equation-transformation</loc>
+    <lastmod>2026-02-23</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koukou-jouhou.org/support/feature-request</loc>
+    <lastmod>2026-02-23</lastmod>
+    <priority>0.3</priority>
   </url>
 </urlset>

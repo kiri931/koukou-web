@@ -14,7 +14,6 @@ const toolMenuSections = [
       { href: "/study/equation-transformation/", label: "等式の変形テスト" },
       { href: "/tools/presentation", label: "プレゼンガイド" },
       { href: "/tools/pdf-viewer", label: "PDF参照モード" },
-      { href: "/tools/time-schedule", label: "タイムスケジューラ" },
     ],
   },
   {
@@ -22,6 +21,7 @@ const toolMenuSections = [
     items: [
       { href: "/tools/face-mosaic", label: "顔モザイクツール" },
       { href: "/tools/pdf-merge", label: "PDFマージ" },
+      { href: "/tools/time-schedule", label: "タイムスケジューラ" },
     ],
   },
   {
