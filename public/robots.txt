@@ -2,3 +2,5 @@ User-agent: *
 Allow: /
 
 Sitemap: https://koukou-jouhou.org/sitemap.xml
+Sitemap: https://large-format-printer.koukou-jouhou.org/sitemap.xml
+Sitemap: https://shooting.koukou-jouhou.org/sitemap.xml
