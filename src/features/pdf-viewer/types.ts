@@ -1,40 +1,26 @@
-export interface PdfScope {
+export type QuestionFormat = 'choice' | 'text' | 'number';
+
+export interface QuizQuestion {
   id: string;
-  label: string;
-  questionCount?: number;
+  format: QuestionFormat;
+  stem: string;
+  choices?: string[];
+  correctAnswer: string;
+  points: number;
 }
 
-export interface PdfEntry {
+export interface Quiz {
   id: string;
   title: string;
-  path: string;
-  answerPath?: string;
-  note?: string;
-  scopes: PdfScope[];
+  pdfUrl: string;
+  questions: QuizQuestion[];
+  createdAt: number;
 }
 
-export interface Question {
-  id: string;
-  format: 'choice' | 'text';
-  stem: string;
-  choices: string[];
-  answer_text: string;
-  source: {
-    type: 'pdf';
-    pdfId: string;
-    page: number;
-    label: string;
-  };
-}
-
-export interface AnswerEntry {
-  q: number;
-  answer: string;
-  choice: number;
-}
-
-export interface AnswerData {
-  exam: string;
-  source_pdf: string;
-  answers: AnswerEntry[];
+export interface GradingResult {
+  questionId: string;
+  correct: boolean;
+  studentAnswer: string;
+  correctAnswer: string;
+  points: number;
 }

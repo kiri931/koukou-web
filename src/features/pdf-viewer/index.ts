@@ -1,2 +1,2 @@
-export { default as PdfReferenceMode } from './components/PdfReferenceMode';
-export type { PdfScope, PdfEntry, Question, AnswerData, AnswerEntry } from './types';
+export { default as PdfQuizApp } from './components/PdfQuizApp';
+export type { QuestionFormat, QuizQuestion, Quiz, GradingResult } from './types';

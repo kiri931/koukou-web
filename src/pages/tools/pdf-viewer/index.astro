@@ -1,29 +1,29 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import { Header } from '../../../components/Header';
-import { PdfReferenceMode } from '../../../features/pdf-viewer';
+import { PdfQuizApp } from '../../../features/pdf-viewer';
 import '../../../styles/global.css';
 ---
 
 <Layout
-  title="PDF参照モード - 高校情報"
-  description="PDF参照モード。ITパスポートなどの試験問題PDFと解答PDFを並べて参照。ブラウザ上で動作するPDF照合ツール。"
+  title="PDF Quizアプリ - 高校情報"
+  description="教師がPDF URLと問題をJSONで共有し、生徒がブラウザ上でPDFを見ながら解答・採点できるPDF Quizアプリ。"
 >
   <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
     <Header client:load currentPath="/tools/pdf-viewer" />
-    <PdfReferenceMode client:only="react" />
+    <PdfQuizApp client:only="react" />
   </div>
   <script
     type="application/ld+json"
     set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      name: "PDF参照モード",
-      applicationCategory: "UtilitiesApplication",
-      operatingSystem: "Web Browser",
-      offers: { "@type": "Offer", price: "0", priceCurrency: "JPY" },
-      inLanguage: "ja-JP",
-      url: "https://koukou-jouhou.org/tools/pdf-viewer",
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'PDF Quizアプリ',
+      applicationCategory: 'EducationalApplication',
+      operatingSystem: 'Web Browser',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+      inLanguage: 'ja-JP',
+      url: 'https://koukou-jouhou.org/tools/pdf-viewer',
     })}
   />
 </Layout>
