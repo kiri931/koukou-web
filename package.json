@@ -26,6 +26,7 @@
     "katex": "^0.16.28",
     "lucide-react": "^0.575.0",
     "mathjs": "^15.1.1",
+    "mathlive": "^0.108.3",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^5.4.624",
     "radix-ui": "^1.4.3",

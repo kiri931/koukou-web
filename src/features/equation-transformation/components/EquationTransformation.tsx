@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 
 import { questions as questionBank } from "../data/questions";
 import type { RenderedQuestion } from "../types";
+import MathLiveInput from "./MathLiveInput";
 import PrintSheet from "./PrintSheet";
 
 const DEFAULT_COUNT = 10;
@@ -211,12 +212,6 @@ function normalizeAnswer(s: string) {
   return next;
 }
 
-function naturalToLatex(s: string) {
-  return s
-    .replace(/\(([^)]+)\)\/\(([^)]+)\)/g, "\\frac{$1}{$2}")
-    .replace(/\(([^)]+)\)\/([A-Za-z0-9^]+)/g, "\\frac{$1}{$2}");
-}
-
 export default function EquationTransformation() {
   type QuizMode = "choice" | "input";
   const [questionCountInput, setQuestionCountInput] = useState(String(DEFAULT_COUNT));
@@ -328,8 +323,8 @@ export default function EquationTransformation() {
                     記述方式
                   </p>
                   <ul className="mt-1 space-y-1 text-sm text-slate-700 dark:text-slate-300">
-                    <li>記述式では `x=(5y-7)/3` のように半角で入力してください</li>
-                    <li>分数は `a/b`、かっこ付き分数は `(a+b)/(c-d)` の形で入力できます</li>
+                    <li>記述式では数式入力欄をタップ/クリックするとキーボードが表示されます</li>
+                    <li>分数（a/b ボタン）や変数（x, y 等）を選んで入力してください</li>
                   </ul>
                 </div>
               )}
@@ -389,7 +384,6 @@ export default function EquationTransformation() {
               (mode === "choice"
                 ? selected === item.answer
                 : !!selected && normalizeAnswer(selected) === normalizeAnswer(item.answer));
-            const inputPreviewLatex = mode === "input" && selected ? naturalToLatex(selected) : "";
 
             return (
               <Card
@@ -445,14 +439,14 @@ export default function EquationTransformation() {
 
                   {mode === "input" && (
                     <div className="space-y-2">
-                      <Input
+                      <MathLiveInput
                         placeholder="例: x=(5y-7)/3"
                         value={selected ?? ""}
                         disabled={graded}
-                        onChange={(e) =>
+                        onChange={(latex) =>
                           setAnswers((prev) => ({
                             ...prev,
-                            [item.id]: e.target.value,
+                            [item.id]: latex,
                           }))
                         }
                         className={cn(
@@ -465,14 +459,6 @@ export default function EquationTransformation() {
                             "border-rose-400 bg-rose-50 text-rose-900 dark:border-rose-700 dark:bg-rose-950/30 dark:text-rose-100"
                         )}
                       />
-                      {!graded && selected && (
-                        <div className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm dark:border-slate-800 dark:bg-slate-950/50">
-                          <span className="mr-2 text-xs text-slate-500 dark:text-slate-400">
-                            プレビュー:
-                          </span>
-                          <MathChoice text={inputPreviewLatex} />
-                        </div>
-                      )}
                     </div>
                   )}
 
@@ -480,7 +466,7 @@ export default function EquationTransformation() {
                     <div className="no-print mt-3 space-y-1 text-sm">
                       {mode === "input" && selected && (
                         <p className="text-rose-700 dark:text-rose-300">
-                          あなたの解答: <MathChoice text={naturalToLatex(selected)} />
+                          あなたの解答: <MathChoice text={selected} />
                         </p>
                       )}
                       <p className="text-rose-700 dark:text-rose-300">
@@ -491,7 +477,7 @@ export default function EquationTransformation() {
 
                   {graded && isCorrect && mode === "input" && selected && (
                     <div className="no-print mt-3 text-sm text-emerald-700 dark:text-emerald-300">
-                      正解！ <MathChoice text={naturalToLatex(selected)} />
+                      正解！ <MathChoice text={selected} />
                     </div>
                   )}
 
