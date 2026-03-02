@@ -1,0 +1,63 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { Header } from '../../../components/Header';
+import SekigaeSubnav from '../../../components/SekigaeSubnav.astro';
+import { SekigaeApp } from '../../../features/sekigae';
+import '../../../styles/global.css';
+---
+
+<style is:global>
+  @keyframes seatFadeIn {
+    from { opacity: 0; transform: scale(0.7); }
+    to   { opacity: 1; transform: scale(1);   }
+  }
+  .seat-animate {
+    animation: seatFadeIn 0.25s ease-out;
+  }
+
+  @media print {
+    body * { visibility: hidden; }
+    #print-area, #print-area * { visibility: visible; }
+    #print-area {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      background: white;
+    }
+  }
+</style>
+
+<Layout
+  title="席替えWeb版 | 席替えアプリ"
+  description="ブラウザで使える席替えツール。名簿作成・座席設定・ランダム席替え・出席番号順配置に対応。データはすべてブラウザ内に保存されます。"
+>
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <Header client:load currentPath="/tools/sekigae" />
+
+    <main id="main" class="text-slate-900 dark:text-slate-100">
+      <section class="mx-auto max-w-5xl px-4 py-8">
+        <div class="mb-6">
+          <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            席替えアプリ Web版
+          </h1>
+          <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+            名簿・座席を設定してブラウザ上で席替えができます。データはこのデバイス内にのみ保存されます。
+          </p>
+        </div>
+
+        <SekigaeSubnav currentPath="/tools/sekigae/app" />
+
+        <div class="mt-6 rounded-2xl border border-slate-200 bg-white shadow-lg shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-900/60 dark:shadow-slate-950/40 p-4 sm:p-6">
+          <SekigaeApp client:only="react" />
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-200 py-8 text-center text-sm text-slate-500 dark:border-slate-800 dark:text-slate-500">
+      <p>© 席替えアプリ</p>
+    </footer>
+  </div>
+</Layout>

@@ -3,6 +3,7 @@ import { Check, Copy } from 'lucide-react';
 
 interface CalcDisplayProps {
   expression: string;
+  ghostExpression?: string;
   result: string;
   angleMode: 'DEG' | 'RAD';
   shiftActive: boolean;
@@ -13,6 +14,7 @@ interface CalcDisplayProps {
 
 export default function CalcDisplay({
   expression,
+  ghostExpression,
   result,
   angleMode,
   shiftActive,
@@ -49,7 +51,14 @@ export default function CalcDisplay({
         )}
       </div>
       <div className="min-h-10 break-all text-right font-mono text-sm text-zinc-400 sm:text-base">
-        {expression || '0'}
+        {ghostExpression ? (
+          <>
+            <span className="text-zinc-200">{expression}</span>
+            <span className="text-zinc-600">{ghostExpression.slice(expression.length)}</span>
+          </>
+        ) : (
+          expression || '0'
+        )}
       </div>
       <div className="flex items-start gap-2">
         <div

@@ -5,6 +5,7 @@ import type { ButtonDef } from '../types';
 interface CalcButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> {
   button: ButtonDef;
   shiftActive: boolean;
+  highlighted?: boolean;
   onPress: (action: string) => void;
   onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
 }
@@ -19,7 +20,7 @@ const variantClassMap: Record<ButtonDef['variant'], string> = {
 };
 
 const CalcButton = forwardRef<HTMLButtonElement, CalcButtonProps>(function CalcButton(
-  { button, shiftActive, onPress, onClick, className, ...buttonProps },
+  { button, shiftActive, highlighted = false, onPress, onClick, className, ...buttonProps },
   ref
 ) {
   const label = shiftActive && button.shiftLabel ? button.shiftLabel : button.label;
@@ -45,6 +46,7 @@ const CalcButton = forwardRef<HTMLButtonElement, CalcButtonProps>(function CalcB
         button.wide && 'col-span-2',
         showShiftSubLabel && 'py-1',
         isShiftKey && shiftActive && 'ring-2 ring-violet-400 ring-offset-1 dark:ring-violet-300',
+        !isShiftKey && highlighted && 'ring-2 ring-yellow-400 ring-offset-1 dark:ring-yellow-300',
         className
       )}
       aria-pressed={isShiftKey ? shiftActive : undefined}

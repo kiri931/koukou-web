@@ -221,9 +221,10 @@ interface CalcKeypadProps {
   shiftActive: boolean;
   angleMode: AngleMode;
   onPress: (action: string) => void;
+  highlightedAction?: string;
 }
 
-export default function CalcKeypad({ shiftActive, angleMode, onPress }: CalcKeypadProps) {
+export default function CalcKeypad({ shiftActive, angleMode, onPress, highlightedAction }: CalcKeypadProps) {
   return (
     <div className="space-y-2">
       {BUTTON_ROWS.map((row, rowIndex) => (
@@ -238,7 +239,15 @@ export default function CalcKeypad({ shiftActive, angleMode, onPress }: CalcKeyp
             return (
               <Tooltip key={`${rowIndex}-${buttonIndex}-${button.action}`} delayDuration={500}>
                 <TooltipTrigger asChild>
-                  <CalcButton button={normalizedButton} shiftActive={shiftActive} onPress={onPress} />
+                  <CalcButton
+                    button={normalizedButton}
+                    shiftActive={shiftActive}
+                    onPress={onPress}
+                    highlighted={
+                      normalizedButton.action === highlightedAction ||
+                      (shiftActive && normalizedButton.shiftAction === highlightedAction)
+                    }
+                  />
                 </TooltipTrigger>
                 {tooltipText && (
                   <TooltipContent side="top" className="max-w-[200px] text-center text-xs leading-snug">

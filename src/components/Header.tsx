@@ -11,6 +11,7 @@ const toolMenuSections = [
     items: [
       { href: "/tools/typing-japanese", label: "タイピング練習" },
       { href: "/tools/scientific-calculator", label: "関数電卓" },
+      { href: "/tools/calc-drill", label: "計算技術検定ドリル" },
       { href: "/study/equation-transformation/", label: "等式の変形テスト" },
       { href: "/tools/presentation", label: "プレゼンガイド" },
       { href: "/tools/pdf-viewer", label: "PDF参照モード" },
