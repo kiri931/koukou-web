@@ -1,0 +1,66 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { Header } from '../../components/Header';
+import { CalcDrill } from '../../features/calc-drill';
+import '../../styles/global.css';
+---
+
+<Layout
+  title="計算技術検定ドリル - ツール"
+  description="計算技術検定3級・4級向けに、次に押すべきキーをガイドしながら練習できるドリルアプリ。関数電卓UIで四則計算・関数計算の手順を段階的に学べます。"
+>
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <Header client:load currentPath="/tools/calc-drill" />
+    <h1 class="sr-only">計算技術検定ドリル</h1>
+    <CalcDrill client:only="react" />
+    <section class="mx-auto mt-8 max-w-5xl px-4 pb-12 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+      <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">計算技術検定ドリルについて</h2>
+      <p class="mt-3">
+        このドリルは、計算技術検定3級・4級で必要となる手順をキーガイド付きで練習できる学習ツールです。
+        次に押すキーを確認しながら進められるため、計算結果だけでなく操作手順の定着に役立ちます。
+      </p>
+
+      <h2 class="mt-6 text-lg font-semibold text-slate-900 dark:text-slate-100">使い方</h2>
+      <ol class="mt-2 list-decimal space-y-1 pl-5">
+        <li>出題レベルや問題形式を選択します。</li>
+        <li>キーガイドに沿って順番に入力します。</li>
+        <li>解答後に正誤と手順を確認し、繰り返し練習します。</li>
+      </ol>
+
+      <h2 class="mt-6 text-lg font-semibold text-slate-900 dark:text-slate-100">仕様・対応環境</h2>
+      <ul class="mt-2 list-disc space-y-1 pl-5">
+        <li>ブラウザ内で完結し、入力データをサーバーに送信しません。</li>
+        <li>検定3級・4級の学習を想定した出題内容に対応します。</li>
+        <li>最新版のChrome、Edge、Safari、Firefoxでの利用を推奨します。</li>
+      </ul>
+
+      <h2 class="mt-6 text-lg font-semibold text-slate-900 dark:text-slate-100">注意事項</h2>
+      <p class="mt-2">学校で利用する場合は、授業方針や使用機材に合わせて確認のうえ活用してください。</p>
+
+      <h2 class="mt-6 text-lg font-semibold text-slate-900 dark:text-slate-100">よくある質問</h2>
+      <dl class="mt-2 space-y-2">
+        <div>
+          <dt class="font-medium text-slate-900 dark:text-slate-100">Q. 間違えた手順だけ復習できますか？</dt>
+          <dd>A. 問題を繰り返し解くことで、苦手な手順を重点的に練習できます。</dd>
+        </div>
+        <div>
+          <dt class="font-medium text-slate-900 dark:text-slate-100">Q. データは保存されますか？</dt>
+          <dd>A. 保存機能はブラウザ依存です。端末変更時は引き継がれません。</dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: '計算技術検定ドリル',
+      applicationCategory: 'EducationalApplication',
+      operatingSystem: 'Web Browser',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+      inLanguage: 'ja-JP',
+      url: 'https://koukou-jouhou.org/tools/calc-drill',
+    })}
+  />
+</Layout>

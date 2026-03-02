@@ -14,6 +14,7 @@ const canonicalUrl = canonical
 	: new URL(Astro.url.pathname, siteUrl).href;
 const ogImageUrl = ogImage ? new URL(ogImage, siteUrl).href : null;
 const breadcrumbNameMap: Record<string, string> = {
+	about: '運営者情報',
 	tools: 'ツール',
 	support: 'サポート',
 	anki: '覚える君',
@@ -27,6 +28,7 @@ const breadcrumbNameMap: Record<string, string> = {
 	study: '学習',
 	'equation-transformation': '等式の変形テスト',
 	'feature-request': '機能リクエスト',
+	'calc-drill': '計算技術検定ドリル',
 	'privacy-policy': 'プライバシーポリシー',
 	'terms-of-use': '利用規約',
 	'time-schedule': 'タイムスケジューラ',
@@ -115,6 +117,13 @@ const breadcrumbJsonLd =
 	</head>
 	<body>
 		<slot />
+		<footer class="border-t border-slate-200 py-6 text-center text-sm text-slate-500 dark:border-slate-800 dark:text-slate-500">
+			<nav class="flex justify-center gap-6">
+				<a href="/about">運営者情報</a>
+				<a href="/privacy-policy">プライバシーポリシー</a>
+				<a href="/support/feature-request">お問い合わせ</a>
+			</nav>
+		</footer>
 		<script is:inline>
 			(() => {
 				const storageKey = "theme";

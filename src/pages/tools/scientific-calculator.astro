@@ -13,6 +13,42 @@ import '../../styles/global.css';
     <Header client:load currentPath="/tools/scientific-calculator" />
     <h1 class="sr-only">関数電卓</h1>
     <ScientificCalculator client:only="react" />
+    <section class="mx-auto mt-8 max-w-5xl px-4 pb-12 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+      <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">関数電卓について</h2>
+      <p class="mt-3">
+        計算技術検定3級・4級を想定し、四則演算だけでなく三角関数、対数、組合せ、統計処理まで扱える関数電卓です。
+        授業での演習や検定準備に合わせて、計算手順を確認しながら利用できます。
+      </p>
+
+      <h2 class="mt-6 text-lg font-semibold text-slate-900 dark:text-slate-100">使い方</h2>
+      <ol class="mt-2 list-decimal space-y-1 pl-5">
+        <li>モードや角度単位を設定します。</li>
+        <li>キーボードまたは画面ボタンで式を入力します。</li>
+        <li>結果を確認し、必要に応じて履歴や統計機能を使います。</li>
+      </ol>
+
+      <h2 class="mt-6 text-lg font-semibold text-slate-900 dark:text-slate-100">仕様・対応環境</h2>
+      <ul class="mt-2 list-disc space-y-1 pl-5">
+        <li>ブラウザ上で完結し、入力内容をサーバーに送信しません。</li>
+        <li>三角関数、指数対数、nPr/nCr、統計の基本処理に対応します。</li>
+        <li>最新版のChrome、Edge、Safari、Firefoxでの利用を推奨します。</li>
+      </ul>
+
+      <h2 class="mt-6 text-lg font-semibold text-slate-900 dark:text-slate-100">注意事項</h2>
+      <p class="mt-2">実際の検定要件は年度や実施団体の案内を必ず確認してください。</p>
+
+      <h2 class="mt-6 text-lg font-semibold text-slate-900 dark:text-slate-100">よくある質問</h2>
+      <dl class="mt-2 space-y-2">
+        <div>
+          <dt class="font-medium text-slate-900 dark:text-slate-100">Q. 検定本番と同じ機種ですか？</dt>
+          <dd>A. 本番機種そのものではありませんが、学習用途に必要な機能を備えています。</dd>
+        </div>
+        <div>
+          <dt class="font-medium text-slate-900 dark:text-slate-100">Q. 入力履歴は残りますか？</dt>
+          <dd>A. セッション中は参照できますが、恒久保存はブラウザ仕様に依存します。</dd>
+        </div>
+      </dl>
+    </section>
   </div>
   <script
     type="application/ld+json"

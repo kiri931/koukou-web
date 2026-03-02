@@ -13,6 +13,42 @@ import '../../styles/global.css';
     <Header client:load currentPath="/tools/typing-japanese" />
     <h1 class="sr-only">タイピング練習</h1>
     <TypingGame client:only="react" />
+    <section class="mx-auto mt-8 max-w-5xl px-4 pb-12 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+      <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">タイピング練習について</h2>
+      <p class="mt-3">
+        ひらがなをローマ字で入力しながら、日本語タイピングの基礎を学べる練習ツールです。制限時間や難易度を選び、スコア表示で
+        成長を確認しながら反復学習できます。
+      </p>
+
+      <h2 class="mt-6 text-lg font-semibold text-slate-900 dark:text-slate-100">使い方</h2>
+      <ol class="mt-2 list-decimal space-y-1 pl-5">
+        <li>難易度や時間設定を選択します。</li>
+        <li>表示されたひらがなをローマ字で入力します。</li>
+        <li>スコアや正答率を確認して次の練習に活かします。</li>
+      </ol>
+
+      <h2 class="mt-6 text-lg font-semibold text-slate-900 dark:text-slate-100">仕様・対応環境</h2>
+      <ul class="mt-2 list-disc space-y-1 pl-5">
+        <li>ブラウザ上で完結し、入力データはサーバーに送信しません。</li>
+        <li>日本語ローマ字入力の基本パターンに対応しています。</li>
+        <li>最新版のChrome、Edge、Safari、Firefoxでの利用を推奨します。</li>
+      </ul>
+
+      <h2 class="mt-6 text-lg font-semibold text-slate-900 dark:text-slate-100">注意事項</h2>
+      <p class="mt-2">授業利用時はキーボード配列や入力方式の設定を事前に統一してください。</p>
+
+      <h2 class="mt-6 text-lg font-semibold text-slate-900 dark:text-slate-100">よくある質問</h2>
+      <dl class="mt-2 space-y-2">
+        <div>
+          <dt class="font-medium text-slate-900 dark:text-slate-100">Q. スコアは保存されますか？</dt>
+          <dd>A. 保存機能はブラウザ実装に依存し、端末が変わると引き継がれません。</dd>
+        </div>
+        <div>
+          <dt class="font-medium text-slate-900 dark:text-slate-100">Q. ローマ字入力が合わない場合は？</dt>
+          <dd>A. IME設定やキーボード配列を確認し、標準入力モードでお試しください。</dd>
+        </div>
+      </dl>
+    </section>
   </div>
   <script
     type="application/ld+json"

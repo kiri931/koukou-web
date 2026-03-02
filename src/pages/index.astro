@@ -64,6 +64,27 @@ import '../styles/global.css';
           </a>
 
           <a
+            href="/tools/calc-drill"
+            class="group rounded-xl border border-slate-200 bg-white p-6 transition-all hover:border-amber-500/50 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900/50 dark:hover:bg-slate-900"
+          >
+            <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10 text-amber-500 transition-colors group-hover:bg-amber-500/20">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+                <rect x="4" y="2.5" width="16" height="19" rx="2" />
+                <path d="M8 6.5h8" />
+                <path d="M8 11.5h2" />
+                <path d="M12 11.5h2" />
+                <path d="M16 11.5h0.01" />
+                <path d="M8 15.5h2" />
+                <path d="M12 15.5h2" />
+                <path d="M16 15.5h0.01" />
+                <path d="M8 19h8" />
+              </svg>
+            </div>
+            <h3 class="mb-1 font-semibold text-slate-900 group-hover:text-slate-950 dark:text-slate-100 dark:group-hover:text-white">計算技術検定ドリル</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400">次に押すべきキーをガイドしながら、計算技術検定3級・4級の手順を練習できます。</p>
+          </a>
+
+          <a
             href="/tools/presentation"
             class="group rounded-xl border border-slate-200 bg-white p-6 transition-all hover:border-amber-500/50 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900/50 dark:hover:bg-slate-900"
           >
@@ -300,7 +321,7 @@ import '../styles/global.css';
           <div>
             <p>このサイトはAIで作っています。<br />
             そのため制作は早いですが、細かい部分が甘いところもあります。<br />
-            「こんなのあったらいいな」を元に作っているので、よく分からないアプリや作りかけのものもあります。それでもいいよという方は使ってください。</p>
+            「こんなのあったらいいな」を元に、情報科の授業や学習に役立つツールを作っています。実験的な機能も含まれるため、授業でご利用の際はご確認のうえお使いください。</p>
             <p class="mt-2">モバイル版には対応していないものもあるのでご注意ください。</p>
           </div>
 
@@ -332,8 +353,5 @@ import '../styles/global.css';
       </section>
     </main>
 
-    <footer class="border-t border-slate-200 py-8 text-center text-sm text-slate-500 dark:border-slate-800 dark:text-slate-500">
-      <p>All processing is done locally in your browser.</p>
-    </footer>
   </div>
 </Layout>
