@@ -28,7 +28,7 @@ const toolMenuSections = [
   {
     label: "SUPPORT",
     items: [
-      { href: "/tools/sekigae", label: "席替えアプリ サポート" },
+      { href: "https://koukou-jouhou.org/sekigae/", label: "席替えアプリ サポート" },
       { href: "/support/feature-request", label: "機能リクエスト" },
     ],
   },

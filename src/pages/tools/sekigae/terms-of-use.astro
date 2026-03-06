@@ -1,118 +1,15 @@
 ---
-import Layout from '../../../layouts/Layout.astro';
-import { Header } from '../../../components/Header';
-import SekigaeSubnav from '../../../components/SekigaeSubnav.astro';
-import '../../../styles/global.css';
+// 席替えアプリは https://koukou-jouhou.org/sekigae/ に移転しました
 ---
-
-<Layout
-  title="利用規約 | 席替えアプリ"
-  description="席替えアプリの利用規約。利用条件、禁止事項、免責、変更、問い合わせ等を定めます。"
-  noindex={true}
->
-    <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <Header client:load currentPath="/tools/sekigae" />
-
-      <main id="main" class="text-slate-900 dark:text-slate-100">
-        <section class="mx-auto max-w-5xl px-4 py-10">
-          <div class="mb-8">
-            <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">利用規約</h1>
-            <p class="mt-3 text-slate-600 dark:text-slate-400">当アプリの提供条件および運営者とユーザーの皆さまとの間の権利義務関係を定めます。</p>
-          </div>
-
-          <SekigaeSubnav currentPath="/tools/sekigae/terms-of-use" />
-
-          <section class="mt-6 rounded-2xl border border-slate-200 bg-white shadow-lg shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-900/60 dark:shadow-slate-950/40">
-            <div class="p-6 sm:p-8 [&_h2]:mt-10 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-slate-900 dark:[&_h2]:text-slate-100 [&_h3]:mt-8 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-slate-800 dark:[&_h3]:text-slate-200 [&_p]:mb-4 [&_p]:text-slate-700 dark:[&_p]:text-slate-300 [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:text-slate-700 dark:[&_ul]:text-slate-300 [&_ol]:mb-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:text-slate-700 dark:[&_ol]:text-slate-300 [&_li]:mb-2 [&_a]:text-indigo-600 [&_a]:underline [&_a]:underline-offset-4 [&_a:hover]:text-indigo-500 dark:[&_a]:text-indigo-300 dark:[&_a:hover]:text-indigo-200 [&_code]:rounded-lg [&_code]:border [&_code]:border-slate-300 [&_code]:bg-slate-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.9em] [&_code]:text-slate-900 dark:[&_code]:border-slate-700 dark:[&_code]:bg-slate-800 dark:[&_code]:text-slate-100 [&_hr]:my-10 [&_hr]:border-slate-200 dark:[&_hr]:border-slate-800 [&_table]:w-full [&_table]:border-collapse [&_table]:text-sm [&_th]:border [&_th]:border-slate-300 [&_th]:bg-slate-100 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:align-top [&_th]:text-slate-800 dark:[&_th]:border-slate-700 dark:[&_th]:bg-slate-800 dark:[&_th]:text-slate-200 [&_td]:border [&_td]:border-slate-300 [&_td]:px-3 [&_td]:py-2 [&_td]:align-top dark:[&_td]:border-slate-700">
-              <p class="rounded-lg border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
-                対象アプリ：席替えアプリ（以下「当アプリ」）
-              </p>
-              <p class="rounded-lg border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
-                制定日：2026年2月21日
-              </p>
-
-              <hr />
-
-              <p>この利用規約（以下「本規約」）は、当アプリの提供条件および運営者とユーザーの皆さまとの間の権利義務関係を定めるものです。当アプリの利用にあたっては、本規約に同意したものとみなします。</p>
-
-              <h2>運営者情報</h2>
-              <ul>
-                <li>運営者：足立左瑛佳</li>
-                <li>Webサイト：<a href="https://koukou-jouhou.org/" target="_blank" rel="noopener noreferrer">https://koukou-jouhou.org/</a></li>
-              </ul>
-
-              <h2>1. 定義</h2>
-              <ul>
-                <li>「運営者」：当アプリを提供・運営する者</li>
-                <li>「ユーザー」：当アプリを利用する者</li>
-                <li>「ユーザーコンテンツ」：ユーザーが当アプリに入力・保存する情報（生徒名、座席配置など）</li>
-              </ul>
-
-              <h2>2. 利用条件</h2>
-              <ul>
-                <li>ユーザーは、自らの責任において当アプリを利用するものとします。</li>
-                <li>ユーザーは、法令・公序良俗・本規約に反する行為を行ってはなりません。</li>
-              </ul>
-
-              <h2>3. 禁止事項</h2>
-              <p>ユーザーは以下の行為をしてはなりません。</p>
-              <ul>
-                <li>当アプリの機能・通信・サーバー等を妨害する行為</li>
-                <li>不正アクセス、リバースエンジニアリング、解析、改変等（法令で認められる範囲を除く）</li>
-                <li>第三者の権利（著作権、商標権、プライバシー等）を侵害する行為</li>
-                <li>ユーザーコンテンツとして、本人の同意のない個人情報を不適切に入力・共有する行為</li>
-                <li>その他、運営者が不適切と判断する行為</li>
-              </ul>
-
-              <h2>4. ユーザーコンテンツ</h2>
-              <ul>
-                <li>ユーザーコンテンツの入力・利用・共有はユーザーの責任で行ってください。</li>
-                <li>当アプリは、ユーザーコンテンツを原則として端末内に保存します。端末の故障・紛失・OSアップデート等によりデータが消失する可能性があります。</li>
-                <li>ユーザーは、必要に応じてエクスポート等によりバックアップを行ってください。</li>
-              </ul>
-
-              <h2>5. 広告</h2>
-              <p>当アプリは、広告を表示する場合があります。広告の内容は第三者により提供されることがあり、当該広告の取引・問い合わせ等はユーザーと広告主の間で行われます。</p>
-
-              <h2>6. アプリ内課金</h2>
-              <ul>
-                <li>当アプリは、アプリ内課金（サブスクリプション/買い切りを含む）を提供する場合があります。</li>
-                <li>購入・支払い・解約・返金等は、App Storeの規約および各種ポリシーに従います。</li>
-                <li>運営者は、法令で求められる場合を除き、ユーザー都合による返金には応じられない場合があります。</li>
-              </ul>
-
-              <h2>7. 免責・保証の否認</h2>
-              <ul>
-                <li>当アプリは現状有姿で提供され、特定目的適合性、正確性、完全性、継続性等について明示または黙示の保証を行いません。</li>
-                <li>当アプリの利用によりユーザーに生じた損害について、運営者は、運営者の故意または重過失による場合を除き責任を負いません。</li>
-                <li>当アプリに起因してユーザーと第三者の間で紛争が生じた場合、ユーザーの責任と費用で解決するものとします。</li>
-              </ul>
-
-              <h2>8. 知的財産権</h2>
-              <p>当アプリに関する著作権、商標権その他一切の知的財産権は運営者または正当な権利者に帰属します。</p>
-
-              <h2>9. 本規約の変更</h2>
-              <p>運営者は、必要に応じて本規約を変更できます。変更後の内容は、本ページへの掲示その他運営者が適切と判断する方法で周知します。</p>
-
-              <h2>10. 準拠法・裁判管轄</h2>
-              <p>本規約は日本法に準拠し、当アプリに関して紛争が生じた場合は、運営者所在地を管轄する裁判所を第一審の専属的合意管轄裁判所とします。</p>
-
-              <h2>11. お問い合わせ</h2>
-              <p>本規約に関するお問い合わせは、以下へご連絡ください。</p>
-              <ul>
-                <li>運営者名：足立左瑛佳</li>
-                <li>連絡先：準備中</li>
-              </ul>
-
-              <hr />
-              <p class="text-sm text-slate-500 dark:text-slate-400">最終更新日：2026年2月21日</p>
-            </div>
-          </section>
-        </section>
-      </main>
-
-      <footer class="border-t border-slate-200 py-8 text-center text-sm text-slate-500 dark:border-slate-800 dark:text-slate-500">
-        <p>© 席替えアプリ</p>
-      </footer>
-    </div>
-</Layout>
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0; url=https://koukou-jouhou.org/sekigae/terms-of-use/" />
+    <link rel="canonical" href="https://koukou-jouhou.org/sekigae/terms-of-use/" />
+    <title>移転しました | 利用規約</title>
+  </head>
+  <body>
+    <p><a href="https://koukou-jouhou.org/sekigae/terms-of-use/">移転先へ移動する</a></p>
+  </body>
+</html>
