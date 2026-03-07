@@ -33,12 +33,12 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://koukou-jouhou.org/tools/pdf-viewer</loc>
+    <loc>https://koukou-jouhou.org/pdf-viewer/</loc>
     <lastmod>2026-02-27</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://koukou-jouhou.org/tools/pdf-viewer/viewer</loc>
+    <loc>https://koukou-jouhou.org/pdf-viewer/viewer</loc>
     <lastmod>2026-02-27</lastmod>
     <priority>0.4</priority>
   </url>
