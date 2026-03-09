@@ -13,7 +13,7 @@ const toolMenuSections = [
       { href: "/tools/scientific-calculator", label: "関数電卓" },
       { href: "/tools/calc-drill", label: "計算技術検定ドリル" },
       { href: "/study/equation-transformation/", label: "等式の変形テスト" },
-      { href: "/tools/presentation", label: "プレゼンガイド" },
+      { href: "https://koukou-jouhou.org/presentation/", label: "プレゼンガイド" },
       { href: "https://koukou-jouhou.org/pdf-viewer/", label: "PDF参照モード" },
     ],
   },
