@@ -70,6 +70,24 @@ export default function DataManagementView(props: Props) {
     return file.text();
   };
 
+  const importPresetDataset = async () => {
+    setError(null);
+    setMessage(null);
+    try {
+      setBusy('preset-import:joho1-vocab');
+      const response = await fetch('/joho1-vocab.json');
+      if (!response.ok) {
+        throw new Error('プリセットデータセットを読み込めませんでした');
+      }
+      await onImportDataset(await response.text());
+      setMessage('「情報I頻出用語」をインポートしました。');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'プリセットデータセットのインポートに失敗しました');
+    } finally {
+      setBusy(null);
+    }
+  };
+
   const loadCards = async (datasetId: string) => {
     const cards = await onGetCards(datasetId);
     setDatasetCards(cards);
@@ -174,6 +192,18 @@ export default function DataManagementView(props: Props) {
               }}
             />
             <p className="text-xs text-slate-500">`public/sample-dataset.json` を使って動作確認できます。</p>
+            <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-slate-50 p-3 dark:bg-slate-900/30">
+              <p className="text-sm text-slate-600 dark:text-slate-300">プリセット: 情報I頻出用語（25件）</p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={busy === 'preset-import:joho1-vocab'}
+                onClick={importPresetDataset}
+              >
+                インポート
+              </Button>
+            </div>
           </div>
 
           <div className="grid gap-3 md:grid-cols-2">
