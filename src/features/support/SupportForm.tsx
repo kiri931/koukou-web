@@ -33,7 +33,6 @@ export function SupportForm() {
     const params = new URLSearchParams(window.location.search);
     const ref = params.get("ref");
     if (ref) {
-      setCategory("バグ報告");
       setContent(`対象ページ: ${ref}\n\n### 気になった点\n(ここに具体的な誤り・分かりにくい点を書いてください)\n`);
     }
   }, []);
