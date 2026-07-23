@@ -75,7 +75,7 @@ export default function DataManagementView(props: Props) {
     setMessage(null);
     try {
       setBusy('preset-import:joho1-vocab');
-      const response = await fetch('/joho1-vocab.json');
+      const response = await fetch('/tools/joho1-vocab.json');
       if (!response.ok) {
         throw new Error('プリセットデータセットを読み込めませんでした');
       }
