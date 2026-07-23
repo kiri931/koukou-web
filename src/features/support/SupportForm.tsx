@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,16 @@ export function SupportForm() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get("ref");
+    if (ref) {
+      setCategory("バグ報告");
+      setContent(`対象ページ: ${ref}\n\n### 気になった点\n(ここに具体的な誤り・分かりにくい点を書いてください)\n`);
+    }
+  }, []);
 
   const isSubmitting = status === "submitting";
 
