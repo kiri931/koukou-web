@@ -1,8 +1,14 @@
 {
-  "name": "koukou-web",
+  "name": "koukou-tools-hub",
   "compatibility_date": "2026-02-21",
   "main": "src/worker.ts",
   "assets": {
     "directory": "./dist"
-  }
+  },
+  "routes": [
+    { "pattern": "koukou-jouhou.org/_astro-web/*", "zone_name": "koukou-jouhou.org" },
+    { "pattern": "koukou-jouhou.org/tools/*", "zone_name": "koukou-jouhou.org" },
+    { "pattern": "koukou-jouhou.org/study/*", "zone_name": "koukou-jouhou.org" },
+    { "pattern": "koukou-jouhou.org/support/*", "zone_name": "koukou-jouhou.org" }
+  ]
 }

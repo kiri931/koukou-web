@@ -376,6 +376,56 @@ export default function EquationTransformation() {
           </CardContent>
         </Card>
 
+        <Card className="mb-6 border-slate-200 bg-white/95 dark:border-slate-800 dark:bg-slate-900/70">
+          <CardHeader>
+            <CardTitle className="text-xl">使い方</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-5 text-sm text-slate-700 dark:text-slate-300">
+            <div>
+              <ol className="list-decimal space-y-1 pl-5">
+                <li>出題数と方式（択一式 / 記述式）を選ぶ</li>
+                <li>出題される問題に解答する（記述式は数式入力キーボード対応）</li>
+                <li>「採点する」で正答率と解説を確認する</li>
+                <li>「出題を更新」でランダムに新しい問題へ切り替え、「印刷」でA4プリントとして配布する</li>
+              </ol>
+            </div>
+
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/50">
+              <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+                この単元とのつながり
+              </h2>
+              <p>
+                等式の変形は、プログラミングでの変数への代入や条件式の整理、シミュレーションのパラメータ計算など、
+                情報I・情報IIでプログラムを書く際の土台になります。検定対策の計算問題にも直結します。
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+                よくある質問
+              </h2>
+              <div className="space-y-3">
+                <div>
+                  <p className="font-medium text-slate-900 dark:text-slate-100">Q. 採点後にもう一度同じ問題を解き直せますか?</p>
+                  <p>「やり直し」ボタンから同じ問題セットに再挑戦できます。</p>
+                </div>
+                <div>
+                  <p className="font-medium text-slate-900 dark:text-slate-100">Q. 印刷して配布に使えますか?</p>
+                  <p>
+                    「印刷」ボタンからA4サイズ想定でレイアウトされたプリントを出力できます。小テストや宿題プリントとして利用できます。
+                  </p>
+                </div>
+                <div>
+                  <p className="font-medium text-slate-900 dark:text-slate-100">Q. 記述式と択一式はどちらがおすすめですか?</p>
+                  <p>
+                    初めての単元は択一式で概念をつかみ、慣れてきたら記述式で計算力を鍛える、という使い分けがおすすめです。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         <section className="space-y-4">
           {items.map((item, index) => {
             const selected = answers[item.id];

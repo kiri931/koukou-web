@@ -8,6 +8,9 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   output: 'static',
   integrations: [react()],
+  build: {
+    assets: '_astro-web',
+  },
 
   vite: {
     plugins: [tailwindcss()],

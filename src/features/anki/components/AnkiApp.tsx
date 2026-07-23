@@ -37,6 +37,59 @@ export default function AnkiApp() {
         </div>
       </div>
 
+      <Card className="mb-6 border-slate-200 bg-white/95 dark:border-slate-800 dark:bg-slate-900/70">
+        <CardHeader>
+          <CardTitle className="text-xl">使い方</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-5 text-sm text-slate-700 dark:text-slate-300">
+          <div>
+            <ol className="list-decimal space-y-1 pl-5">
+              <li>トップでデータセットを選ぶ（または新規作成）</li>
+              <li>「学習」タブで問題に対して短答入力し、送信する</li>
+              <li>正答例・解説を見て、Unknown / Hard / Good / Easy の4段階で自己採点する</li>
+              <li>FSRSアルゴリズムが自己採点結果をもとに次回の復習タイミングを自動調整する</li>
+              <li>「ダッシュボード」で期限切れ枚数、本日分、平均保持率、間違えやすいカードのランキングを確認する</li>
+              <li>「データ管理」でJSONインポート / バックアップ、カードの追加・編集・削除ができる</li>
+            </ol>
+          </div>
+
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/50">
+            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+              この単元とのつながり
+            </h2>
+            <p>
+              情報I・情報IIの用語、ITパスポートや基本情報技術者、全商・全工協検定の一問一答対策、
+              プログラミング構文の暗記など、短答形式で繰り返し覚えたい学習全般に使えます。
+              FSRS（分散復習アルゴリズム）により、覚えた内容を忘れかけたタイミングで自動的に復習が回ってくるため、
+              一夜漬けより記憶が定着しやすい設計です。
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+              よくある質問
+            </h2>
+            <div className="space-y-3">
+              <div>
+                <p className="font-medium text-slate-900 dark:text-slate-100">Q. 自分で問題（カード）を追加できますか?</p>
+                <p>「データ管理」タブからカードの追加・編集・削除ができます。JSON形式でのインポートにも対応しています。</p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900 dark:text-slate-100">Q. データはどこに保存されますか?</p>
+                <p>
+                  ブラウザのIndexedDBに保存されます。端末やブラウザを変えると引き継がれない点にご注意ください。
+                  バックアップ機能で保存内容をエクスポートしておくと安心です。
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-slate-900 dark:text-slate-100">Q. 目標に合わせて復習頻度を調整できますか?</p>
+                <p>「設定」タブで目標保持率や試験日を指定すると、それに応じて復習間隔が調整されます。</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {(anki.error || anki.dbError) && (
         <Card className="mb-4 border-red-300">
           <CardContent className="pt-6 text-sm text-red-600">{anki.error ?? anki.dbError}</CardContent>
