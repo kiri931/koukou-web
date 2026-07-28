@@ -72,6 +72,11 @@ export default {
       return handleSupportRequest(request, env);
     }
 
+    // ASSETS バインディングが外れていても 500 ではなく 404 を返す(検索エンジン対策)
+    if (!env.ASSETS) {
+      return new Response("Not Found", { status: 404 });
+    }
+
     return env.ASSETS.fetch(request);
   },
 };
