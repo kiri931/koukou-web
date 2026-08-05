@@ -1,6 +1,7 @@
 export type DrillLevel = '3級' | '4級';
 
-export type DrillCategory = '四則計算' | '関数計算' | '応用計算' | '実務計算';
+/** 計算技術検定の実際の出題区分。4級は集計計算、3級は関数計算。 */
+export type DrillCategory = '四則計算' | '集計計算' | '関数計算' | '実務計算';
 
 /** 答えをどこまで丸めて答えるか。自動検算（problems.diagnostic.test.ts）もこれを見る。 */
 export type Rounding =
@@ -17,7 +18,6 @@ export interface DrillProblem {
   /** 'RAD' の問題は、手順に入る前に DEG/RAD キーを押させる */
   angleMode: 'DEG' | 'RAD';
   rounding?: Rounding;
-  exam_ref?: string;
 }
 
 export type DrillLevelFilter = DrillLevel | '両方';

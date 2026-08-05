@@ -101,15 +101,36 @@ function toSuperscript(text: string) {
   return [...text].map((ch) => SUPERSCRIPT[ch] ?? ch).join('');
 }
 
+/** `fact(5-1)` を `(5-1)!` に直す。かっこの対応を見るので正規表現では書けない。 */
+function formatFactorials(expression: string): string {
+  const start = expression.indexOf('fact(');
+  if (start === -1) return expression;
+
+  let depth = 0;
+  for (let i = start + 4; i < expression.length; i += 1) {
+    if (expression[i] === '(') depth += 1;
+    if (expression[i] === ')') {
+      depth -= 1;
+      if (depth === 0) {
+        const inner = expression.slice(start + 5, i);
+        return formatFactorials(
+          `${expression.slice(0, start)}(${inner})!${expression.slice(i + 1)}`
+        );
+      }
+    }
+  }
+  // 閉じていない途中の入力。ここだけ素直に置き換える
+  return `${expression.slice(0, start)}(${expression.slice(start + 5)}`;
+}
+
 /** 画面に出す形。生徒が「打った通りに見える」ことを優先する。 */
 export function formatExpressionForDisplay(expression: string) {
-  return expression
+  return formatFactorials(expression)
     // 指数表記 3.46e-5 → 3.46×10⁻⁵（先頭が数字のときだけ。定数 e とは区別される）
     .replace(/(\d)e([+-]?\d*)/g, (_m, digit: string, exp: string) =>
       `${digit}×10${exp ? toSuperscript(exp) : ''}`)
     .replace(/\bxroot\((\d+(?:\.\d+)?),/g, '$1√(')
     .replace(/\bxroot\(/g, 'ˣ√(')
-    .replace(/\bfact\(/g, '!(')
     .replace(/\bpow10\(/g, '10^(')
     .replace(/\bexp\(/g, 'e^(')
     .replace(/\bcbrt\(/g, '∛(')

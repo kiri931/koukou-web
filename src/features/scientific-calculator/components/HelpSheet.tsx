@@ -31,8 +31,8 @@ const HELP_SECTIONS: HelpSection[] = [
         description: '角度単位を度数法(DEG)とラジアン(RAD)で切り替えます。例: sin(30)=0.5 は DEG。',
       },
       {
-        label: 'DMS',
-        description: '度・分・秒の入力パネルを開きます。例: 35°41\'22\" を角度として入力。',
+        label: '°′″',
+        description: '度・分・秒を区切って入力します。押すたびに度→分→秒と進みます。例: 35 °′″ 41 °′″ 22 °′″ で 35度41分22秒。',
       },
       {
         label: 'STAT',
@@ -101,7 +101,7 @@ const HELP_SECTIONS: HelpSection[] = [
         label: 'xʸ',
         description: 'べき乗を入力します。例: 2 xʸ 5 = 32',
         shiftLabel: 'ʸ√x',
-        shiftDescription: 'y乗根を計算します。例: ʸ√x(32, 5) = 2',
+        shiftDescription: 'y乗根を計算します。先に根の数を押します。例: 5 ʸ√x 32 = 2',
       },
       {
         label: 'log',
@@ -124,8 +124,10 @@ const HELP_SECTIONS: HelpSection[] = [
   {
     title: '順列・組合せ',
     items: [
-      { label: 'nPr', description: '順列（並べ方の数）を計算します。例: 5 nPr 2 = 20' },
-      { label: 'nCr', description: '組合せ（選び方の数）を計算します。例: 5 nCr 2 = 10' },
+      { label: 'nPr', description: '順列（並べ方の数）を計算します。数の後ろに押します。例: 5 nPr 2 = 20' },
+      { label: 'nCr', description: '組合せ（選び方の数）を計算します。SHIFT のあと押します。例: 5 nCr 2 = 10' },
+      { label: 'x!', description: '階乗を計算します。数の後ろに押します。例: 5 x! = 120' },
+      { label: 'Ans', description: '直前の計算結果を式に入れます。SHIFT のあと押します。' },
       { label: '(', description: '左かっこを入力します。式の優先順位をまとめるときに使います。' },
       { label: ')', description: '右かっこを入力します。左かっこと対で使います。' },
     ],

@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { BUTTON_ROWS } from '@/features/scientific-calculator/components/CalcKeypad';
 import type { AngleMode } from '@/features/scientific-calculator/types';
 import { roundingLabel, type DrillProblem } from '../types';
@@ -12,6 +11,16 @@ const ACTION_LABELS: Record<string, string> = Object.fromEntries(
     return entries;
   })
 );
+
+/*
+ * この帯は常に暗い下地なので、明暗が切り替わる共通ボタンは使わない。
+ * 実測: もう一度 = zinc-100 文字 / zinc-700 面 で 9.50:1、枠 zinc-400 は帯に対し 5.81:1。
+ *       次の問題 = zinc-900 文字 / emerald-400 面 で 9.22:1、面は帯に対し 7.75:1。
+ */
+const SECONDARY_BUTTON =
+  'shrink-0 rounded-md border border-zinc-400 bg-zinc-700 px-3 py-1.5 text-base font-semibold text-zinc-100 hover:bg-zinc-600';
+const PRIMARY_BUTTON =
+  'shrink-0 rounded-md bg-emerald-400 px-3 py-1.5 text-base font-bold text-zinc-900 hover:bg-emerald-300';
 
 interface DrillDisplayProps {
   problem: DrillProblem;
@@ -103,9 +112,6 @@ export default function DrillDisplay({
         </p>
         <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
           {rounding && <span className="text-base text-amber-300">{rounding}</span>}
-          {problem.exam_ref && (
-            <span className="text-base text-zinc-400">出典: {problem.exam_ref}</span>
-          )}
           <button
             type="button"
             onClick={() => setQuestionExpanded((prev) => !prev)}
@@ -146,12 +152,12 @@ export default function DrillDisplay({
               正解! 答え {problem.expectedAnswer}
             </p>
             <div className="flex shrink-0 gap-2">
-              <Button type="button" size="sm" variant="outline" onClick={onRetry}>
+              <button type="button" onClick={onRetry} className={SECONDARY_BUTTON}>
                 もう一度
-              </Button>
-              <Button type="button" size="sm" onClick={onNext}>
+              </button>
+              <button type="button" onClick={onNext} className={PRIMARY_BUTTON}>
                 次の問題
-              </Button>
+              </button>
             </div>
           </>
         ) : (
@@ -190,9 +196,9 @@ export default function DrillDisplay({
               >
                 <div className="h-full rounded-full bg-amber-400 transition-all" style={{ width: `${progressPercent}%` }} />
               </div>
-              <Button type="button" size="sm" variant="outline" onClick={onRetry}>
+              <button type="button" onClick={onRetry} className={SECONDARY_BUTTON}>
                 もう一度
-              </Button>
+              </button>
             </div>
           </>
         )}

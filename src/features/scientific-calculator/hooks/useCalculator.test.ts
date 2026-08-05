@@ -132,7 +132,8 @@ describe('useCalculator', () => {
 
     press(result, '(', '5', '-', '1', ')', 'fact(', '=');
 
-    expect(result.current.state.expression).toBe('fact((5-1))');
+    expect(result.current.state.expression).toBe('fact(5-1)');
+    expect(result.current.displayExpression).toBe('(5-1)!');
     expect(result.current.state.result).toBe('24');
   });
 

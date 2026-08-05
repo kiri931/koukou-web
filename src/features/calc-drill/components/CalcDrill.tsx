@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import { RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import CalcKeypad from '@/features/scientific-calculator/components/CalcKeypad';
-import { DRILL_PROBLEMS } from '../data/problems';
+import { generateProblems } from '../data/problems';
 import { useCalcDrill } from '../hooks/useCalcDrill';
 import type { DrillCategory, DrillLevelFilter } from '../types';
 import DrillDisplay from './DrillDisplay';
@@ -11,7 +12,7 @@ const LEVEL_FILTERS: DrillLevelFilter[] = ['両方', '4級', '3級'];
 const CATEGORY_FILTERS: (DrillCategory | 'すべて')[] = [
   'すべて',
   '四則計算',
-  '応用計算',
+  '集計計算',
   '関数計算',
   '実務計算',
 ];
@@ -20,15 +21,20 @@ export default function CalcDrill() {
   const [levelFilter, setLevelFilter] = useState<DrillLevelFilter>('両方');
   const [categoryFilter, setCategoryFilter] = useState<DrillCategory | 'すべて'>('すべて');
   const [listOpen, setListOpen] = useState(false);
+  // 開くたびに違う種にする。過去問をそのまま出すのではなく、同じ形の問題を作っている
+  const [seed, setSeed] = useState(() => Math.floor(Math.random() * 2 ** 31));
+  const displayRef = useRef<HTMLDivElement>(null);
+
+  const allProblems = useMemo(() => generateProblems(seed), [seed]);
 
   const filteredProblems = useMemo(
     () =>
-      DRILL_PROBLEMS.filter(
+      allProblems.filter(
         (problem) =>
           (levelFilter === '両方' || problem.level === levelFilter) &&
           (categoryFilter === 'すべて' || problem.category === categoryFilter)
       ),
-    [levelFilter, categoryFilter]
+    [allProblems, levelFilter, categoryFilter]
   );
 
   const {
@@ -53,6 +59,7 @@ export default function CalcDrill() {
       <main className="mx-auto max-w-[30rem] px-4 py-4 text-slate-900 dark:text-slate-100">
         <p className="mb-3 text-base text-slate-600 dark:text-slate-300">
           光っているキーを順に押していきます。手順ごと覚えるための練習です。
+          問題は検定と同じ形で毎回作り直されます。
         </p>
 
         <div className="mb-3 space-y-1.5">
@@ -86,10 +93,25 @@ export default function CalcDrill() {
               </Button>
             ))}
           </div>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => setSeed(Math.floor(Math.random() * 2 ** 31))}
+            >
+              <RefreshCw className="size-4" aria-hidden="true" />
+              問題を作り直す
+            </Button>
+            <span className="text-base text-slate-600 dark:text-slate-300">
+              {filteredProblems.length} 問
+            </span>
+          </div>
         </div>
 
         {currentProblem ? (
           <>
+            <div ref={displayRef} className="scroll-mt-20">
             <DrillDisplay
               problem={currentProblem}
               problemNumber={problemIndex + 1}
@@ -107,6 +129,7 @@ export default function CalcDrill() {
               onRetry={retryProblem}
               onNext={nextProblem}
             />
+            </div>
 
             {/* ディスプレイのすぐ下。間を空けないのが目的なので mt は詰める */}
             <div className="mt-2">
@@ -125,7 +148,7 @@ export default function CalcDrill() {
                 aria-expanded={listOpen}
                 className="rounded text-base font-semibold text-slate-700 underline underline-offset-2 dark:text-slate-200"
               >
-                問題一覧（{filteredProblems.length}件）を{listOpen ? 'たたむ' : 'ひらく'}
+                問題一覧（{filteredProblems.length}問）を{listOpen ? 'たたむ' : 'ひらく'}
               </button>
               {listOpen && (
                 <div className="mt-2 max-h-80 overflow-auto rounded-md border border-slate-300 dark:border-slate-800">
@@ -157,6 +180,8 @@ export default function CalcDrill() {
                               onClick={() => {
                                 selectProblem(index);
                                 setListOpen(false);
+                                // 一覧はキーパッドの下にあるので、選んだら表示に戻す
+                                displayRef.current?.scrollIntoView({ block: 'start' });
                               }}
                               className="text-left underline underline-offset-2"
                             >

@@ -190,14 +190,19 @@ export function useCalculator() {
     });
   };
 
-  /** ( 5 - 1 ) x! → fact((5-1)) その場で閉じる後置演算 */
+  /** ( 5 - 1 ) x! → fact(5-1) その場で閉じる後置演算 */
   const insertPostfixFunction = (fnName: string) => {
     setState((prev) => {
       const base = prev.justEvaluated && !prev.hasError ? prev.result : prev.expression;
       const { head, operand } = splitTrailingOperand(base);
+      // すでに (…) の塊なら、かっこを二重にしない（表示が (5-1)! になる）
+      const inner =
+        operand.startsWith('(') && operand.endsWith(')') && countParenBalance(operand.slice(1, -1)) === 0
+          ? operand.slice(1, -1)
+          : operand;
       return {
         ...prev,
-        expression: `${head}${fnName}(${operand || '0'})`,
+        expression: `${head}${fnName}(${inner || '0'})`,
         justEvaluated: false,
         hasError: false,
       };
