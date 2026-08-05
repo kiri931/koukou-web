@@ -49,9 +49,9 @@
     "language": "python"
   },
   {
-    "question": "try:",
+    "question": "except (KeyError, IndexError):",
     "answers": [
-      "try:"
+      "except (KeyError, IndexError):"
     ],
     "language": "python"
   },
@@ -154,13 +154,6 @@
     "language": "html"
   },
   {
-    "question": "<a href=\"#\">Link</a>",
-    "answers": [
-      "<a href=\"#\">Link</a>"
-    ],
-    "language": "html"
-  },
-  {
     "question": "<!-- comment -->",
     "answers": [
       "<!-- comment -->"
@@ -208,5 +201,152 @@
       "box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);"
     ],
     "language": "css"
+  },
+  {
+    "question": "<link rel=\"stylesheet\" href=\"style.css\">",
+    "answers": [
+      "<link rel=\"stylesheet\" href=\"style.css\">"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "<input type=\"text\" name=\"user\" required />",
+    "answers": [
+      "<input type=\"text\" name=\"user\" required />"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "<button type=\"submit\" class=\"btn\">Send</button>",
+    "answers": [
+      "<button type=\"submit\" class=\"btn\">Send</button>"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "<form action=\"/submit\" method=\"post\">",
+    "answers": [
+      "<form action=\"/submit\" method=\"post\">"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "<img src=\"photo.jpg\" alt=\"A photo\" />",
+    "answers": [
+      "<img src=\"photo.jpg\" alt=\"A photo\" />"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "<table><tr><td>1</td></tr></table>",
+    "answers": [
+      "<table><tr><td>1</td></tr></table>"
+    ],
+    "language": "html"
+  },
+  {
+    "question": "background: linear-gradient(90deg, #fff, #000);",
+    "answers": [
+      "background: linear-gradient(90deg, #fff, #000);"
+    ],
+    "language": "css"
+  },
+  {
+    "question": "transition: opacity 0.3s ease-in-out;",
+    "answers": [
+      "transition: opacity 0.3s ease-in-out;"
+    ],
+    "language": "css"
+  },
+  {
+    "question": "font-family: \"Helvetica Neue\", sans-serif;",
+    "answers": [
+      "font-family: \"Helvetica Neue\", sans-serif;"
+    ],
+    "language": "css"
+  },
+  {
+    "question": "border-radius: 8px 8px 0 0;",
+    "answers": [
+      "border-radius: 8px 8px 0 0;"
+    ],
+    "language": "css"
+  },
+  {
+    "question": "position: absolute; top: 0; left: 0;",
+    "answers": [
+      "position: absolute; top: 0; left: 0;"
+    ],
+    "language": "css"
+  },
+  {
+    "question": "(a + b) * (c - d) / e",
+    "answers": [
+      "(a + b) * (c - d) / e"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "x >= 10 && y <= 20",
+    "answers": [
+      "x >= 10 && y <= 20"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "!(x == y) || (z != w)",
+    "answers": [
+      "!(x == y) || (z != w)"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "{ \"id\": 1, \"name\": \"abc\" }",
+    "answers": [
+      "{ \"id\": 1, \"name\": \"abc\" }"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "total = price * 1.1 + fee",
+    "answers": [
+      "total = price * 1.1 + fee"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "arr[0], arr[1], arr[2]",
+    "answers": [
+      "arr[0], arr[1], arr[2]"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "a = b = c = 0",
+    "answers": [
+      "a = b = c = 0"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "path = \"C:\\\\Users\\\\test\"",
+    "answers": [
+      "path = \"C:\\\\Users\\\\test\""
+    ],
+    "language": "common"
+  },
+  {
+    "question": "value << 2 | 1 & 3",
+    "answers": [
+      "value << 2 | 1 & 3"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "flag = (n % 2 == 0)",
+    "answers": [
+      "flag = (n % 2 == 0)"
+    ],
+    "language": "common"
   }
 ]

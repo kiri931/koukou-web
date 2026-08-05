@@ -2,10 +2,10 @@
   {
     "question": "こんにちは、せんせい",
     "answers": [
-      "konnichiha,sensei",
-      "konnichiwa,sensei",
-      "konnitiha,sensei",
-      "konnitiwa,sensei"
+      "konnnichiha,sensei",
+      "konnnichiwa,sensei",
+      "konnnitiha,sensei",
+      "konnnitiwa,sensei"
     ]
   },
   {
@@ -91,7 +91,6 @@
   {
     "question": "にほんごのほんをよむ",
     "answers": [
-      "nihongonohonoyomu",
       "nihongonohonwoyomu"
     ]
   },
@@ -107,8 +106,8 @@
   {
     "question": "まちでともだちにあう",
     "answers": [
-      "machidetomodachiniaou",
-      "matidetomodatiniaou"
+      "machidetomodachiniau",
+      "matidetomodatiniau"
     ]
   },
   {
@@ -134,7 +133,7 @@
   {
     "question": "きんようびのひる",
     "answers": [
-      "kinyoubinohiru"
+      "kinnyoubinohiru"
     ]
   },
   {
@@ -170,8 +169,8 @@
   {
     "question": "ちいさなこえでいう",
     "answers": [
-      "chiisanakoedeyuu",
-      "tiisanakoedeyuu"
+      "chiisanakoedeiu",
+      "tiisanakoedeiu"
     ]
   },
   {
@@ -316,17 +315,16 @@
   {
     "question": "あさごはんをたべます",
     "answers": [
-      "asagohanotabemasu",
       "asagohanwotabemasu"
     ]
   },
   {
     "question": "びじゅつかんにいく",
     "answers": [
-      "bijutsukanniiku",
-      "bijutukanniiku",
-      "bizyutsukanniiku",
-      "bizyutukanniiku"
+      "bijutsukannniiku",
+      "bijutukannniiku",
+      "bizyutsukannniiku",
+      "bizyutukannniiku"
     ]
   },
   {
@@ -380,10 +378,10 @@
   {
     "question": "かぞくとしょくじ",
     "answers": [
-      "kazokutoshokujii",
-      "kazokutoshokuzii",
-      "kazokutosyokujii",
-      "kazokutosyokuzii"
+      "kazokutoshokuji",
+      "kazokutoshokuzi",
+      "kazokutosyokuji",
+      "kazokutosyokuzi"
     ]
   },
   {

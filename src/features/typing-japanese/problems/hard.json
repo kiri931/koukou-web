@@ -18,9 +18,7 @@
   {
     "question": "\"おいしい\"ごはんをたべた",
     "answers": [
-      "\"oishii\"gohanotabeta",
       "\"oishii\"gohanwotabeta",
-      "\"oisii\"gohanotabeta",
       "\"oisii\"gohanwotabeta"
     ]
   },
@@ -40,10 +38,6 @@
   {
     "question": "ほんを14さつ,かいました",
     "answers": [
-      "hono14satsu,kaimashita",
-      "hono14satsu,kaimasita",
-      "hono14satu,kaimashita",
-      "hono14satu,kaimasita",
       "honwo14satsu,kaimashita",
       "honwo14satsu,kaimasita",
       "honwo14satu,kaimashita",
@@ -148,12 +142,12 @@
     "answers": [
       "\"shigoto,benkyo\"nomainichi",
       "\"shigoto,benkyo\"nomainiti",
-      "\"shigoto,benkyou\"nomaïnichi",
-      "\"shigoto,benkyou\"nomaïniti",
+      "\"shigoto,benkyou\"nomainichi",
+      "\"shigoto,benkyou\"nomainiti",
       "\"sigoto,benkyo\"nomainichi",
       "\"sigoto,benkyo\"nomainiti",
-      "\"sigoto,benkyou\"nomaïnichi",
-      "\"sigoto,benkyou\"nomaïniti"
+      "\"sigoto,benkyou\"nomainichi",
+      "\"sigoto,benkyou\"nomainiti"
     ]
   },
   {
@@ -179,8 +173,8 @@
   {
     "question": "ばんごはんに,さかなをたべた",
     "answers": [
-      "bangohannisakanaotabeta",
-      "bangohannisakanawotabeta"
+      "bangohannni,sakanaotabeta",
+      "bangohannni,sakanawotabeta"
     ]
   },
   {
@@ -241,10 +235,10 @@
   {
     "question": "きょうは*まいにち*のひとつ",
     "answers": [
-      "kyouwa*mainichi*nohito",
-      "kyouwa*mainiti*nohito",
-      "kyowa*mainichi*nohito",
-      "kyowa*mainiti*nohito"
+      "kyouwa*mainichi*nohitotsu",
+      "kyouwa*mainiti*nohitotu",
+      "kyowa*mainichi*nohitotsu",
+      "kyowa*mainiti*nohitotu"
     ]
   },
   {
@@ -352,15 +346,14 @@
   {
     "question": "\"ほん\"をたくさんよむ",
     "answers": [
-      "\"hon\"otakusanyomu",
-      "\"hon\"wotakusanyomu"
+      "\"hon\"wotakusannyomu"
     ]
   },
   {
     "question": "かばんのなかに*えんぴつ*",
     "answers": [
-      "kabannonakani*enpitsu*",
-      "kabannonakani*enpitu*"
+      "kabannnonakani*enpitsu*",
+      "kabannnonakani*enpitu*"
     ]
   },
   {

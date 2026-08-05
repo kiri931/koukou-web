@@ -278,5 +278,75 @@
       "width: 100%;"
     ],
     "language": "css"
+  },
+  {
+    "question": "x = (a + b) / 2",
+    "answers": [
+      "x = (a + b) / 2"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "y = a * b - c",
+    "answers": [
+      "y = a * b - c"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "flag = a != b",
+    "answers": [
+      "flag = a != b"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "arr[i] = arr[j]",
+    "answers": [
+      "arr[i] = arr[j]"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "a += 1; b -= 1",
+    "answers": [
+      "a += 1; b -= 1"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "\"key\": \"value\"",
+    "answers": [
+      "\"key\": \"value\""
+    ],
+    "language": "common"
+  },
+  {
+    "question": "x = y % 3",
+    "answers": [
+      "x = y % 3"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "(a || b) && c",
+    "answers": [
+      "(a || b) && c"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "n = -1 * n",
+    "answers": [
+      "n = -1 * n"
+    ],
+    "language": "common"
+  },
+  {
+    "question": "s = \"abc\" + \"def\"",
+    "answers": [
+      "s = \"abc\" + \"def\""
+    ],
+    "language": "common"
   }
 ]
