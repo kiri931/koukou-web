@@ -5,13 +5,13 @@ export function useFaceDetection(
   opencvReadyRef: React.RefObject<boolean>,
   imageLoadedRef: React.RefObject<boolean>,
   canvasRef: React.RefObject<HTMLCanvasElement | null>,
-  cascadeRef: React.RefObject<any>,
+  detectorRef: React.RefObject<any>,
   onDetected: (rects: Rect[]) => void,
 ) {
   const [isDetecting, setIsDetecting] = useState(false);
   const [detectStatus, setDetectStatus] = useState("");
-  const [minNeighbors, setMinNeighbors] = useState(2);
-  const [scaleFactor, setScaleFactor] = useState(1.1);
+  const [scoreThreshold, setScoreThreshold] = useState(0.6);
+  const [nmsThreshold, setNmsThreshold] = useState(0.3);
 
   const handleDetect = useCallback(async () => {
     if (!opencvReadyRef.current || !imageLoadedRef.current) return;
@@ -54,33 +54,41 @@ export function useFaceDetection(
       }
 
       const src = cv.imread(detectCanvas);
-      const gray = new cv.Mat();
-      cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+      const bgr = new cv.Mat();
+      cv.cvtColor(src, bgr, cv.COLOR_RGBA2BGR);
 
-      const faces = new cv.RectVector();
-      const msize = new cv.Size(0, 0);
-      cascadeRef.current.detectMultiScale(gray, faces, scaleFactor, minNeighbors, 0, msize, msize);
+      const detector = detectorRef.current;
+      detector.setInputSize(new cv.Size(bgr.cols, bgr.rows));
+      detector.setScoreThreshold(scoreThreshold);
+      detector.setNMSThreshold(nmsThreshold);
+
+      const faces = new cv.Mat();
+      detector.detect(bgr, faces);
 
       const newRects: Rect[] = [];
-      for (let i = 0; i < faces.size(); i++) {
-        const face = faces.get(i);
+      for (let i = 0; i < faces.rows; i++) {
+        const row = i * faces.cols;
+        const x = faces.data32F[row];
+        const y = faces.data32F[row + 1];
+        const w = faces.data32F[row + 2];
+        const h = faces.data32F[row + 3];
         newRects.push({
-          x: Math.round(face.x * scaleX),
-          y: Math.round(face.y * scaleY),
-          w: Math.round(face.width * scaleX),
-          h: Math.round(face.height * scaleY),
+          x: Math.round(x * scaleX),
+          y: Math.round(y * scaleY),
+          w: Math.round(w * scaleX),
+          h: Math.round(h * scaleY),
           type: "auto",
         });
       }
 
       src.delete();
-      gray.delete();
+      bgr.delete();
       faces.delete();
 
       onDetected(newRects);
 
       if (newRects.length === 0) {
-        setDetectStatus("顔が検出されませんでした。minNeighbors を下げて再試行してください。");
+        setDetectStatus("顔が検出されませんでした。scoreThreshold を下げて再試行してください。");
       } else {
         setDetectStatus(`${newRects.length} 個の顔を検出しました`);
       }
@@ -107,16 +115,16 @@ export function useFaceDetection(
         tempCanvas = null;
       }
     }
-  }, [opencvReadyRef, imageLoadedRef, canvasRef, cascadeRef, scaleFactor, minNeighbors, onDetected]);
+  }, [opencvReadyRef, imageLoadedRef, canvasRef, detectorRef, scoreThreshold, nmsThreshold, onDetected]);
 
   return {
     isDetecting,
     detectStatus,
     setDetectStatus,
-    minNeighbors,
-    setMinNeighbors,
-    scaleFactor,
-    setScaleFactor,
+    scoreThreshold,
+    setScoreThreshold,
+    nmsThreshold,
+    setNmsThreshold,
     handleDetect,
   };
 }

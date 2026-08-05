@@ -112,11 +112,23 @@ export interface StudySessionState {
   status: StudySessionStatus;
   datasetId: string | null;
   queue: StudyQueueItem[];
+  /** 選択肢の誤答を作るための候補。データセット全体のカード（期限切れに限らない） */
+  choicePool: StudyQueueItem[];
   index: number;
   total: number;
   correctCount: number;
   incorrectCount: number;
   current: StudyQueueItem | null;
+  /** いまの問題の出題モード。初めて解くカードは選択、2回目以降は記述 */
+  mode: 'choice' | 'input';
+  /** 選択モードのときの選択肢（表示ラベル）。記述なら空 */
+  choices: string[];
+  /** 出題用の問題文。答えが混ざっていれば伏せ字にしたもの */
+  maskedQuestion: string;
+  /** この問で開いたヒントの段階数。問題が変わるたび 0 に戻る */
+  hintLevel: number;
+  /** ヒントを1段階でも開いたか（採点の上限に使う） */
+  usedHint: boolean;
   userAnswer: string;
   isCorrect: boolean | null;
   matchedAnswer: string | null;

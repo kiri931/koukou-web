@@ -2,7 +2,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import CalcButton from './CalcButton';
 import type { AngleMode, ButtonDef } from '../types';
 
-const BUTTON_ROWS: ButtonDef[][] = [
+export const BUTTON_ROWS: ButtonDef[][] = [
   [
     {
       label: 'SHIFT',
@@ -18,10 +18,11 @@ const BUTTON_ROWS: ButtonDef[][] = [
       description: '角度単位を度数法(DEG)とラジアン(RAD)で切り替えます。三角関数の結果に影響します。',
     },
     {
-      label: 'DMS',
-      action: 'toggle-dms',
+      label: '°′″',
+      action: 'dms',
       variant: 'mode',
-      description: '度・分・秒(DMS)入力パネルを開閉します。角度入力や三角関数計算に使えます。',
+      description:
+        '度・分・秒を区切って入力します。押すたびに度→分→秒と進みます。例: 85 °′″ 29 °′″ 17 °′″ で 85度29分17秒',
     },
     {
       label: 'STAT',
@@ -122,10 +123,10 @@ const BUTTON_ROWS: ButtonDef[][] = [
       label: 'xʸ',
       shiftLabel: 'ʸ√x',
       action: '^(',
-      shiftAction: 'yroot(',
+      shiftAction: 'xroot(',
       variant: 'function',
       description: 'べき乗を入力します。例: 2 xʸ 5 = 32',
-      shiftDescription: 'y乗根を計算します。例: 32 の 5乗根 = 2',
+      shiftDescription: 'y乗根を計算します。先に根の数を押します。例: 5 ʸ√x 32 = 2',
     },
     {
       label: 'log',
@@ -149,15 +150,21 @@ const BUTTON_ROWS: ButtonDef[][] = [
   [
     {
       label: 'nPr',
+      shiftLabel: 'nCr',
       action: 'nPr(',
+      shiftAction: 'nCr(',
       variant: 'function',
-      description: '順列（並べ方の数）を計算します。例: 5 nPr 2 = 20',
+      description: '順列（並べ方の数）を計算します。数の後ろに押します。例: 5 nPr 2 = 20',
+      shiftDescription: '組合せ（選び方の数）を計算します。数の後ろに押します。例: 5 nCr 2 = 10',
     },
     {
-      label: 'nCr',
-      action: 'nCr(',
+      label: 'x!',
+      shiftLabel: 'Ans',
+      action: 'fact(',
+      shiftAction: 'ans',
       variant: 'function',
-      description: '組合せ（選び方の数）を計算します。例: 5 nCr 2 = 10',
+      description: '階乗を計算します。数の後ろに押します。例: 5 x! = 120',
+      shiftDescription: '直前の計算結果を式に入れます。',
     },
     {
       label: '×10ⁿ',
@@ -226,9 +233,9 @@ interface CalcKeypadProps {
 
 export default function CalcKeypad({ shiftActive, angleMode, onPress, highlightedAction }: CalcKeypadProps) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       {BUTTON_ROWS.map((row, rowIndex) => (
-        <div key={rowIndex} className="grid grid-cols-5 gap-2">
+        <div key={rowIndex} className="grid grid-cols-5 gap-1.5">
           {row.map((button, buttonIndex) => {
             const normalizedButton =
               button.action === 'toggle-angle'

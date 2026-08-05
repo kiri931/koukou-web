@@ -122,3 +122,56 @@
     @apply bg-background text-foreground;
     }
 }
+/* リンクカードのアイコン枠(LinkCard.tsx)。
+   カードごとに色が違うので Tailwind のクラスではなく CSS 変数 --chip で渡す。
+   クラス名を動的に組み立てると Tailwind の静的走査から漏れて CSS が出力されない。 */
+.icon-chip {
+  margin-bottom: 0.75rem;
+  display: flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--chip) 12%, transparent);
+  /* 明るい背景では素の色だと 3:1 に届かない色がある(黄など)ので暗い側へ寄せる */
+  color: color-mix(in srgb, var(--chip) 70%, #0f172a);
+  transition: background-color 0.15s ease;
+}
+
+html.dark .icon-chip {
+  background: color-mix(in srgb, var(--chip) 18%, transparent);
+  color: color-mix(in srgb, var(--chip) 75%, #ffffff);
+}
+
+.group:hover .icon-chip {
+  background: color-mix(in srgb, var(--chip) 22%, transparent);
+}
+
+html.dark .group:hover .icon-chip {
+  background: color-mix(in srgb, var(--chip) 28%, transparent);
+}
+
+/* フォーカスリングは操作要素すべてに既定で付ける。
+   個別に focus-visible: を書く方式だと、新しいボタンで必ず付け忘れる。
+   暗幕でまわりを隠すのではなく、対象そのものを縁取る(DADS)。 */
+@layer base {
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  summary:focus-visible,
+  [tabindex]:not([tabindex='-1']):focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+:root {
+  --focus-ring: #4f46e5; /* indigo-600。白背景に対して 3:1 以上 */
+}
+
+.dark {
+  --focus-ring: #a5b4fc; /* indigo-300。暗い背景では明るい側でないと見えない */
+}

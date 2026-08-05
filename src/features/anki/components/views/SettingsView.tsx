@@ -43,7 +43,7 @@ export default function SettingsView({ settings, onSave }: Props) {
     <Card>
       <CardHeader>
         <CardTitle>設定</CardTitle>
-        <CardDescription>目標保持率と試験日を設定し、復習間隔に反映します。</CardDescription>
+        <CardDescription>どれくらい忘れかけたら復習するかを決めます。まずは既定のままで構いません。</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <section className="space-y-3">
@@ -58,7 +58,10 @@ export default function SettingsView({ settings, onSave }: Props) {
             value={[targetRetentionRate]}
             onValueChange={([value]) => setTargetRetentionRate(value)}
           />
-          <p className="text-xs text-slate-500">0.70〜0.97 の範囲。高いほど短い間隔で復習します。</p>
+          <p className="text-xs text-slate-500">
+            「思い出せる見込みがこの値まで下がったら、もう一度出す」という目安です。
+            高くすると忘れにくくなりますが、1日にこなす枚数が増えます。既定は90%。
+          </p>
         </section>
 
         <section className="space-y-2">
@@ -70,7 +73,10 @@ export default function SettingsView({ settings, onSave }: Props) {
             value={examDate}
             onChange={(event) => setExamDate(event.target.value)}
           />
-          <p className="text-xs text-slate-500">設定すると、間隔が試験日を超えにくいように調整されます。</p>
+          <p className="text-xs text-slate-500">
+            入れておくと、復習の間隔がこの日を飛び越えないように調整されます。
+            「試験前に一度も出ないまま本番」を防ぐためのものです。
+          </p>
         </section>
 
         <div className="flex items-center gap-2">

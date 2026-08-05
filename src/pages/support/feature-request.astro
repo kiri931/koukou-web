@@ -10,7 +10,7 @@ import "../../styles/global.css";
   description="高校情報サイトへの機能追加リクエスト・改善提案を送信するフォームです。"
 >
   <div class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
-    <Header client:load currentPath="/support/feature-request" />
+    <Header client:load currentPath={Astro.url.pathname} />
 
     <main class="mx-auto max-w-5xl px-4 py-12 sm:py-16">
       <SupportForm client:only="react" />

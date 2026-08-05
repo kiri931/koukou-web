@@ -1,5 +1,5 @@
 export type AngleMode = 'DEG' | 'RAD';
-export type PanelMode = 'none' | 'dms' | 'stats';
+export type PanelMode = 'none' | 'stats';
 
 export interface CalculatorState {
   expression: string;

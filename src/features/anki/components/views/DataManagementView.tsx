@@ -70,17 +70,17 @@ export default function DataManagementView(props: Props) {
     return file.text();
   };
 
-  const importPresetDataset = async () => {
+  const importPresetDataset = async (presetPath: string, presetLabel: string, busyKey: string) => {
     setError(null);
     setMessage(null);
     try {
-      setBusy('preset-import:joho1-vocab');
-      const response = await fetch('/tools/joho1-vocab.json');
+      setBusy(busyKey);
+      const response = await fetch(presetPath);
       if (!response.ok) {
         throw new Error('プリセットデータセットを読み込めませんでした');
       }
       await onImportDataset(await response.text());
-      setMessage('「情報I頻出用語」をインポートしました。');
+      setMessage(`「${presetLabel}」をインポートしました。`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'プリセットデータセットのインポートに失敗しました');
     } finally {
@@ -193,13 +193,61 @@ export default function DataManagementView(props: Props) {
             />
             <p className="text-xs text-slate-500">`public/sample-dataset.json` を使って動作確認できます。</p>
             <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-slate-50 p-3 dark:bg-slate-900/30">
-              <p className="text-sm text-slate-600 dark:text-slate-300">プリセット: 情報I頻出用語（25件）</p>
+              <p className="text-sm text-slate-600 dark:text-slate-300">プリセット: 情報I頻出用語（141件）</p>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 disabled={busy === 'preset-import:joho1-vocab'}
-                onClick={importPresetDataset}
+                onClick={() => importPresetDataset('/tools/joho1-vocab.json', '情報I頻出用語', 'preset-import:joho1-vocab')}
+              >
+                インポート
+              </Button>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-slate-50 p-3 dark:bg-slate-900/30">
+              <p className="text-sm text-slate-600 dark:text-slate-300">プリセット: ITパスポート頻出用語（103件）</p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={busy === 'preset-import:it-passport'}
+                onClick={() => importPresetDataset('/tools/it-passport.json', 'ITパスポート頻出用語', 'preset-import:it-passport')}
+              >
+                インポート
+              </Button>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-slate-50 p-3 dark:bg-slate-900/30">
+              <p className="text-sm text-slate-600 dark:text-slate-300">プリセット: 基本情報技術者試験 頻出用語（100件）</p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={busy === 'preset-import:fe-vocab'}
+                onClick={() => importPresetDataset('/tools/fe-vocab.json', '基本情報技術者試験 頻出用語', 'preset-import:fe-vocab')}
+              >
+                インポート
+              </Button>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-slate-50 p-3 dark:bg-slate-900/30">
+              <p className="text-sm text-slate-600 dark:text-slate-300">プリセット: 情報セキュリティマネジメント試験 頻出用語（89件）</p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={busy === 'preset-import:sg-vocab'}
+                onClick={() => importPresetDataset('/tools/sg-vocab.json', '情報セキュリティマネジメント試験 頻出用語', 'preset-import:sg-vocab')}
+              >
+                インポート
+              </Button>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-slate-50 p-3 dark:bg-slate-900/30">
+              <p className="text-sm text-slate-600 dark:text-slate-300">プリセット: 計算技術検定 頻出用語・公式（50件）</p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={busy === 'preset-import:calc-drill-vocab'}
+                onClick={() => importPresetDataset('/tools/calc-drill-vocab.json', '計算技術検定 頻出用語・公式', 'preset-import:calc-drill-vocab')}
               >
                 インポート
               </Button>

@@ -1,9 +1,14 @@
 import { useState } from 'react';
 import { fsrsScheduleNext } from './useFsrs';
+import { resolveQuestion } from '../lib/questionMode';
+import { maskQuestion } from '../lib/maskQuestion';
+import { hasMoreHints } from '../lib/hints';
+import { capGrade } from '../lib/gradeCap';
 import type { AnswerCheckResult, AppSettings, Card, CardState, Grade, Review, StudySessionState } from '../types';
 
 type StudyDeps = {
   buildDueQueue: (datasetId: string) => Promise<StudySessionState['queue']>;
+  getCardsByDataset: (datasetId: string) => Promise<Card[]>;
   checkAnswer: (card: Card, inputText: string) => AnswerCheckResult;
   detectConfusion: (params: { datasetId: string; cardId: string; inputText: string }) => Promise<void>;
   upsertCardState: (state: CardState) => Promise<void>;
@@ -14,11 +19,17 @@ const initialState: StudySessionState = {
   status: 'idle',
   datasetId: null,
   queue: [],
+  choicePool: [],
   index: 0,
   total: 0,
   correctCount: 0,
   incorrectCount: 0,
   current: null,
+  mode: 'input',
+  choices: [],
+  maskedQuestion: '',
+  hintLevel: 0,
+  usedHint: false,
   userAnswer: '',
   isCorrect: null,
   matchedAnswer: null,
@@ -27,6 +38,12 @@ const initialState: StudySessionState = {
   error: null,
 };
 
+/**
+ * 次の問題を組み立てる。
+ *
+ * 出題モード・選択肢・伏せ字の問題文はここで一度だけ決める。
+ * 描画のたびに作り直すと、選択肢の並びが押すたびに変わってしまう。
+ */
 function toQuestionState(base: StudySessionState, index: number): StudySessionState {
   const current = base.queue[index] ?? null;
   if (!current) {
@@ -35,6 +52,11 @@ function toQuestionState(base: StudySessionState, index: number): StudySessionSt
       status: 'done',
       index,
       current: null,
+      mode: 'input',
+      choices: [],
+      maskedQuestion: '',
+      hintLevel: 0,
+      usedHint: false,
       userAnswer: '',
       isCorrect: null,
       matchedAnswer: null,
@@ -44,11 +66,20 @@ function toQuestionState(base: StudySessionState, index: number): StudySessionSt
     };
   }
 
+  // 誤答の候補は期限が来たカードだけでなくデータセット全体から拾う。
+  // 期限切れが数枚しかない日に、その数枚だけで4択を作ろうとすると選択肢が痩せる
+  const question = resolveQuestion(current, base.choicePool.length > 0 ? base.choicePool : base.queue);
+
   return {
     ...base,
     status: 'question',
     index,
     current,
+    mode: question.mode,
+    choices: question.choices,
+    maskedQuestion: maskQuestion(current.card.question, current.card.answers).text,
+    hintLevel: 0,
+    usedHint: false,
     userAnswer: '',
     isCorrect: null,
     matchedAnswer: null,
@@ -71,6 +102,11 @@ export function useStudySession(deps: StudyDeps, settings: AppSettings, onPersis
 
     try {
       const queue = await deps.buildDueQueue(datasetId);
+      // 選択肢を作るための候補。取れなくても学習は続けられるので、失敗は握りつぶす
+      const choicePool = await deps
+        .getCardsByDataset(datasetId)
+        .then((cards) => cards.map((card) => ({ card, cardState: null })))
+        .catch(() => [] as StudySessionState['queue']);
       if (queue.length === 0) {
         setSession({
           ...initialState,
@@ -83,19 +119,20 @@ export function useStudySession(deps: StudyDeps, settings: AppSettings, onPersis
         return;
       }
 
-      const base: StudySessionState = {
-        ...initialState,
-        datasetId,
-        queue,
-        total: queue.length,
-        correctCount: 0,
-        incorrectCount: 0,
-        index: 0,
-        current: queue[0],
-        status: 'question',
-        submittedAt: Date.now(),
-      };
-      setSession(base);
+      // 1問目も2問目以降と同じ組み立て方を通す。
+      // ここだけ手で組むと、1問目にだけ選択肢や伏せ字が入らない
+      setSession(
+        toQuestionState(
+          {
+            ...initialState,
+            datasetId,
+            queue,
+            choicePool,
+            total: queue.length,
+          },
+          0
+        )
+      );
     } catch (err) {
       setSession((prev) => ({
         ...prev,
@@ -132,8 +169,28 @@ export function useStudySession(deps: StudyDeps, settings: AppSettings, onPersis
     }));
   };
 
-  const submitGrade = async (grade: Grade) => {
+  /**
+   * ヒントを1段階開く。
+   *
+   * 選択モードでは開かない。4択のうえヒントまで出すと答えが確定する。
+   */
+  const revealHint = () => {
+    setSession((prev) => {
+      if (prev.status !== 'question' || !prev.current || prev.mode === 'choice') return prev;
+      if (!hasMoreHints(prev.current.card, prev.hintLevel)) return prev;
+      return { ...prev, hintLevel: prev.hintLevel + 1, usedHint: true };
+    });
+  };
+
+  const submitGrade = async (rawGrade: Grade) => {
     if (session.status !== 'reviewing' || !session.current || !session.datasetId) return;
+
+    // ボタンを出さないだけでは数字キーの 4 がそのまま通ってしまうので、ここでも丸める
+    const grade = capGrade(rawGrade, {
+      mode: session.mode,
+      usedHint: session.usedHint,
+      isCorrect: session.isCorrect,
+    });
 
     const now = Date.now();
     const nextState = fsrsScheduleNext({
@@ -193,6 +250,7 @@ export function useStudySession(deps: StudyDeps, settings: AppSettings, onPersis
     startSession,
     submitAnswer,
     submitGrade,
+    revealHint,
     resetSession,
   };
 }

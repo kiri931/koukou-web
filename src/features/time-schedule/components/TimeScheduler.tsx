@@ -179,11 +179,11 @@ export default function TimeScheduler() {
   const elapsedSec = Math.floor((elapsedMs % 60000) / 1000);
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-8 text-slate-100">
+    <main className="mx-auto max-w-5xl px-4 py-8 text-slate-900 dark:text-slate-100">
       <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-bold text-slate-100">タイムスケジューラ</h1>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">タイムスケジューラ</h1>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-slate-400 whitespace-nowrap">合計時間: {totalTime}分</span>
+          <span className="text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">合計時間: {totalTime}分</span>
           <div className="w-40">
             <Slider
               min={10}
@@ -209,7 +209,7 @@ export default function TimeScheduler() {
 
           {/* Elapsed display */}
           <div className="text-center">
-            <span className="font-mono text-3xl font-bold text-slate-100">
+            <span className="font-mono text-3xl font-bold text-slate-900 dark:text-slate-100">
               {String(elapsedMin).padStart(2, '0')}:{String(elapsedSec).padStart(2, '0')}
             </span>
             {currentTask && (
@@ -234,26 +234,26 @@ export default function TimeScheduler() {
               </Button>
             )}
             {isRunning && !isPaused && (
-              <Button onClick={pause} size="sm" variant="outline" className="border-slate-600 text-slate-200">
+              <Button onClick={pause} size="sm" variant="outline" className="border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200">
                 ⏸ 一時停止
               </Button>
             )}
-            <Button onClick={reset} size="sm" variant="outline" className="border-slate-600 text-slate-200">
+            <Button onClick={reset} size="sm" variant="outline" className="border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200">
               🔄 リセット
             </Button>
           </div>
         </div>
 
-        <Separator className="bg-slate-700" />
+        <Separator className="bg-slate-300 dark:bg-slate-700" />
 
         {/* Right: Task list */}
-        <Card className="border-slate-700 bg-slate-900/50">
+        <Card className="border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900/50">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base text-slate-200">タスク一覧</CardTitle>
+            <CardTitle className="text-base text-slate-800 dark:text-slate-200">タスク一覧</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             {tasks.length === 0 && (
-              <p className="text-sm text-slate-500 py-4 text-center">
+              <p className="text-sm text-slate-600 dark:text-slate-400 py-4 text-center">
                 タスクを追加してください
               </p>
             )}
@@ -264,9 +264,9 @@ export default function TimeScheduler() {
                 className={`flex items-center gap-2 rounded-lg border p-2 transition-colors ${
                   index === currentTaskIndex && isRunning
                     ? 'border-indigo-500/60 bg-indigo-500/10'
-                    : 'border-slate-700 bg-slate-800/50'
+                    : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50'
                 } ${
-                  dragOverId === task.id ? 'ring-2 ring-indigo-500/60 bg-slate-800/80' : ''
+                  dragOverId === task.id ? 'ring-2 ring-indigo-500/60 bg-slate-100 dark:bg-slate-800/80' : ''
                 } ${
                   draggingId === task.id
                     ? 'opacity-80 scale-[0.99] shadow-lg shadow-indigo-500/10 border-indigo-500/40'
@@ -292,7 +292,7 @@ export default function TimeScheduler() {
                 {/* Drag handle */}
                 <button
                   type="button"
-                  className={`cursor-grab select-none text-slate-400 hover:text-slate-200 active:cursor-grabbing ${
+                  className={`cursor-grab select-none text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 active:cursor-grabbing ${
                     draggingId === task.id ? 'text-indigo-300' : ''
                   }`}
                   draggable={!(isRunning && !isPaused)}
@@ -316,13 +316,13 @@ export default function TimeScheduler() {
                 {/* Color picker */}
                 <div className="relative">
                   <button
-                    className="h-6 w-6 rounded-full border-2 border-slate-600 flex-shrink-0 transition-transform hover:scale-110"
+                    className="h-6 w-6 rounded-full border-2 border-slate-300 dark:border-slate-700 flex-shrink-0 transition-transform hover:scale-110"
                     style={{ backgroundColor: task.color }}
                     onClick={() => setColorPickerOpen(colorPickerOpen === task.id ? null : task.id)}
                     title="色を変更"
                   />
                   {colorPickerOpen === task.id && (
-                    <div className="absolute left-0 top-8 z-10 flex flex-wrap gap-1 rounded-lg border border-slate-600 bg-slate-800 p-2 shadow-xl w-[112px]">
+                    <div className="absolute left-0 top-8 z-10 flex flex-wrap gap-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 p-2 shadow-xl w-[112px]">
                       {DEFAULT_COLORS.map((c) => (
                         <button
                           key={c}
@@ -345,7 +345,7 @@ export default function TimeScheduler() {
                 <Input
                   value={task.name}
                   onChange={(e) => updateTask(task.id, { name: e.target.value })}
-                  className="h-7 flex-1 border-slate-600 bg-transparent text-slate-200 text-sm focus-visible:ring-indigo-500"
+                  className="h-7 flex-1 border-slate-300 dark:border-slate-700 bg-transparent text-slate-800 dark:text-slate-200 text-sm focus-visible:ring-indigo-500"
                   disabled={isRunning && !isPaused}
                 />
 
@@ -357,17 +357,17 @@ export default function TimeScheduler() {
                     max={480}
                     value={task.duration}
                     onChange={(e) => updateTask(task.id, { duration: Math.max(1, Number(e.target.value)) })}
-                    className="w-14 rounded-md border border-slate-600 bg-transparent px-1.5 py-1 text-center text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="w-14 rounded-md border border-slate-300 dark:border-slate-700 bg-transparent px-1.5 py-1 text-center text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     disabled={isRunning && !isPaused}
                   />
-                  <span className="text-xs text-slate-400">分</span>
+                  <span className="text-xs text-slate-600 dark:text-slate-400">分</span>
                 </div>
 
                 {/* Delete */}
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 w-7 p-0 text-slate-500 hover:text-red-400 flex-shrink-0"
+                  className="h-7 w-7 p-0 text-slate-600 dark:text-slate-400 hover:text-red-400 flex-shrink-0"
                   onClick={() => deleteTask(task.id)}
                   disabled={isRunning && !isPaused}
                   title="削除"
@@ -377,18 +377,18 @@ export default function TimeScheduler() {
               </div>
             ))}
 
-            <Separator className="my-2 bg-slate-700" />
+            <Separator className="my-2 bg-slate-300 dark:bg-slate-700" />
 
             {/* Total bar */}
             {tasks.length > 0 && (
               <div className="space-y-1 px-1">
-                <div className="flex justify-between text-xs text-slate-400">
+                <div className="flex justify-between text-xs text-slate-600 dark:text-slate-400">
                   <span>割り当て済み</span>
                   <span>
                     {tasks.reduce((s, t) => s + t.duration, 0)}分 / {totalTime}分
                   </span>
                 </div>
-                <div className="h-1.5 w-full rounded-full bg-slate-700 overflow-hidden">
+                <div className="h-1.5 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
                   <div
                     className="h-full rounded-full bg-indigo-500 transition-all"
                     style={{
@@ -403,7 +403,7 @@ export default function TimeScheduler() {
               onClick={addTask}
               variant="outline"
               size="sm"
-              className="mt-2 w-full border-slate-600 text-slate-300 hover:border-indigo-500/50 hover:text-white hover:bg-slate-800"
+              className="mt-2 w-full border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-indigo-500/50 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
               disabled={isRunning && !isPaused}
             >
               + タスク追加

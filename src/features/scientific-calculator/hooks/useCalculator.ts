@@ -1,7 +1,14 @@
 import { useMemo, useState } from 'react';
 import { evaluate } from 'mathjs';
-import type { AngleMode, CalculatorState, DmsState, PanelMode } from '../types';
+import type { AngleMode, CalculatorState, PanelMode } from '../types';
 import { applyInsertOperator, applyInsertText } from './calculatorStateTransitions';
+import {
+  countParenBalance,
+  formatExpressionForDisplay,
+  nextDmsSeparator,
+  prepareForEval,
+  splitTrailingOperand,
+} from './expression';
 
 function isDigitAction(action: string) {
   return /^[0-9]$/.test(action);
@@ -54,11 +61,13 @@ function buildScope(angleMode: AngleMode, memory: number) {
     atan: (x: number) => fromRad(Math.atan(x)),
     sqrt: (x: number) => Math.sqrt(x),
     cbrt: (x: number) => Math.cbrt(x),
-    yroot: (x: number, y: number) => x ** (1 / y),
+    // 打つ順（4 ʸ√x 3.56 = 3.56の4乗根）と引数の順を一致させる
+    xroot: (n: number, a: number) => (a < 0 && Number.isInteger(n) && n % 2 !== 0 ? -((-a) ** (1 / n)) : a ** (1 / n)),
     log: (x: number) => Math.log10(x),
     ln: (x: number) => Math.log(x),
     exp: (x: number) => Math.exp(x),
     pow10: (x: number) => 10 ** x,
+    fact: factorialSafe,
     nPr: (n: number, r: number) => factorialSafe(n) / factorialSafe(n - r),
     nCr: (n: number, r: number) => factorialSafe(n) / (factorialSafe(r) * factorialSafe(n - r)),
     pi: Math.PI,
@@ -68,7 +77,7 @@ function buildScope(angleMode: AngleMode, memory: number) {
 }
 
 function parseEvalNumber(expression: string, angleMode: AngleMode, memory: number): number {
-  const value = evaluate(expression, buildScope(angleMode, memory));
+  const value = evaluate(prepareForEval(expression), buildScope(angleMode, memory));
   const numeric = typeof value === 'number' ? value : Number(value);
   if (!Number.isFinite(numeric)) throw new Error('計算結果が無効です');
   return numeric;
@@ -81,26 +90,6 @@ function appendWithImplicitMultiplication(base: string, token: string) {
     return `${trimmed}*${token}`;
   }
   return `${trimmed}${token}`;
-}
-
-function countParenBalance(expression: string) {
-  let balance = 0;
-  for (const ch of expression) {
-    if (ch === '(') balance += 1;
-    if (ch === ')') balance -= 1;
-  }
-  return balance;
-}
-
-function formatExpressionForDisplay(expression: string) {
-  return expression
-    .replace(/\*10\^\(/g, '×10^(')
-    .replace(/\*/g, '×')
-    .replace(/\//g, '÷')
-    .replace(/\bpi\b/g, 'π')
-    .replace(/\byroot\(/g, 'ʸ√x(')
-    .replace(/\bpow10\(/g, '10^(')
-    .replace(/\bexp\(/g, 'e^(');
 }
 
 function createInitialState(): CalculatorState {
@@ -116,10 +105,19 @@ function createInitialState(): CalculatorState {
   };
 }
 
+const PREFIX_FUNCTIONS = new Set([
+  'sqrt(', 'cbrt(', 'sin(', 'cos(', 'tan(',
+  'asin(', 'acos(', 'atan(', 'log(', 'pow10(', 'ln(', 'exp(',
+]);
+
+const INFIX_FUNCTIONS: Record<string, string> = {
+  'xroot(': 'xroot',
+  'nPr(': 'nPr',
+  'nCr(': 'nCr',
+};
+
 export function useCalculator() {
   const [state, setState] = useState<CalculatorState>(createInitialState);
-  const [dms, setDms] = useState<DmsState>({ degrees: '', minutes: '', seconds: '' });
-  const [dmsError, setDmsError] = useState<string | null>(null);
 
   const parenBalance = useMemo(() => countParenBalance(state.expression), [state.expression]);
   const displayExpression = useMemo(
@@ -136,7 +134,7 @@ export function useCalculator() {
     setState((prev) => {
       if (!prev.expression.trim()) return prev;
       try {
-        const value = evaluate(prev.expression, buildScope(prev.angleMode, prev.memory));
+        const value = evaluate(prepareForEval(prev.expression), buildScope(prev.angleMode, prev.memory));
         const formatted = formatEvalResult(value);
         if (formatted === 'Error') {
           return { ...prev, result: 'Error', hasError: true, justEvaluated: true };
@@ -166,15 +164,40 @@ export function useCalculator() {
     setState((prev) => applyInsertOperator(prev, operator));
   };
 
-  const insertFunction = (fnToken: string) => {
+  const insertPrefixFunction = (fnToken: string) => {
     setState((prev) => {
       const seed = prev.justEvaluated && !prev.hasError ? prev.result : prev.expression;
-      const nextExpression = prev.justEvaluated && !prev.hasError && prev.result !== ''
-        ? `${fnToken}${seed})`
-        : appendWithImplicitMultiplication(seed, fnToken);
       return {
         ...prev,
-        expression: nextExpression,
+        expression: appendWithImplicitMultiplication(seed, fnToken),
+        justEvaluated: false,
+        hasError: false,
+      };
+    });
+  };
+
+  /** 4 ʸ√x 3.56 → xroot(4,3.56 ／ 5 nPr 3 → nPr(5,3 */
+  const insertInfixFunction = (fnName: string) => {
+    setState((prev) => {
+      const base = prev.justEvaluated && !prev.hasError ? prev.result : prev.expression;
+      const { head, operand } = splitTrailingOperand(base);
+      return {
+        ...prev,
+        expression: `${head}${fnName}(${operand || '0'},`,
+        justEvaluated: false,
+        hasError: false,
+      };
+    });
+  };
+
+  /** ( 5 - 1 ) x! → fact((5-1)) その場で閉じる後置演算 */
+  const insertPostfixFunction = (fnName: string) => {
+    setState((prev) => {
+      const base = prev.justEvaluated && !prev.hasError ? prev.result : prev.expression;
+      const { head, operand } = splitTrailingOperand(base);
+      return {
+        ...prev,
+        expression: `${head}${fnName}(${operand || '0'})`,
         justEvaluated: false,
         hasError: false,
       };
@@ -196,22 +219,29 @@ export function useCalculator() {
 
   const insertParenthesis = (token: '(' | ')') => {
     setState((prev) => {
-      const base = prev.justEvaluated && !prev.hasError && token === '(' ? '' : prev.expression;
-      const expression =
-        token === '('
-          ? appendWithImplicitMultiplication(base, token)
-          : `${prev.justEvaluated && !prev.hasError ? prev.result : prev.expression}${token}`;
+      if (token === '(') {
+        const base = prev.justEvaluated && !prev.hasError ? '' : prev.expression;
+        return {
+          ...prev,
+          expression: appendWithImplicitMultiplication(base, token),
+          result: prev.justEvaluated && !prev.hasError ? '0' : prev.result,
+          justEvaluated: false,
+          hasError: false,
+        };
+      }
+      // `)` は一番内側のかっこを1つ閉じるだけ（実機と同じ）。
+      // 閉じ忘れは `=` のときにまとめて補う。
+      const seed = prev.justEvaluated && !prev.hasError ? prev.result : prev.expression;
       return {
         ...prev,
-        expression,
-        result: prev.justEvaluated && token === '(' ? '0' : prev.result,
+        expression: `${seed})`,
         justEvaluated: false,
         hasError: false,
       };
     });
   };
 
-  const insertPostfix = (token: '^2' | '^3') => {
+  const insertPostfixPower = (token: '^2' | '^3') => {
     setState((prev) => {
       const base = prev.justEvaluated && !prev.hasError ? prev.result : prev.expression;
       return {
@@ -223,12 +253,27 @@ export function useCalculator() {
     });
   };
 
+  /** xʸ は中置。4.62 xʸ 1.57 → 4.62^(1.57 で、次の演算子や `)` で閉じる */
   const insertPowerGroup = () => {
     setState((prev) => {
       const base = prev.justEvaluated && !prev.hasError ? prev.result : prev.expression;
       return {
         ...prev,
         expression: `${base || '0'}^(`,
+        justEvaluated: false,
+        hasError: false,
+      };
+    });
+  };
+
+  const insertDmsSeparator = () => {
+    setState((prev) => {
+      const base = prev.justEvaluated && !prev.hasError ? prev.result : prev.expression;
+      const separator = nextDmsSeparator(base);
+      if (!separator) return prev;
+      return {
+        ...prev,
+        expression: `${base}${separator}`,
         justEvaluated: false,
         hasError: false,
       };
@@ -259,12 +304,6 @@ export function useCalculator() {
           justEvaluated: false,
         }));
         break;
-      case 'toggle-dms':
-        setState((prev) => ({
-          ...prev,
-          panelMode: prev.panelMode === 'dms' ? 'none' : 'dms',
-        }));
-        break;
       case 'toggle-stats':
         setState((prev) => ({
           ...prev,
@@ -277,7 +316,6 @@ export function useCalculator() {
           angleMode: prev.angleMode,
           memory: prev.memory,
         }));
-        setDmsError(null);
         break;
       case 'del':
         setState((prev) => {
@@ -320,16 +358,33 @@ export function useCalculator() {
           return { ...prev, memory: prev.memory - value };
         });
         break;
-      case 'exp10':
+      case 'ans':
         setState((prev) => {
-          const base = prev.justEvaluated && !prev.hasError ? prev.result : prev.expression;
+          const token = prev.hasError ? '0' : prev.result;
+          const base = prev.justEvaluated && !prev.hasError ? '' : prev.expression;
           return {
             ...prev,
-            expression: `${base || '1'}*10^(`,
+            expression: appendWithImplicitMultiplication(base, token),
+            result: prev.justEvaluated ? '0' : prev.result,
             justEvaluated: false,
             hasError: false,
           };
         });
+        break;
+      case 'exp10':
+        // かっこを開かず、指数表記のリテラルとして入れる（3.46e-5）
+        setState((prev) => {
+          const base = prev.justEvaluated && !prev.hasError ? prev.result : prev.expression;
+          return {
+            ...prev,
+            expression: `${base || '1'}e`,
+            justEvaluated: false,
+            hasError: false,
+          };
+        });
+        break;
+      case 'dms':
+        insertDmsSeparator();
         break;
       case 'negate':
         setState((prev) => {
@@ -367,11 +422,19 @@ export function useCalculator() {
           break;
         }
         if (action === '^2' || action === '^3') {
-          insertPostfix(action);
+          insertPostfixPower(action);
           break;
         }
-        if (action === 'yroot(' || action === 'sqrt(' || action === 'cbrt(' || action === 'sin(' || action === 'cos(' || action === 'tan(' || action === 'asin(' || action === 'acos(' || action === 'atan(' || action === 'log(' || action === 'pow10(' || action === 'ln(' || action === 'exp(' || action === 'nPr(' || action === 'nCr(') {
-          insertFunction(action);
+        if (action === 'fact(') {
+          insertPostfixFunction('fact');
+          break;
+        }
+        if (INFIX_FUNCTIONS[action]) {
+          insertInfixFunction(INFIX_FUNCTIONS[action]);
+          break;
+        }
+        if (PREFIX_FUNCTIONS.has(action)) {
+          insertPrefixFunction(action);
           break;
         }
         insertText(action);
@@ -385,85 +448,11 @@ export function useCalculator() {
     setState((prev) => ({ ...prev, panelMode }));
   };
 
-  const setDmsField = (field: keyof DmsState, value: string) => {
-    if (/^-?\d*(\.\d*)?$/.test(value) || value === '' || value === '-') {
-      setDms((prev) => ({ ...prev, [field]: value }));
-      setDmsError(null);
-    }
-  };
-
-  const parseDmsToDegrees = () => {
-    const deg = Number(dms.degrees || '0');
-    const min = Number(dms.minutes || '0');
-    const sec = Number(dms.seconds || '0');
-
-    if (![deg, min, sec].every(Number.isFinite)) {
-      throw new Error('DMS入力が不正です');
-    }
-    if (min < 0 || min >= 60) throw new Error('分は0〜59で入力');
-    if (sec < 0 || sec >= 60) throw new Error('秒は0〜59.999で入力');
-
-    const sign = deg < 0 ? -1 : 1;
-    const absDeg = Math.abs(deg);
-    return sign * (absDeg + min / 60 + sec / 3600);
-  };
-
-  const applyDmsToExpression = () => {
-    try {
-      const value = parseDmsToDegrees();
-      setState((prev) => ({
-        ...prev,
-        expression: appendWithImplicitMultiplication(
-          prev.justEvaluated && !prev.hasError ? '' : prev.expression,
-          formatNumberLike(value)
-        ),
-        result: prev.justEvaluated ? '0' : prev.result,
-        panelMode: 'none',
-        justEvaluated: false,
-        hasError: false,
-      }));
-      setDmsError(null);
-    } catch (error) {
-      setDmsError(error instanceof Error ? error.message : 'DMSエラー');
-    }
-  };
-
-  const calculateDmsTrig = (kind: 'sin' | 'cos' | 'tan' | 'asin' | 'acos' | 'atan') => {
-    try {
-      const degreesValue = parseDmsToDegrees();
-      const scope = buildScope(state.angleMode, state.memory);
-      const fn = scope[kind] as (x: number) => number;
-      const value = fn(degreesValue);
-      const formatted = formatNumberLike(value);
-      if (formatted === 'Error') throw new Error('計算結果が無効です');
-      setState((prev) => ({
-        ...prev,
-        result: formatted,
-        hasError: false,
-        justEvaluated: true,
-      }));
-      setDmsError(null);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'DMS計算エラー';
-      setDmsError(message);
-      setState((prev) => ({ ...prev, result: message, hasError: true, justEvaluated: true }));
-    } finally {
-      if (state.shiftActive) {
-        setState((prev) => ({ ...prev, shiftActive: false }));
-      }
-    }
-  };
-
   return {
     state,
-    dms,
-    dmsError,
     displayExpression,
     parenBalance,
     pressButton,
     setPanelMode,
-    setDmsField,
-    applyDmsToExpression,
-    calculateDmsTrig,
   };
 }

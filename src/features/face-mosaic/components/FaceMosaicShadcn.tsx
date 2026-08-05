@@ -56,7 +56,7 @@ export default function FaceMosaicShadcn() {
   const [blurKernel, setBlurKernel] = useState(21);
 
   // Hooks
-  const { opencvStatus, statusText, opencvReadyRef, cascadeRef } = useOpenCV();
+  const { opencvStatus, statusText, opencvReadyRef, detectorRef, retry } = useOpenCV();
 
   const rectManager = useRectManager();
   const {
@@ -107,12 +107,12 @@ export default function FaceMosaicShadcn() {
     isDetecting,
     detectStatus,
     setDetectStatus,
-    minNeighbors,
-    setMinNeighbors,
-    scaleFactor,
-    setScaleFactor,
+    scoreThreshold,
+    setScoreThreshold,
+    nmsThreshold,
+    setNmsThreshold,
     handleDetect,
-  } = useFaceDetection(opencvReadyRef, imageLoadedRef, canvasRef, cascadeRef, onDetected);
+  } = useFaceDetection(opencvReadyRef, imageLoadedRef, canvasRef, detectorRef, onDetected);
 
   const { effectRef, mosaicSizeRef, blurKernelRef, renderOverlay } = useCanvasRenderer({
     canvasRef,
@@ -266,6 +266,25 @@ export default function FaceMosaicShadcn() {
             <LoaderCircle className="h-4 w-4 animate-spin" />
           )}
           <AlertTitle>{statusText}</AlertTitle>
+          {/*
+            読み込みに失敗しても道具ごと止めない。
+            自動検出（OpenCV.js 10.9MB）が要るのは「顔を自動で見つける」ところだけで、
+            手動で囲む・モザイク・ぼかし・黒塗り・保存は Canvas だけで動く。
+            学校のネットワークで大きいファイルが落ちてこないことは現実に起きるので、
+            そのとき何ができるのかを、その場に書く。
+          */}
+          {opencvStatus === "error" && (
+            <AlertDescription className="mt-2 text-sm">
+              <p>
+                自動で顔を見つける機能だけが使えません。
+                <strong>手動で囲めば、モザイク・ぼかし・黒塗りはこのまま使えます。</strong>
+                （画像を選んでから「手動描画モード」を押してください）
+              </p>
+              <Button variant="outline" size="sm" className="mt-3" onClick={retry}>
+                もう一度読み込む
+              </Button>
+            </AlertDescription>
+          )}
         </Alert>
 
         {/* Step 1: Image Selection */}
@@ -336,46 +355,46 @@ export default function FaceMosaicShadcn() {
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-5">
-            {/* minNeighbors */}
+            {/* scoreThreshold */}
             <div className="flex flex-col gap-2">
               <Label>
-                minNeighbors
+                scoreThreshold
                 <span className="ml-1 text-xs font-normal text-muted-foreground">（小さいほど多く検出・誤検出も増える）</span>
               </Label>
               <div className="flex items-center gap-3">
                 <Slider
-                  min={1}
-                  max={10}
-                  step={1}
-                  value={[minNeighbors]}
-                  onValueChange={(v) => setMinNeighbors(v[0])}
+                  min={0.1}
+                  max={0.9}
+                  step={0.05}
+                  value={[scoreThreshold]}
+                  onValueChange={(v) => setScoreThreshold(v[0])}
                   className="flex-1 [&_[data-slot=slider-track]]:bg-muted [&_[data-slot=slider-range]]:bg-primary [&_[data-slot=slider-thumb]]:border-primary"
                 />
                 <Badge variant="secondary" className="min-w-[2.5rem] justify-center tabular-nums text-primary">
-                  {minNeighbors}
+                  {scoreThreshold.toFixed(2)}
                 </Badge>
               </div>
             </div>
 
             <Separator className="bg-border" />
 
-            {/* scaleFactor */}
+            {/* nmsThreshold */}
             <div className="flex flex-col gap-2">
               <Label>
-                scaleFactor
-                <span className="ml-1 text-xs font-normal text-muted-foreground">（小さいほど精度高い・処理は遅くなる）</span>
+                nmsThreshold
+                <span className="ml-1 text-xs font-normal text-muted-foreground">（重なる検出枠を統合する強さ）</span>
               </Label>
               <div className="flex items-center gap-3">
                 <Slider
-                  min={1.05}
-                  max={2.0}
+                  min={0.1}
+                  max={0.9}
                   step={0.05}
-                  value={[scaleFactor]}
-                  onValueChange={(v) => setScaleFactor(v[0])}
+                  value={[nmsThreshold]}
+                  onValueChange={(v) => setNmsThreshold(v[0])}
                   className="flex-1 [&_[data-slot=slider-track]]:bg-muted [&_[data-slot=slider-range]]:bg-primary [&_[data-slot=slider-thumb]]:border-primary"
                 />
                 <Badge variant="secondary" className="min-w-[2.5rem] justify-center tabular-nums text-primary">
-                  {scaleFactor.toFixed(2)}
+                  {nmsThreshold.toFixed(2)}
                 </Badge>
               </div>
             </div>

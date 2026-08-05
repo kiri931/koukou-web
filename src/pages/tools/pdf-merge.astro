@@ -10,7 +10,7 @@ import '../../styles/global.css';
   description="PDFマージツール。複数のPDFファイルをブラウザ上で結合・並び替え。サーバー不要、ファイルはローカル処理されます。"
 >
   <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
-    <Header client:load currentPath="/tools/pdf-merge" />
+    <Header client:load currentPath={Astro.url.pathname} />
     <PdfMerge client:only="react" />
     <section class="mx-auto mt-8 max-w-5xl px-4 pb-12 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
       <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">PDFマージについて</h2>

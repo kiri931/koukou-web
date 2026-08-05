@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { buildHints, hasMoreHints } from '../../lib/hints';
+import { gradeCapReason, maxGrade } from '../../lib/gradeCap';
 import type { DatasetSummary, Grade, StudySessionState } from '../../types';
 
 type Props = {
@@ -14,6 +16,7 @@ type Props = {
   onStartSession: (datasetId: string) => Promise<void> | void;
   onSubmitAnswer: (text: string) => Promise<void> | void;
   onSubmitGrade: (grade: Grade) => Promise<void> | void;
+  onRevealHint: () => void;
   onResetSession: () => void;
 };
 
@@ -54,9 +57,20 @@ export default function StudyView(props: Props) {
     onStartSession,
     onSubmitAnswer,
     onSubmitGrade,
+    onRevealHint,
     onResetSession,
   } = props;
   const [answerText, setAnswerText] = useState('');
+
+  const hints = session.current ? buildHints(session.current.card, session.hintLevel) : [];
+  const hintLeft = session.current ? hasMoreHints(session.current.card, session.hintLevel) : false;
+  const capContext = { mode: session.mode, usedHint: session.usedHint, isCorrect: session.isCorrect };
+  const allowedGrade = maxGrade(capContext);
+  const capReason = gradeCapReason(capContext);
+  const availableGrades = gradeButtons.filter((item) => item.grade <= allowedGrade);
+  // 正解したのに押せるボタンが1つしか無いとき、それは採点ではなく「次へ進む」操作。
+  // 選ぶ余地が無いのに「Hard」と書いてあると、自己評価を求められているように読める
+  const isJustNext = Boolean(session.isCorrect) && availableGrades.length === 1;
 
   const currentDataset = datasets.find((d) => d.datasetId === (session.datasetId ?? selectedDatasetId));
   const accuracy = useMemo(() => {
@@ -64,6 +78,25 @@ export default function StudyView(props: Props) {
     if (total === 0) return null;
     return (session.correctCount / total) * 100;
   }, [session.correctCount, session.incorrectCount]);
+
+  // 選択モードは数字キーでも答えられる。クリック/タップだけでも完結するので、
+  // これはあくまで補助。入力欄にフォーカスがあるときは邪魔しない
+  useEffect(() => {
+    if (session.status !== 'question' || session.mode !== 'choice') return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.repeat || event.ctrlKey || event.metaKey || event.altKey) return;
+      const target = event.target as HTMLElement | null;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
+      const index = Number(event.key) - 1;
+      if (!Number.isInteger(index) || index < 0 || index >= session.choices.length) return;
+      event.preventDefault();
+      void onSubmitAnswer(session.choices[index]);
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [session.status, session.mode, session.choices, onSubmitAnswer]);
 
   useEffect(() => {
     if (session.status !== 'reviewing') return;
@@ -151,33 +184,78 @@ export default function StudyView(props: Props) {
                   {session.index + 1} / {session.total}
                 </CardDescription>
               </div>
-              <Badge variant="outline">QUESTION</Badge>
+              <Badge variant="outline">{session.mode === 'choice' ? '選んで答える' : '書いて答える'}</Badge>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {session.current.card.topic && <Badge variant="secondary">{session.current.card.topic}</Badge>}
+            {/* 出題中はカテゴリを出さない。ヒントの1段階目がカテゴリなので、
+                常時出しているとヒントを押す意味が無くなる（採点画面では出す） */}
             <div className="rounded-lg border p-4">
-              <p className="whitespace-pre-wrap text-lg leading-relaxed">{session.current.card.question}</p>
+              <p className="whitespace-pre-wrap text-lg leading-relaxed">{session.maskedQuestion}</p>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="anki-answer">回答</Label>
-              <Input
-                id="anki-answer"
-                value={answerText}
-                onChange={(event) => setAnswerText(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter') {
-                    event.preventDefault();
-                    void handleSubmit();
-                  }
-                }}
-                placeholder="短答を入力"
-                autoComplete="off"
-              />
-            </div>
-            <Button onClick={handleSubmit} disabled={!answerText.trim()} className="bg-green-600 text-white hover:bg-green-700">
-              送信
-            </Button>
+
+            {session.mode === 'choice' ? (
+              <div className="space-y-2">
+                <p className="text-sm text-slate-600 dark:text-slate-300">
+                  初めての問題です。あてはまるものを選んでください。
+                </p>
+                <ul className="space-y-2">
+                  {session.choices.map((choice, index) => (
+                    <li key={choice}>
+                      <Button
+                        variant="outline"
+                        className="h-auto w-full justify-start whitespace-normal py-3 text-left text-base"
+                        onClick={() => onSubmitAnswer(choice)}
+                      >
+                        <span className="mr-3 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded border font-mono text-sm">
+                          {index + 1}
+                        </span>
+                        <span>{choice}</span>
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <>
+                {hints.length > 0 && (
+                  <div className="space-y-1 rounded-lg border bg-slate-50 p-4 dark:bg-slate-900/40" aria-live="polite">
+                    {hints.map((hint) => (
+                      <p key={hint.label} className="text-sm">
+                        <span className="text-slate-500">{hint.label}: </span>
+                        <span className="font-medium">{hint.value}</span>
+                      </p>
+                    ))}
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <Label htmlFor="anki-answer">回答</Label>
+                  <Input
+                    id="anki-answer"
+                    value={answerText}
+                    onChange={(event) => setAnswerText(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        event.preventDefault();
+                        void handleSubmit();
+                      }
+                    }}
+                    placeholder="短答を入力"
+                    autoComplete="off"
+                  />
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button onClick={handleSubmit} disabled={!answerText.trim()} className="bg-green-600 text-white hover:bg-green-700">
+                    送信
+                  </Button>
+                  {hintLeft && (
+                    <Button variant="outline" onClick={onRevealHint}>
+                      ヒントを見る（{hints.length + 1}つ目）
+                    </Button>
+                  )}
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
       )}
@@ -192,16 +270,24 @@ export default function StudyView(props: Props) {
                 {session.isCorrect ? '正解' : '不正解'}
               </Badge>
             </div>
-            <CardDescription>数字キー 1/2/3/4 でも採点できます。</CardDescription>
+            <CardDescription>
+              {isJustNext ? '数字キー 2 でも次に進めます。' : '数字キー 1/2/3/4 でも採点できます。'}
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-3 md:grid-cols-2">
               <div className="rounded-lg border p-4">
                 <p className="mb-1 text-sm text-slate-500">問題</p>
+                {/* 答え合わせの場では伏せない。元の問題文を出す */}
                 <p className="whitespace-pre-wrap">{session.current.card.question}</p>
+                {session.current.card.topic && (
+                  <p className="mt-2 text-sm text-slate-500">カテゴリ: {session.current.card.topic}</p>
+                )}
               </div>
               <div className="rounded-lg border p-4">
-                <p className="mb-1 text-sm text-slate-500">あなたの回答</p>
+                <p className="mb-1 text-sm text-slate-500">
+                  {session.mode === 'choice' ? 'あなたが選んだもの' : 'あなたの回答'}
+                </p>
                 <p className="whitespace-pre-wrap">{session.userAnswer || '（未入力）'}</p>
                 <p className="mt-2 text-sm text-slate-500">正答例: {session.current.card.answers.join(' / ')}</p>
                 {session.matchedAnswer && <p className="mt-1 text-sm text-green-600">一致: {session.matchedAnswer}</p>}
@@ -213,15 +299,20 @@ export default function StudyView(props: Props) {
                 <p className="whitespace-pre-wrap">{session.current.card.explanation}</p>
               </div>
             )}
+            {capReason && <p className="text-sm text-slate-600 dark:text-slate-300">{capReason}</p>}
             <div className="flex flex-wrap gap-2">
               {!session.isCorrect && (
                 <Button variant="outline" onClick={() => onSubmitGrade(1)}>
                   <span className="inline-flex items-center gap-2"><Kbd>1</Kbd> Unknown</span>
                 </Button>
               )}
-              {gradeButtons.map((item) => (
+              {/* 選んで当てただけ・ヒントを見て書けただけのカードを Easy にすると
+                  次回が数週間先になってしまうので、押せる上限を下げる */}
+              {availableGrades.map((item) => (
                 <Button key={item.grade} className={item.className} onClick={() => onSubmitGrade(item.grade)}>
-                  <span className="inline-flex items-center gap-2"><Kbd>{item.keyHint}</Kbd> {item.label}</span>
+                  <span className="inline-flex items-center gap-2">
+                    <Kbd>{item.keyHint}</Kbd> {isJustNext ? '次へ' : item.label}
+                  </span>
                 </Button>
               ))}
             </div>

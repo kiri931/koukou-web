@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDB } from './useDB';
 import { useStudySession } from './useStudySession';
+import { useDeckLink } from './useDeckLink';
 import type { AppSettings, Card, DashboardStats, DatasetSummary } from '../types';
 import { DEFAULT_SETTINGS } from '../types';
 
@@ -79,6 +80,10 @@ export function useAnki() {
 
   const study = useStudySession(db, settings, refreshStats);
 
+  // /tools/anki/?import=glossary で来たときに用語集を取り込む。
+  // syncDataset を渡す(importDataset ではない)。読み直しで復習の履歴を消さないため
+  const deckLink = useDeckLink(db.ready, db.syncDataset, refreshAll);
+
   const importDataset = async (rawText: string) => {
     await db.importDataset(rawText);
     await refreshAll();
@@ -138,6 +143,7 @@ export function useAnki() {
     startSession: study.startSession,
     submitAnswer: study.submitAnswer,
     submitGrade: study.submitGrade,
+    revealHint: study.revealHint,
     resetSession: study.resetSession,
     importDataset,
     deleteDataset,
@@ -148,5 +154,6 @@ export function useAnki() {
     importBackup,
     updateSettings,
     refreshAll,
+    deckLink,
   };
 }

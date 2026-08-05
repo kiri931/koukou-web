@@ -28,6 +28,8 @@ type DBApi = {
   error: string | null;
   listDatasets: () => Promise<DatasetSummary[]>;
   importDataset: (input: Dataset | string) => Promise<DatasetSummary>;
+  /** 復習の進み具合を残したまま内容だけ入れ替える。詳しくは実装のコメント */
+  syncDataset: (input: Dataset | string) => Promise<DatasetSummary>;
   deleteDataset: (datasetId: string) => Promise<void>;
   getCardsByDataset: (datasetId: string) => Promise<Card[]>;
   upsertCard: (datasetId: string, card: Card) => Promise<void>;
@@ -277,6 +279,58 @@ export function useDB(): DBApi {
         };
         cardsStore.put(stored);
       }
+
+      await txDone(tx);
+      return summary;
+    },
+
+    // importDataset は「まっさらに入れ直す」ので cardState も reviews も消える。
+    // 用語集のような**あとから語が増えていく**データを読み直すときにそれを使うと、
+    // 読み直すたびに生徒の復習の進み具合(FSRSの安定度・難易度・履歴)が全部飛ぶ。
+    //
+    // syncDataset は中身だけ入れ替える:
+    //   - 今回のデータにあるカード      → 上書き(進み具合はそのまま)
+    //   - 今回のデータから消えたカード  → カードと一緒に進み具合も消す
+    //   - reviews / confusions          → 触らない
+    syncDataset: async (input) => {
+      const dataset = coerceDataset(input);
+      const db = await getDb();
+      const tx = db.transaction(['datasets', 'cards', 'cardState'], 'readwrite');
+      const datasetsStore = tx.objectStore('datasets');
+      const cardsStore = tx.objectStore('cards');
+      const cardStateStore = tx.objectStore('cardState');
+
+      const incomingIds = new Set(dataset.cards.map((card) => card.id));
+
+      const existingCards = await getAllByIndex<StoredCard>(cardsStore, 'datasetId', dataset.datasetId);
+      for (const card of existingCards) {
+        if (!incomingIds.has(card.id)) cardsStore.delete(card.dbKey);
+      }
+
+      const existingStates = await getAllByIndex<StoredCardState>(cardStateStore, 'datasetId', dataset.datasetId);
+      for (const state of existingStates) {
+        if (!incomingIds.has(state.cardId)) cardStateStore.delete(state.id);
+      }
+
+      for (const card of dataset.cards) {
+        const stored: StoredCard = {
+          ...card,
+          datasetId: dataset.datasetId,
+          dbKey: makeCardKey(dataset.datasetId, card.id),
+        };
+        cardsStore.put(stored);
+      }
+
+      const summary: DatasetSummary = {
+        schema: dataset.schema,
+        datasetId: dataset.datasetId,
+        title: dataset.title,
+        description: dataset.description ?? '',
+        tags: dataset.tags ?? [],
+        cardCount: dataset.cards.length,
+        updatedAt: Date.now(),
+      };
+      datasetsStore.put(summary);
 
       await txDone(tx);
       return summary;

@@ -1,44 +1,26 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { sections } from "@/lib/site-links";
 
 interface HeaderProps {
   currentPath?: string;
 }
 
-const toolMenuSections = [
-  {
-    label: "STUDY",
-    items: [
-      { href: "/tools/typing-japanese", label: "タイピング練習" },
-      { href: "/tools/scientific-calculator", label: "関数電卓" },
-      { href: "/tools/calc-drill", label: "計算技術検定ドリル" },
-      { href: "/study/equation-transformation/", label: "等式の変形テスト" },
-      { href: "https://koukou-jouhou.org/presentation", label: "プレゼンガイド" },
-      { href: "https://koukou-jouhou.org/pdf-viewer/", label: "PDF参照モード" },
-    ],
-  },
-  {
-    label: "TOOLS",
-    items: [
-      { href: "/tools/face-mosaic", label: "顔モザイクツール" },
-      { href: "/tools/pdf-merge", label: "PDFマージ" },
-      { href: "/tools/time-schedule", label: "タイムスケジューラ" },
-    ],
-  },
-  {
-    label: "SUPPORT",
-    items: [
-      { href: "https://koukou-jouhou.org/sekigae/", label: "席替えアプリ サポート" },
-      { href: "/support/feature-request", label: "機能リクエスト" },
-    ],
-  },
-] as const;
+// ドロップダウンの中身は src/lib/site-links.ts から作る。
+// 以前はここに独自の一覧を持っていて、トップページのカードとずれていた。
+// 実際、覚える君・可視化スタディ・シューティング・大判プリント・所見作成の
+// 5つがメニューに出ていなかった。
+const toolMenuSections = sections;
+
 
 const navItems = [
-  { href: "/", label: "Home", match: (path: string) => path === "/" },
+  { href: "/", label: "ホーム", dropdown: false, match: (path: string) => path === "/" },
   {
     href: "/tools/",
-    label: "Tools",
+    label: "ツール",
+    // ドロップダウンかどうかはこのフラグで決める。
+    // 以前は label === "Tools" で判定していたので、表示名を日本語にすると壊れた
+    dropdown: true,
     match: (path: string) =>
       path.startsWith("/tools") ||
       path.startsWith("/study") ||
@@ -71,7 +53,7 @@ function Header({ currentPath = "/" }: HeaderProps) {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/85 backdrop-blur-md dark:border-slate-700/50 dark:bg-slate-900/80">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-300/80 bg-white/85 backdrop-blur-md dark:border-slate-700/50 dark:bg-slate-900/80">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
         <a
           href="/"
@@ -94,7 +76,7 @@ function Header({ currentPath = "/" }: HeaderProps) {
         <div className="flex items-center gap-2">
           <nav className="flex items-center gap-1">
             {navItems.map((item) =>
-              item.label === "Tools" ? (
+              item.dropdown ? (
                 <div key={item.href} className="relative" ref={dropdownRef}>
                   <button
                     type="button"
@@ -125,11 +107,11 @@ function Header({ currentPath = "/" }: HeaderProps) {
 
                   {toolsOpen && (
                     <div className="absolute left-0 top-full z-50 pt-2">
-                      <div className="w-[min(92vw,24rem)] rounded-xl border border-slate-200 bg-white p-4 shadow-xl shadow-slate-900/10 dark:border-slate-700 dark:bg-slate-900">
+                      <div className="w-[min(92vw,24rem)] rounded-xl border border-slate-300 bg-white p-4 shadow-xl shadow-slate-900/10 dark:border-slate-700 dark:bg-slate-900">
                         <div className="grid gap-4 grid-cols-1">
                           {toolMenuSections.map((section) => (
                             <div key={section.label}>
-                              <p className="mb-2 text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400">
+                              <p className="mb-2 text-sm font-semibold text-slate-600 dark:text-slate-400">
                                 {section.label}
                               </p>
                               <div className="space-y-1">

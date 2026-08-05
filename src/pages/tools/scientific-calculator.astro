@@ -7,10 +7,10 @@ import '../../styles/global.css';
 
 <Layout
   title="関数電卓 - ツール"
-  description="日本のビジネス計算実務検定向けに必要な関数・組合せ・統計処理を備えた関数電卓。角度モード切替、DMS入力、統計パネルをブラウザだけで利用できます。"
+  description="検定の練習に使える関数電卓。三角関数・対数・nPr/nCr・統計処理、角度モードの切り替え、度分秒の入力に対応し、ブラウザだけで動きます。"
 >
   <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
-    <Header client:load currentPath="/tools/scientific-calculator" />
+    <Header client:load currentPath={Astro.url.pathname} />
     <h1 class="sr-only">関数電卓</h1>
     <ScientificCalculator client:only="react" />
     <section class="mx-auto mt-8 max-w-5xl px-4 pb-12 text-sm leading-relaxed text-slate-700 dark:text-slate-300">

@@ -11,6 +11,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
 import { questions as questionBank } from "../data/questions";
+import { compareAnswers } from "../lib/equivalence";
 import type { RenderedQuestion } from "../types";
 import MathLiveInput from "./MathLiveInput";
 import PrintSheet from "./PrintSheet";
@@ -212,6 +213,43 @@ function normalizeAnswer(s: string) {
   return next;
 }
 
+interface InputVerdict {
+  correct: boolean;
+  /** 不正解の理由が「書き方」にあるときだけ、生徒に伝える一言 */
+  note?: string;
+}
+
+/**
+ * 記述式の1問を判定する。
+ * 式として読めたときは数学的に等しいかで決め、読めなかったときだけ
+ * 従来の文字列一致（normalizeAnswer）に任せる。
+ */
+function judgeInputAnswer(given: string, answer: string): InputVerdict {
+  if (!given.trim()) return { correct: false };
+
+  const result = compareAnswers(given, answer);
+  switch (result.kind) {
+    case "equivalent":
+      return { correct: true };
+    case "different":
+      return { correct: false };
+    case "wrong-subject":
+      return {
+        correct: false,
+        note: `${result.expected} について解いた形（${result.expected}= …）で答えてください。`,
+      };
+    case "unparsable":
+    default: {
+      const correct = normalizeAnswer(given) === normalizeAnswer(answer);
+      if (correct) return { correct: true };
+      if (!given.includes("=")) {
+        return { correct: false, note: "求める文字から「= 」で続けて書いてください。" };
+      }
+      return { correct: false };
+    }
+  }
+}
+
 export default function EquationTransformation() {
   type QuizMode = "choice" | "input";
   const [questionCountInput, setQuestionCountInput] = useState(String(DEFAULT_COUNT));
@@ -247,7 +285,7 @@ export default function EquationTransformation() {
       if (mode === "choice") {
         if (given === item.answer) correct += 1;
       } else {
-        if (normalizeAnswer(given) === normalizeAnswer(item.answer)) correct += 1;
+        if (judgeInputAnswer(given, item.answer).correct) correct += 1;
       }
     }
     setScore(correct);
@@ -286,9 +324,7 @@ export default function EquationTransformation() {
               <div>
                 <CardTitle className="text-2xl">等式の変形テスト</CardTitle>
                 <CardDescription>問題バンクからランダム出題（既定10問）</CardDescription>
-              </div>
-              <Badge className="bg-emerald-600 text-white hover:bg-emerald-600">Study</Badge>
-            </div>
+              </div>            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="no-print">
@@ -325,6 +361,12 @@ export default function EquationTransformation() {
                   <ul className="mt-1 space-y-1 text-sm text-slate-700 dark:text-slate-300">
                     <li>記述式では数式入力欄をタップ/クリックするとキーボードが表示されます</li>
                     <li>分数（a/b ボタン）や変数（x, y 等）を選んで入力してください</li>
+                    <li>
+                      求める文字から <span className="font-mono">x=</span> のように書いてください
+                    </li>
+                    <li>
+                      値が同じなら正解です。項の順序を変えた形・展開した形・通分した形・小数で書いた形も正解になります
+                    </li>
                   </ul>
                 </div>
               )}
@@ -376,64 +418,16 @@ export default function EquationTransformation() {
           </CardContent>
         </Card>
 
-        <Card className="mb-6 border-slate-200 bg-white/95 dark:border-slate-800 dark:bg-slate-900/70">
-          <CardHeader>
-            <CardTitle className="text-xl">使い方</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-5 text-sm text-slate-700 dark:text-slate-300">
-            <div>
-              <ol className="list-decimal space-y-1 pl-5">
-                <li>出題数と方式（択一式 / 記述式）を選ぶ</li>
-                <li>出題される問題に解答する（記述式は数式入力キーボード対応）</li>
-                <li>「採点する」で正答率と解説を確認する</li>
-                <li>「出題を更新」でランダムに新しい問題へ切り替え、「印刷」でA4プリントとして配布する</li>
-              </ol>
-            </div>
-
-            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/50">
-              <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
-                この単元とのつながり
-              </h2>
-              <p>
-                等式の変形は、プログラミングでの変数への代入や条件式の整理、シミュレーションのパラメータ計算など、
-                情報I・情報IIでプログラムを書く際の土台になります。検定対策の計算問題にも直結します。
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
-                よくある質問
-              </h2>
-              <div className="space-y-3">
-                <div>
-                  <p className="font-medium text-slate-900 dark:text-slate-100">Q. 採点後にもう一度同じ問題を解き直せますか?</p>
-                  <p>「やり直し」ボタンから同じ問題セットに再挑戦できます。</p>
-                </div>
-                <div>
-                  <p className="font-medium text-slate-900 dark:text-slate-100">Q. 印刷して配布に使えますか?</p>
-                  <p>
-                    「印刷」ボタンからA4サイズ想定でレイアウトされたプリントを出力できます。小テストや宿題プリントとして利用できます。
-                  </p>
-                </div>
-                <div>
-                  <p className="font-medium text-slate-900 dark:text-slate-100">Q. 記述式と択一式はどちらがおすすめですか?</p>
-                  <p>
-                    初めての単元は択一式で概念をつかみ、慣れてきたら記述式で計算力を鍛える、という使い分けがおすすめです。
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
         <section className="space-y-4">
           {items.map((item, index) => {
             const selected = answers[item.id];
+            const verdict =
+              graded && mode === "input" && selected
+                ? judgeInputAnswer(selected, item.answer)
+                : null;
             const isCorrect =
               graded &&
-              (mode === "choice"
-                ? selected === item.answer
-                : !!selected && normalizeAnswer(selected) === normalizeAnswer(item.answer));
+              (mode === "choice" ? selected === item.answer : !!verdict && verdict.correct);
 
             return (
               <Card
@@ -519,6 +513,9 @@ export default function EquationTransformation() {
                           あなたの解答: <MathChoice text={selected} />
                         </p>
                       )}
+                      {verdict?.note && (
+                        <p className="text-rose-700 dark:text-rose-300">{verdict.note}</p>
+                      )}
                       <p className="text-rose-700 dark:text-rose-300">
                         正解: <MathChoice text={item.answer} />
                       </p>
@@ -557,6 +554,69 @@ export default function EquationTransformation() {
             );
           })}
         </section>
+
+        {/* 解き終わる場所にも採点を置く。上のボタン群は問題を解ききると画面外に出る */}
+        <div className="mb-6 mt-4 flex flex-wrap gap-2 print:hidden">
+          <Button type="button" onClick={gradeAnswers}>
+            採点する
+          </Button>
+          <Button type="button" variant="outline" onClick={resetAnswers}>
+            やり直し
+          </Button>
+          <Button type="button" variant="outline" onClick={reloadQuestions}>
+            別の問題に変える
+          </Button>
+        </div>
+
+        <Card className="mb-6 border-slate-200 bg-white/95 dark:border-slate-800 dark:bg-slate-900/70">
+          <CardHeader>
+            <CardTitle className="text-xl">使い方</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-5 text-sm text-slate-700 dark:text-slate-300">
+            <div>
+              <ol className="list-decimal space-y-1 pl-5">
+                <li>出題数と方式（択一式 / 記述式）を選ぶ</li>
+                <li>出題される問題に解答する（記述式は数式入力キーボード対応）</li>
+                <li>「採点する」で正答率と解説を確認する</li>
+                <li>「出題を更新」でランダムに新しい問題へ切り替え、「印刷」でA4プリントとして配布する</li>
+              </ol>
+            </div>
+
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/50">
+              <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+                この単元とのつながり
+              </h2>
+              <p>
+                等式の変形は、プログラミングでの変数への代入や条件式の整理、シミュレーションのパラメータ計算など、
+                情報I・情報IIでプログラムを書く際の土台になります。検定対策の計算問題にも直結します。
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+                よくある質問
+              </h2>
+              <div className="space-y-3">
+                <div>
+                  <p className="font-medium text-slate-900 dark:text-slate-100">Q. 採点後にもう一度同じ問題を解き直せますか?</p>
+                  <p>「やり直し」ボタンから同じ問題セットに再挑戦できます。</p>
+                </div>
+                <div>
+                  <p className="font-medium text-slate-900 dark:text-slate-100">Q. 印刷して配布に使えますか?</p>
+                  <p>
+                    「印刷」ボタンからA4サイズ想定でレイアウトされたプリントを出力できます。小テストや宿題プリントとして利用できます。
+                  </p>
+                </div>
+                <div>
+                  <p className="font-medium text-slate-900 dark:text-slate-100">Q. 記述式と択一式はどちらがおすすめですか?</p>
+                  <p>
+                    初めての単元は択一式で概念をつかみ、慣れてきたら記述式で計算力を鍛える、という使い分けがおすすめです。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <p className="print-footer print-student-info hidden">
           等式の変形テスト ／ 氏名：__________________ ／ 学年：____ 組：____ 番：____

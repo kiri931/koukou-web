@@ -2,6 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type { DatasetSummary } from '../../types';
+import FsrsExplainer from '../FsrsExplainer';
 
 type Props = {
   datasets: DatasetSummary[];
@@ -10,31 +11,87 @@ type Props = {
   onSelectDataset: (datasetId: string) => void;
   onStartSession: (datasetId: string) => Promise<void> | void;
   onMoveToStudy: () => void;
+  onMoveToData: () => void;
 };
 
-export default function HomeView(props: Props) {
-  const { datasets, dueByDataset, selectedDatasetId, onSelectDataset, onStartSession, onMoveToStudy } = props;
+/** 1問あたりおよそ20秒として、かかる時間の見当を出す */
+function estimateMinutes(count: number): number {
+  return Math.max(1, Math.round((count * 20) / 60));
+}
 
+export default function HomeView(props: Props) {
+  const { datasets, dueByDataset, selectedDatasetId, onSelectDataset, onStartSession, onMoveToStudy, onMoveToData } =
+    props;
+
+  // はじめて開いた人が最初に見る画面。
+  // **最初の一手を1つに絞る。**「データセットJSONをインポート」と言われても、
+  // 何を用意すればよいのか分からない。用語集68語がそのまま入るので、それを既定にする。
+  // （画面くらべ 20260801-anki-start / 2026-08-01 採用）
   if (datasets.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>ホーム</CardTitle>
-          <CardDescription>まずはデータ管理タブからデータセットJSONをインポートしてください。</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button onClick={onMoveToStudy} variant="outline">学習タブへ</Button>
-        </CardContent>
-      </Card>
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>まだ問題が入っていません</CardTitle>
+            <CardDescription>
+              情報I用語集の68語をそのまま入れて、今日から始められます。
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-2">
+            <Button asChild className="min-h-11 bg-green-600 text-white hover:bg-green-700">
+              <a href="/tools/anki/?import=glossary">情報I用語集（68語）で始める</a>
+            </Button>
+            <Button variant="outline" className="min-h-11" onClick={onMoveToData}>
+              自分で作った問題を入れる
+            </Button>
+          </CardContent>
+        </Card>
+        <FsrsExplainer />
+      </div>
     );
   }
 
+  const totalDue = datasets.reduce((sum, dataset) => sum + (dueByDataset[dataset.datasetId] ?? 0), 0);
+  // 「選択中」が無いときは、期限切れがいちばん多い問題集から始める
+  const suggestedId =
+    selectedDatasetId ??
+    datasets.reduce(
+      (best, dataset) =>
+        (dueByDataset[dataset.datasetId] ?? 0) > (dueByDataset[best.datasetId] ?? 0) ? dataset : best,
+      datasets[0]!,
+    ).datasetId;
+
   return (
     <div className="space-y-4">
+      {/* 続けている人が最初に見たいのは「今日ぶんが何問で、どれくらいかかるか」。
+          問題集を選ぶところから始めさせない */}
       <Card>
         <CardHeader>
-          <CardTitle>クイックスタート</CardTitle>
-          <CardDescription>データセットを選んで、期限切れカードから学習を開始します。</CardDescription>
+          <CardTitle>今日やること</CardTitle>
+          <CardDescription>
+            {totalDue > 0
+              ? `復習するのは ${totalDue}問（およそ${estimateMinutes(totalDue)}分）です。`
+              : '今日ぶんの復習は終わっています。新しく覚えるぶんを進められます。'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button
+            className="min-h-11 bg-green-600 text-white hover:bg-green-700"
+            onClick={async () => {
+              onSelectDataset(suggestedId);
+              await onStartSession(suggestedId);
+              onMoveToStudy();
+            }}
+          >
+            はじめる
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>問題集を選んで始める</CardTitle>
+          <CardDescription>別の問題集をやりたいときはこちらから。</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           {datasets.map((dataset) => {
@@ -73,12 +130,13 @@ export default function HomeView(props: Props) {
                   <CardTitle className="text-lg">{dataset.title}</CardTitle>
                   <CardDescription>{dataset.description || '説明なし'}</CardDescription>
                 </div>
-                <Badge variant="secondary">due {dueByDataset[dataset.datasetId] ?? 0}</Badge>
+                {/* 英語のままだと、生徒には「due」も「cards」も意味が伝わらない */}
+                <Badge variant="secondary">今日 {dueByDataset[dataset.datasetId] ?? 0}問</Badge>
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex flex-wrap gap-2">
-                <Badge variant="outline">{dataset.cardCount} cards</Badge>
+                <Badge variant="outline">全{dataset.cardCount}問</Badge>
                 {(dataset.tags ?? []).slice(0, 3).map((tag) => (
                   <Badge key={tag} variant="outline">#{tag}</Badge>
                 ))}
@@ -100,6 +158,8 @@ export default function HomeView(props: Props) {
           </Card>
         ))}
       </div>
+
+      <FsrsExplainer />
     </div>
   );
 }

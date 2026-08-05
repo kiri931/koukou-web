@@ -14,7 +14,7 @@ export default function DashboardView({ stats }: Props) {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">期限切れ</CardTitle>
-            <CardDescription>今すぐ学習対象</CardDescription>
+            <CardDescription>そろそろ忘れるころ。ここから復習します</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold tabular-nums">{stats.due.overdue}</p>
@@ -24,7 +24,7 @@ export default function DashboardView({ stats }: Props) {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">本日分</CardTitle>
-            <CardDescription>今日中に復習したい件数</CardDescription>
+            <CardDescription>今日中に出しておきたい枚数</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold tabular-nums">{stats.due.today}</p>
@@ -34,7 +34,7 @@ export default function DashboardView({ stats }: Props) {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">平均保持率</CardTitle>
-            <CardDescription>FSRS 推定</CardDescription>
+            <CardDescription>いま思い出せる見込み。低いほど復習どき</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold tabular-nums">{avgPercent == null ? '-' : `${avgPercent}%`}</p>

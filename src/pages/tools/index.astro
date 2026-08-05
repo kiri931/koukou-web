@@ -1,133 +1,154 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { Header } from '../../components/Header';
+import { LinkCard } from '../../components/LinkCard';
+import { SectionHeading } from '../../components/SectionHeading';
+import { sections, audienceOf, sendsDataOf } from '../../lib/site-links';
 import '../../styles/global.css';
+
+// カードは src/lib/site-links.ts から作る。
+// 以前はこのページが独自にカードを手書きしていて、**16個あるツールのうち
+// 6個しか出ていなかった**(覚える君・関数電卓・PDFマージ・計算技術検定ドリル・
+// 等式の変形テスト・大判プリント・可視化スタディ・シューティング・所見作成・
+// 機能リクエストが抜けていた)。一覧の出どころを1つにすれば、この手の
+// 取りこぼしは起きなくなる。
+//
+// フッターもこのページだけ独自に持っていて、Layout のフッターと二重に
+// 出ていた(英文 "All processing is done locally in your browser." のもの)。
+//
+// 2026-07-31: site-links.ts の中身をメインサイトの一覧と同じにした。
+// このページからも作戦盤・フローチャート・かんじチェックなど、
+// 独立ワーカーで動くツールまで辿れる。
 ---
 
 <Layout
-  title="ツール一覧 - 高校情報"
-  description="高校生向けWebツール一覧。すべてブラウザ上で動作し、個人情報のサーバー送信なし。顔モザイク・PDFマージ・タイピング練習・席替えアプリなど。"
+	title="ツール一覧 - 高校情報"
+	description="高校生向けWebツール一覧。すべてブラウザ上で動作し、個人情報のサーバー送信なし。顔モザイク・PDFマージ・タイピング練習・席替えアプリなど。"
 >
-    <div class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
-      <Header client:load currentPath="/tools" />
+	<div class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+		<Header client:load currentPath={Astro.url.pathname} />
 
-      <main class="mx-auto max-w-5xl px-4 py-16">
-        <section class="mb-10">
-          <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Tools</h1>
-          <p class="mt-2 text-slate-600 dark:text-slate-400">ブラウザ上で完結するWebツール集。</p>
-        </section>
+		<main class="mx-auto max-w-5xl px-4 py-12 sm:py-16">
+			<section class="mb-10">
+				<h1 class="text-3xl font-bold tracking-tight sm:text-4xl">ツール一覧</h1>
+				<p class="mt-4 text-base leading-[1.8] text-slate-600 dark:text-slate-400">
+					ほとんどのツールはブラウザの中だけで動き、入力した内容や画像を送信することはありません。
+					<strong class="font-semibold text-slate-900 dark:text-slate-100">「共有・送信あり」</strong>
+					の印が付いたものだけ、共有リンクを作ったり内容を送ったりしたときに通信します。
+				</p>
+			</section>
 
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <!-- 席替えアプリ サポート -->
-          <a
-            href="https://koukou-jouhou.org/sekigae/"
-            class="group rounded-xl border border-slate-200 bg-white p-6 transition-all hover:border-emerald-500/50 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900/50 dark:hover:bg-slate-900"
-          >
-            <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 transition-colors group-hover:bg-emerald-500/20">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
-                <path d="M4 20h16" />
-                <path d="M7 20V8h10v12" />
-                <path d="M9 8V4h6v4" />
-                <path d="M9 12h6" />
-              </svg>
-            </div>
-            <h3 class="mb-1 font-semibold text-slate-900 group-hover:text-slate-950 dark:text-slate-100 dark:group-hover:text-white">席替えアプリ サポート</h3>
-            <p class="text-sm text-slate-600 dark:text-slate-400">名簿作成から座席配置、席替え、共有までの使い方とFAQを掲載。</p>
-          </a>
+			{/* 絞り込み。JS が動かないときは出さない（押しても動かないボタンを出さない）。
+			    その場合も全件が分類ごとに並ぶので、一覧としては成立している。 */}
+			<nav data-audience-filter hidden aria-label="使う人でしぼり込む" class="mb-8">
+				<p class="mb-3 text-base font-semibold text-slate-900 dark:text-slate-100">
+					どなたが使いますか
+				</p>
+				<ul class="flex flex-wrap gap-2">
+					{[
+						{ value: 'all', label: 'すべて' },
+						{ value: 'student', label: '生徒が使う' },
+						{ value: 'teacher', label: '先生が使う' },
+					].map((option) => (
+						<li>
+							<button
+								type="button"
+								data-audience={option.value}
+								aria-pressed={option.value === 'all'}
+								class="audience-tab min-h-11 rounded-full border border-slate-300 px-4 text-sm font-semibold dark:border-slate-700"
+							>
+								{option.label}
+							</button>
+						</li>
+					))}
+				</ul>
+				<p role="status" aria-live="polite" class="sr-only" data-audience-status />
+			</nav>
 
-          <!-- 顔モザイクツール -->
-          <a
-            href="/tools/face-mosaic"
-            class="group rounded-xl border border-slate-200 bg-white p-6 transition-all hover:border-indigo-500/50 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900/50 dark:hover:bg-slate-900"
-          >
-            <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400 transition-colors group-hover:bg-indigo-500/20">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
-                <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-                <circle cx="9" cy="9" r="2" />
-                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-              </svg>
-            </div>
-            <h3 class="mb-1 font-semibold text-slate-900 group-hover:text-slate-950 dark:text-slate-100 dark:group-hover:text-white">顔モザイクツール</h3>
-            <p class="text-sm text-slate-600 dark:text-slate-400">画像内の顔を自動検出し、モザイク・ぼかし・黒塗りで加工できます。</p>
-          </a>
-
-          <!-- タイムスケジューラ -->
-          <a
-            href="/tools/time-schedule"
-            class="group rounded-xl border border-slate-200 bg-white p-6 transition-all hover:border-purple-500/50 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900/50 dark:hover:bg-slate-900"
-          >
-            <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/10 text-purple-400 transition-colors group-hover:bg-purple-500/20">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
-            </div>
-            <h3 class="mb-1 font-semibold text-slate-900 group-hover:text-slate-950 dark:text-slate-100 dark:group-hover:text-white">タイムスケジューラ</h3>
-            <p class="text-sm text-slate-600 dark:text-slate-400">円形クロックでタスクを時間配分し、タイマーで進行を管理できます。</p>
-          </a>
-
-          <!-- プレゼンガイド -->
-          <a
-            href="https://koukou-jouhou.org/presentation"
-            class="group rounded-xl border border-slate-200 bg-white p-6 transition-all hover:border-amber-500/50 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900/50 dark:hover:bg-slate-900"
-          >
-            <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400 transition-colors group-hover:bg-amber-500/20">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
-                <path d="M3 4h18v12H3z" />
-                <path d="M8 20h8" />
-                <path d="M12 16v4" />
-                <path d="M7 8h10" />
-                <path d="M7 11h6" />
-              </svg>
-            </div>
-            <h3 class="mb-1 font-semibold text-slate-900 group-hover:text-slate-950 dark:text-slate-100 dark:group-hover:text-white">プレゼンガイド</h3>
-            <p class="text-sm text-slate-600 dark:text-slate-400">タイマー・評価ルーブリック・印刷フォームをまとめた授業用ツール。</p>
-          </a>
-
-          <!-- タイピング練習 -->
-          <a
-            href="/tools/typing-japanese"
-            class="group rounded-xl border border-slate-200 bg-white p-6 transition-all hover:border-sky-500/50 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900/50 dark:hover:bg-slate-900"
-          >
-            <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-sky-500/10 text-sky-400 transition-colors group-hover:bg-sky-500/20">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
-                <rect width="20" height="16" x="2" y="4" rx="2" />
-                <path d="M6 8h.01" />
-                <path d="M10 8h.01" />
-                <path d="M14 8h.01" />
-                <path d="M18 8h.01" />
-                <path d="M5 12h.01" />
-                <path d="M9 12h.01" />
-                <path d="M13 12h.01" />
-                <path d="M17 12h.01" />
-                <path d="M6 16h12" />
-              </svg>
-            </div>
-            <h3 class="mb-1 font-semibold text-slate-900 group-hover:text-slate-950 dark:text-slate-100 dark:group-hover:text-white">タイピング練習</h3>
-            <p class="text-sm text-slate-600 dark:text-slate-400">ひらがなのローマ字入力を練習するタイピングゲーム。</p>
-          </a>
-
-          <!-- PDF参照モード -->
-          <a
-            href="/tools/pdf-viewer"
-            class="group rounded-xl border border-slate-200 bg-white p-6 transition-all hover:border-blue-600/50 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900/50 dark:hover:bg-slate-900"
-          >
-            <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-500 transition-colors group-hover:bg-blue-500/20">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <path d="M14 2v6h6" />
-                <path d="M9 15h6" />
-                <path d="M9 11h6" />
-              </svg>
-            </div>
-            <h3 class="mb-1 font-semibold text-slate-900 group-hover:text-slate-950 dark:text-slate-100 dark:group-hover:text-white">PDF参照モード</h3>
-            <p class="text-sm text-slate-600 dark:text-slate-400">ITパスポート等の試験問題をPDFと照合して学習できます。</p>
-          </a>
-        </div>
-      </main>
-
-      <footer class="border-t border-slate-200 py-8 text-center text-sm text-slate-500 dark:border-slate-800 dark:text-slate-500">
-        <p>All processing is done locally in your browser.</p>
-      </footer>
-    </div>
+			{
+				sections.map((section) => (
+					<section class="mb-12" data-tool-section>
+						<SectionHeading title={section.label} desc={section.desc} />
+						<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+							{section.items.map((item) => (
+								<LinkCard
+									href={item.href}
+									label={item.label}
+									desc={item.desc}
+									icon={item.icon}
+									accent={item.accent}
+									audience={audienceOf(item.href)}
+									badge={sendsDataOf(item.href) ? '共有・送信あり' : undefined}
+								/>
+							))}
+						</div>
+					</section>
+				))
+			}
+		</main>
+	</div>
 </Layout>
+
+<style>
+	.audience-tab {
+		background: white;
+		color: #0f172a;
+	}
+
+	:global(html.dark) .audience-tab {
+		background: rgb(15 23 42 / 0.5);
+		color: #f1f5f9;
+	}
+
+	/* 選択中は色だけでなく背景の濃さでも分かるようにする */
+	.audience-tab[aria-pressed='true'] {
+		background: #4f46e5;
+		border-color: #4f46e5;
+		color: #ffffff;
+	}
+
+	:global(html.dark) .audience-tab[aria-pressed='true'] {
+		background: #6366f1;
+		border-color: #6366f1;
+	}
+</style>
+
+<script>
+	const nav = document.querySelector<HTMLElement>('[data-audience-filter]');
+	const tools = Array.from(document.querySelectorAll<HTMLElement>('[data-tool]'));
+	const groups = Array.from(document.querySelectorAll<HTMLElement>('[data-tool-section]'));
+
+	if (nav && tools.length > 0) {
+		nav.hidden = false;
+
+		const status = nav.querySelector<HTMLElement>('[data-audience-status]');
+		const buttons = Array.from(nav.querySelectorAll<HTMLButtonElement>('button[data-audience]'));
+
+		const apply = (selected: string) => {
+			let shown = 0;
+			for (const tool of tools) {
+				// 'both' は「生徒が使う」でも「先生が使う」でも残す。
+				// 迷うものを消してしまうと、探している人が見つけられなくなる
+				const audience = tool.dataset.audience ?? 'both';
+				const match = selected === 'all' || audience === selected || audience === 'both';
+				tool.hidden = !match;
+				if (match) shown += 1;
+			}
+			// 中身が全部消えた分類は、見出しごと隠す
+			for (const group of groups) {
+				const visible = Array.from(group.querySelectorAll<HTMLElement>('[data-tool]')).some(
+					(tool) => !tool.hidden,
+				);
+				group.hidden = !visible;
+			}
+			for (const button of buttons) {
+				button.setAttribute('aria-pressed', String(button.dataset.audience === selected));
+			}
+			if (status) status.textContent = `${shown}件を表示中`;
+		};
+
+		for (const button of buttons) {
+			button.addEventListener('click', () => apply(button.dataset.audience ?? 'all'));
+		}
+	}
+</script>

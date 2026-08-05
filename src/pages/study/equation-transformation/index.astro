@@ -10,7 +10,7 @@ import "../../../styles/global.css";
   description="等式の変形テスト。高校数学の方程式・不等式を変形するドリル形式の学習ツール。ブラウザ上で動作。"
 >
   <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
-    <Header client:load currentPath="/study/equation-transformation" />
+    <Header client:load currentPath={Astro.url.pathname} />
     <EquationTransformation client:only="react" />
   </div>
   <script

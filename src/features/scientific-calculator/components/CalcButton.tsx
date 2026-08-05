@@ -41,17 +41,28 @@ const CalcButton = forwardRef<HTMLButtonElement, CalcButtonProps>(function CalcB
       type="button"
       onClick={handleClick}
       className={cn(
-        'relative h-12 rounded-lg border border-white/50 px-2 text-sm font-semibold shadow-sm transition active:translate-y-px sm:h-14 sm:text-base',
+        'relative h-11 rounded-lg border border-white/50 px-1 text-base font-semibold shadow-sm transition active:translate-y-px sm:h-12',
         variantClassMap[button.variant],
         button.wide && 'col-span-2',
         showShiftSubLabel && 'py-1',
         isShiftKey && shiftActive && 'ring-2 ring-violet-400 ring-offset-1 dark:ring-violet-300',
-        !isShiftKey && highlighted && 'ring-2 ring-yellow-400 ring-offset-1 dark:ring-yellow-300',
+        // ライトは amber-700 (対キー背景 4.57:1)、ダークは amber-400 (8.92:1)。
+        // どちらも DADS の非テキスト 3:1 を満たす。yellow-400 は 1.39:1 で見えなかった。
+        highlighted && 'ring-[3px] ring-amber-700 ring-offset-1 dark:ring-amber-400',
         className
       )}
       aria-pressed={isShiftKey ? shiftActive : undefined}
       {...buttonProps}
     >
+      {/* 色だけに情報を乗せないための印。枠線と併用する。 */}
+      {highlighted && (
+        <span
+          aria-hidden="true"
+          className="absolute left-1 top-0.5 text-[11px] font-bold leading-none text-amber-800 dark:text-amber-300"
+        >
+          ▶
+        </span>
+      )}
       {hasShiftAlt && (
         <span
           aria-hidden="true"

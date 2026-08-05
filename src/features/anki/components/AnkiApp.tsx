@@ -32,10 +32,44 @@ export default function AnkiApp() {
           <p className="text-sm text-slate-600 dark:text-slate-400">短答入力 × 分散復習（FSRS）で暗記を進める学習ツール</p>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="outline">datasets {anki.datasets.length}</Badge>
-          <Badge className="bg-green-600 text-white">due {anki.dashboard.due.overdue}</Badge>
+          <Badge variant="outline">問題集 {anki.datasets.length}</Badge>
+          <Badge className="bg-green-600 text-white">
+            復習まち {anki.dashboard.due.overdue}
+          </Badge>
         </div>
       </div>
+
+      {/* /tools/anki/?import=glossary で来たときの結果。
+          用語集ページの「覚える君で覚える」ボタンと、先生が配るURLの両方から来る */}
+      {anki.deckLink.status !== 'idle' && (
+        <div
+          role="status"
+          className={
+            anki.deckLink.status === 'error'
+              ? 'mb-6 rounded-lg border border-red-300 bg-red-50 p-4 text-base text-red-900 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-200'
+              : 'mb-6 rounded-lg border border-indigo-300 bg-indigo-50 p-4 text-base text-indigo-900 dark:border-indigo-500/40 dark:bg-indigo-500/10 dark:text-indigo-100'
+          }
+        >
+          {anki.deckLink.status === 'loading' && <>「{anki.deckLink.label}」を読み込んでいます…</>}
+          {anki.deckLink.status === 'done' && (
+            <>
+              <strong className="font-semibold">「{anki.deckLink.label}」を取り込みました。</strong>
+              （{anki.deckLink.cardCount}問）
+              <span className="mt-1 block text-sm">
+                すでに覚えたぶんの記録は消えていません。下の一覧から選んで「学習」に進んでください。
+              </span>
+            </>
+          )}
+          {anki.deckLink.status === 'error' && (
+            <>
+              <strong className="font-semibold">「{anki.deckLink.label}」を読み込めませんでした。</strong>
+              <span className="mt-1 block text-sm">
+                {anki.deckLink.message}／通信できていない可能性があります。時間をおいて開き直してください。
+              </span>
+            </>
+          )}
+        </div>
+      )}
 
       <Card className="mb-6 border-slate-200 bg-white/95 dark:border-slate-800 dark:bg-slate-900/70">
         <CardHeader>
@@ -123,6 +157,7 @@ export default function AnkiApp() {
               onSelectDataset={anki.setSelectedDatasetId}
               onStartSession={anki.startSession}
               onMoveToStudy={() => setTab('study')}
+              onMoveToData={() => setTab('data')}
             />
           </TabsContent>
 
@@ -135,6 +170,7 @@ export default function AnkiApp() {
               onStartSession={anki.startSession}
               onSubmitAnswer={anki.submitAnswer}
               onSubmitGrade={anki.submitGrade}
+              onRevealHint={anki.revealHint}
               onResetSession={anki.resetSession}
             />
           </TabsContent>
