@@ -51,6 +51,26 @@ export function grade(correct: number, total: number): ExamResult {
   return { correct, total, score, passed: score >= PASSING_SCORE };
 }
 
+/**
+ * 出題する問題を選ぶ。
+ *
+ * **毎回シャッフルすること。** 先頭から順に取ると、「もう一度やる」で
+ * まったく同じ10問が出てしまい、答えを覚えているだけで満点になる。
+ * 本番の練習にならない。
+ */
+export function pickExamQuestions(
+  pool: DrillProblem[],
+  count: number,
+  random: () => number = Math.random
+): DrillProblem[] {
+  const shuffled = [...pool];
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled.slice(0, count);
+}
+
 /** 残り時間を mm:ss で。 */
 export function formatRemaining(seconds: number): string {
   const clamped = Math.max(0, Math.floor(seconds));

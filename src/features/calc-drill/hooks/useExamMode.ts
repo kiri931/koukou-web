@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useCalculator } from '@/features/scientific-calculator/hooks/useCalculator';
-import { EXAM_DURATION_SEC, EXAM_QUESTION_COUNT, grade, isAnswerCorrect } from '../lib/grading';
+import {
+  EXAM_DURATION_SEC,
+  EXAM_QUESTION_COUNT,
+  grade,
+  isAnswerCorrect,
+  pickExamQuestions,
+} from '../lib/grading';
 import type { DrillProblem } from '../types';
 
 export type ExamPhase = 'ready' | 'running' | 'finished';
@@ -52,7 +58,7 @@ export function useExamMode(pool: DrillProblem[]) {
   }, [phase, endsAt, finish, stopTimer]);
 
   const start = () => {
-    const picked = pool.slice(0, EXAM_QUESTION_COUNT);
+    const picked = pickExamQuestions(pool, EXAM_QUESTION_COUNT);
     if (picked.length === 0) return;
     calc.pressButton('ac');
     setQuestions(picked);
@@ -107,7 +113,7 @@ export function useExamMode(pool: DrillProblem[]) {
 
   const result = useMemo(
     // 時間切れで残った問題も、答えていない＝不正解として数える
-    () => grade(answers.filter((a) => a.correct).length, questions.length || EXAM_QUESTION_COUNT),
+    () => grade(answers.filter((a) => a.correct).length, questions.length),
     [answers, questions.length]
   );
 

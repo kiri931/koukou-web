@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { DrillProblem } from '../types';
-import { formatRemaining, grade, isAnswerCorrect, PASSING_SCORE } from './grading';
+import { formatRemaining, grade, isAnswerCorrect, PASSING_SCORE, pickExamQuestions } from './grading';
 
 function problem(expectedAnswer: string, rounding?: DrillProblem['rounding']): DrillProblem {
   return {
@@ -49,6 +49,41 @@ describe('grading', () => {
     expect(grade(6, 10)).toEqual({ correct: 6, total: 10, score: 60, passed: false });
     expect(grade(0, 0)).toEqual({ correct: 0, total: 0, score: 0, passed: false });
     expect(PASSING_SCORE).toBe(70);
+  });
+
+  describe('pickExamQuestions', () => {
+    const pool = Array.from({ length: 30 }, (_, i) => ({ ...problem('0'), id: `p${i}` }));
+    // 種を決めた乱数。テストで結果を再現するため
+    const seeded = (seed: number) => () => {
+      seed = (seed * 1103515245 + 12345) % 2147483648;
+      return seed / 2147483648;
+    };
+
+    it('指定した数だけ、重複なく選ぶ', () => {
+      const picked = pickExamQuestions(pool, 10, seeded(1));
+      expect(picked).toHaveLength(10);
+      expect(new Set(picked.map((p) => p.id)).size).toBe(10);
+      for (const p of picked) expect(pool).toContain(p);
+    });
+
+    it('毎回ちがう問題が選ばれる（先頭から順ではない）', () => {
+      // 先頭固定だと「もう一度やる」で同じ10問が出て、答えを覚えるだけになる
+      const a = pickExamQuestions(pool, 10, seeded(1)).map((p) => p.id);
+      const b = pickExamQuestions(pool, 10, seeded(999)).map((p) => p.id);
+      expect(a).not.toEqual(b);
+      expect(a).not.toEqual(pool.slice(0, 10).map((p) => p.id));
+    });
+
+    it('問題が足りなければ、ある分だけ返す', () => {
+      expect(pickExamQuestions(pool.slice(0, 4), 10, seeded(1))).toHaveLength(4);
+      expect(pickExamQuestions([], 10, seeded(1))).toEqual([]);
+    });
+
+    it('元の配列を書き換えない', () => {
+      const before = pool.map((p) => p.id);
+      pickExamQuestions(pool, 10, seeded(7));
+      expect(pool.map((p) => p.id)).toEqual(before);
+    });
   });
 
   it('残り時間の表示', () => {

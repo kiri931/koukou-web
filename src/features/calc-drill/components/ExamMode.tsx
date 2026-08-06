@@ -34,7 +34,10 @@ export default function ExamMode({ pool, levelLabel, categoryLabel }: ExamModePr
       <div className="rounded-lg border border-slate-300 p-4 dark:border-slate-800">
         <h3 className="text-lg font-bold">本番と同じ形で解く</h3>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-base text-slate-700 dark:text-slate-200">
-          <li>{levelLabel}・{categoryLabel} から {EXAM_QUESTION_COUNT} 問を 10 分で解きます。</li>
+          <li>
+            {levelLabel}・{categoryLabel} から {Math.min(pool.length, EXAM_QUESTION_COUNT)} 問を
+            10 分で解きます。毎回ちがう問題が選ばれます。
+          </li>
           <li>
             <strong>キーのガイドは出ません。</strong>自分で手順を決めて電卓を打ちます。
           </li>
