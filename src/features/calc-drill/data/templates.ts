@@ -113,6 +113,60 @@ const yon_shisoku: Template[] = [
       rounding: D2,
     };
   },
+  (rng) => {
+    const a = dec(rng, 10, 99, 1);
+    const b = dec(rng, 1, 40, 1);
+    const c = dec(rng, 1, 9, 1);
+    const d = int(rng, 2, 12);
+    return {
+      category: '四則計算',
+      question: `${a.tok} + ${b.tok} - ${c.tok} × ${d}`,
+      guide: [a.tok, '+', b.tok, '-', c.tok, '×', String(d), '='],
+      value: a.n + b.n - c.n * d,
+      rounding: D2,
+    };
+  },
+  (rng) => {
+    const a = dec(rng, 20, 99, 1);
+    const b = dec(rng, 1, 19, 1);
+    const c = dec(rng, 1, 20, 1);
+    const d = dec(rng, 1, 20, 1);
+    return {
+      category: '四則計算',
+      question: `( ${a.tok} - ${b.tok} ) ÷ ( ${c.tok} + ${d.tok} )`,
+      guide: ['(', a.tok, '-', b.tok, ')', '÷', '(', c.tok, '+', d.tok, ')', '='],
+      value: (a.n - b.n) / (c.n + d.n),
+      rounding: D2,
+    };
+  },
+  (rng) => {
+    const a = dec(rng, 1, 20, 1);
+    const b = dec(rng, 1, 40, 1);
+    const c = dec(rng, 1, 40, 1);
+    const d = dec(rng, 1, 99, 1);
+    return {
+      category: '四則計算',
+      question: `${a.tok} × ( ${b.tok} + ${c.tok} ) - ${d.tok}`,
+      guide: [a.tok, '×', '(', b.tok, '+', c.tok, ')', '-', d.tok, '='],
+      value: a.n * (b.n + c.n) - d.n,
+      rounding: D2,
+    };
+  },
+  (rng) => {
+    // 5個の数値。4級の上限に近い長さ
+    const a = dec(rng, 10, 99, 1);
+    const b = dec(rng, 1, 9, 1);
+    const c = int(rng, 2, 9);
+    const d = dec(rng, 10, 90, 1);
+    const e = int(rng, 2, 9);
+    return {
+      category: '四則計算',
+      question: `${a.tok} + ${b.tok} × ${c} - ${d.tok} ÷ ${e}`,
+      guide: [a.tok, '+', b.tok, '×', String(c), '-', d.tok, '÷', String(e), '='],
+      value: a.n + b.n * c - d.n / e,
+      rounding: D2,
+    };
+  },
 ];
 
 // ────────────────────────────────────────────────────────────
@@ -174,6 +228,62 @@ const yon_shukei: Template[] = [
       rounding: D2,
     };
   },
+  (rng) => {
+    const a = int(rng, 800, 48000);
+    const b = int(rng, 5, 60);
+    return {
+      category: '集計計算',
+      question: `${a} 円の品を ${b} % 引きで買うといくらか`,
+      guide: [String(a), '×', '(', '100', '-', String(b), ')', '÷', '100', '='],
+      value: (a * (100 - b)) / 100,
+      rounding: D2,
+    };
+  },
+  (rng) => {
+    const a = int(rng, 500, 9000);
+    const r = int(rng, 8, 12);
+    return {
+      category: '集計計算',
+      question: `税抜 ${a} 円に ${r} % の税を加えるといくらか`,
+      guide: [String(a), '×', '(', '100', '+', String(r), ')', '÷', '100', '='],
+      value: (a * (100 + r)) / 100,
+      rounding: D2,
+    };
+  },
+  (rng) => {
+    const a = int(rng, 200, 5000);
+    const b = a + int(rng, 20, 4000);
+    return {
+      category: '集計計算',
+      question: `${a} が ${b} になった。何 % 増えたか`,
+      guide: ['(', String(b), '-', String(a), ')', '÷', String(a), '×', '100', '='],
+      value: ((b - a) / a) * 100,
+      rounding: D1,
+    };
+  },
+  (rng) => {
+    const a = int(rng, 80, 600);
+    const m = int(rng, 2, 40);
+    const b = int(rng, 80, 600);
+    const n = int(rng, 2, 40);
+    return {
+      category: '集計計算',
+      question: `1個 ${a} 円を ${m} 個、1個 ${b} 円を ${n} 個 買ったときの平均単価`,
+      guide: ['(', String(a), '×', String(m), '+', String(b), '×', String(n), ')', '÷', '(', String(m), '+', String(n), ')', '='],
+      value: (a * m + b * n) / (m + n),
+      rounding: D2,
+    };
+  },
+  (rng) => {
+    const xs = Array.from({ length: 6 }, () => dec(rng, 10, 9900, 1));
+    return {
+      category: '集計計算',
+      question: `${xs.map((x) => x.tok).join(' + ')} の合計`,
+      guide: [...xs.flatMap((x, i) => (i === 0 ? [x.tok] : ['+', x.tok])), '='],
+      value: xs.reduce((sum, x) => sum + x.n, 0),
+      rounding: D1,
+    };
+  },
 ];
 
 // ────────────────────────────────────────────────────────────
@@ -222,6 +332,52 @@ const yon_jitsumu: Template[] = [
       question: `y = ${a.tok} √x において、x = ${x.tok} のときの y`,
       guide: [a.tok, '×', '√', x.tok, '='],
       value: a.n * Math.sqrt(x.n),
+      rounding: D2,
+    };
+  },
+  (rng) => {
+    const a = dec(rng, 10, 900, 1);
+    const x = decNonZero(rng, 0.5, 30, 2, 0.5);
+    return {
+      category: '実務計算',
+      question: `y = ${a.tok} ÷ x² において、x = ${x.tok} のときの y`,
+      guide: [a.tok, '÷', x.tok, 'x²', '='],
+      value: a.n / (x.n * x.n),
+      rounding: D2,
+    };
+  },
+  (rng) => {
+    const a = dec(rng, 1, 30, 2);
+    const x = dec(rng, 1, 90, 2);
+    return {
+      category: '実務計算',
+      question: `y = √( ${a.tok} x ) において、x = ${x.tok} のときの y`,
+      guide: ['√', '(', a.tok, '×', x.tok, ')', '='],
+      value: Math.sqrt(a.n * x.n),
+      rounding: D2,
+    };
+  },
+  (rng) => {
+    // 定数 a, b をもつ一次式に代入する
+    const a = dec(rng, 0.5, 15, 2);
+    const b = dec(rng, 1, 60, 1);
+    const x = dec(rng, 1, 40, 1);
+    return {
+      category: '実務計算',
+      question: `y = ${a.tok} x + ${b.tok} において、x = ${x.tok} のときの y`,
+      guide: [a.tok, '×', x.tok, '+', b.tok, '='],
+      value: a.n * x.n + b.n,
+      rounding: D2,
+    };
+  },
+  (rng) => {
+    const a = dec(rng, 1, 90, 2);
+    const b = dec(rng, 1, 90, 2);
+    return {
+      category: '実務計算',
+      question: `直角をはさむ2辺が ${a.tok} と ${b.tok} のときの斜辺 c = √( a² + b² )`,
+      guide: ['√', '(', a.tok, 'x²', '+', b.tok, 'x²', ')', '='],
+      value: Math.sqrt(a.n ** 2 + b.n ** 2),
       rounding: D2,
     };
   },

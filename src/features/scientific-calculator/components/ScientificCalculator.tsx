@@ -9,6 +9,7 @@ import CalcKeypad from './CalcKeypad';
 import HelpSheet from './HelpSheet';
 import StatisticsPanel from './StatisticsPanel';
 import { useCalculator } from '../hooks/useCalculator';
+import { useKeyboardInput } from '../hooks/useKeyboardInput';
 
 export default function ScientificCalculator() {
   const [helpOpen, setHelpOpen] = useState(false);
@@ -19,6 +20,11 @@ export default function ScientificCalculator() {
     pressButton,
     setPanelMode,
   } = useCalculator();
+
+  // ヘルプに「キー: Enter または =」と書いてあるのに、これを繋いでいなかった。
+  // ドリル側では繋がない（押すキーを制限しているので、キーボードから
+  // 素通しできてしまうとガイドの意味がなくなる）。
+  useKeyboardInput({ onPress: pressButton });
 
   return (
     <TooltipProvider delayDuration={500} skipDelayDuration={100}>

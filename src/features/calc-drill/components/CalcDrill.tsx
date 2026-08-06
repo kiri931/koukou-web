@@ -5,8 +5,11 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import CalcKeypad from '@/features/scientific-calculator/components/CalcKeypad';
 import { generateProblems } from '../data/problems';
 import { useCalcDrill } from '../hooks/useCalcDrill';
+import { clearMissCounts, loadMissCounts, sortByWeakness, type MissCounts } from '../lib/missLog';
 import type { DrillCategory, DrillLevelFilter } from '../types';
 import DrillDisplay from './DrillDisplay';
+import ExamMode from './ExamMode';
+import WeakKeySummary from './WeakKeySummary';
 
 const LEVEL_FILTERS: DrillLevelFilter[] = ['両方', '4級', '3級'];
 const CATEGORY_FILTERS: (DrillCategory | 'すべて')[] = [
@@ -21,13 +24,15 @@ export default function CalcDrill() {
   const [levelFilter, setLevelFilter] = useState<DrillLevelFilter>('両方');
   const [categoryFilter, setCategoryFilter] = useState<DrillCategory | 'すべて'>('すべて');
   const [listOpen, setListOpen] = useState(false);
+  const [weakFirst, setWeakFirst] = useState(false);
+  const [mode, setMode] = useState<'guide' | 'exam'>('guide');
   // 開くたびに違う種にする。過去問をそのまま出すのではなく、同じ形の問題を作っている
   const [seed, setSeed] = useState(() => Math.floor(Math.random() * 2 ** 31));
   const displayRef = useRef<HTMLDivElement>(null);
 
   const allProblems = useMemo(() => generateProblems(seed), [seed]);
 
-  const filteredProblems = useMemo(
+  const baseProblems = useMemo(
     () =>
       allProblems.filter(
         (problem) =>
@@ -35,6 +40,20 @@ export default function CalcDrill() {
           (categoryFilter === 'すべて' || problem.category === categoryFilter)
       ),
     [allProblems, levelFilter, categoryFilter]
+  );
+
+  /*
+   * 「苦手なキーから」を選んだときだけ並べ替える。
+   *
+   * 並べ替えの材料は、ドリルが持っている最新の記録ではなく
+   * **トグルを押した時点で localStorage から読んだ控え** を使う。
+   * 解いている最中に記録が増えるたび問題順が変わると、
+   * いま解いている問題が横に飛んでしまうため。
+   */
+  const [weakSnapshot, setWeakSnapshot] = useState<MissCounts>({});
+  const filteredProblems = useMemo(
+    () => (weakFirst ? sortByWeakness(baseProblems, weakSnapshot) : baseProblems),
+    [weakFirst, baseProblems, weakSnapshot]
   );
 
   const {
@@ -49,17 +68,55 @@ export default function CalcDrill() {
     isDone,
     requiredAction,
     wrongKeyHint,
+    missCounts,
+    setMissCounts,
     nextProblem,
     retryProblem,
     selectProblem,
   } = useCalcDrill(filteredProblems);
 
+  const toggleWeakFirst = () => {
+    setWeakFirst((prev) => {
+      if (!prev) setWeakSnapshot(loadMissCounts());
+      return !prev;
+    });
+  };
+
+  const resetMisses = () => {
+    clearMissCounts();
+    setMissCounts({});
+    setWeakSnapshot({});
+    setWeakFirst(false);
+  };
+
   return (
     <TooltipProvider delayDuration={500} skipDelayDuration={100}>
       <main className="mx-auto max-w-[30rem] px-4 py-4 text-slate-900 dark:text-slate-100">
+        <div className="mb-3 flex flex-wrap gap-1.5">
+          <Button
+            type="button"
+            size="sm"
+            variant={mode === 'guide' ? 'default' : 'outline'}
+            onClick={() => setMode('guide')}
+            aria-pressed={mode === 'guide'}
+          >
+            ガイド練習
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={mode === 'exam' ? 'default' : 'outline'}
+            onClick={() => setMode('exam')}
+            aria-pressed={mode === 'exam'}
+          >
+            本番（10分）
+          </Button>
+        </div>
+
         <p className="mb-3 text-base text-slate-600 dark:text-slate-300">
-          光っているキーを順に押していきます。手順ごと覚えるための練習です。
-          問題は検定と同じ形で毎回作り直されます。
+          {mode === 'guide'
+            ? '光っているキーを順に押していきます。手順ごと覚えるための練習です。問題は検定と同じ形で毎回作り直されます。'
+            : '検定と同じ 10 分・10 問で通して解きます。キーのガイドは出ません。'}
         </p>
 
         <div className="mb-3 space-y-1.5">
@@ -109,7 +166,13 @@ export default function CalcDrill() {
           </div>
         </div>
 
-        {currentProblem ? (
+        {mode === 'exam' ? (
+          <ExamMode
+            pool={filteredProblems}
+            levelLabel={levelFilter}
+            categoryLabel={categoryFilter}
+          />
+        ) : currentProblem ? (
           <>
             <div ref={displayRef} className="scroll-mt-20">
             <DrillDisplay
@@ -140,6 +203,13 @@ export default function CalcDrill() {
                 highlightedAction={requiredAction ?? undefined}
               />
             </div>
+
+            <WeakKeySummary
+              missCounts={missCounts}
+              weakFirst={weakFirst}
+              onToggleWeakFirst={toggleWeakFirst}
+              onReset={resetMisses}
+            />
 
             <div className="mt-6">
               <button

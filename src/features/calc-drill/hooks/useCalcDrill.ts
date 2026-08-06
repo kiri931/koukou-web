@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BUTTON_ROWS } from '@/features/scientific-calculator/components/CalcKeypad';
 import { useCalculator } from '@/features/scientific-calculator/hooks/useCalculator';
+import { loadMissCounts, recordMiss, saveMissCounts, type MissCounts } from '../lib/missLog';
 import type { DrillProblem } from '../types';
 
 /** SHIFT を押さないと出せないキー。データには書かず、ここで自動的に差し込む。 */
@@ -15,7 +16,13 @@ export function useCalcDrill(problems: DrillProblem[]) {
   const [problemIndex, setProblemIndex] = useState(0);
   const [stepIndex, setStepIndex] = useState(0);
   const [wrongKeyHint, setWrongKeyHint] = useState<string | null>(null);
+  const [missCounts, setMissCounts] = useState<MissCounts>({});
   const hintTimer = useRef<number | null>(null);
+
+  // localStorage はブラウザにしか無いので、描画後に読む
+  useEffect(() => {
+    setMissCounts(loadMissCounts());
+  }, []);
 
   useEffect(() => {
     calc.pressButton('ac');
@@ -59,6 +66,14 @@ export function useCalcDrill(problems: DrillProblem[]) {
     if (!currentProblem || isDone) return;
     if (action !== requiredAction) {
       showWrongKeyHint();
+      // 数えるのは「押すべきだったキー」。押し間違えた先には意味がない
+      if (requiredAction) {
+        setMissCounts((prev) => {
+          const next = recordMiss(prev, requiredAction);
+          saveMissCounts(next);
+          return next;
+        });
+      }
       return;
     }
     setWrongKeyHint(null);
@@ -104,6 +119,8 @@ export function useCalcDrill(problems: DrillProblem[]) {
     isDone,
     requiredAction,
     wrongKeyHint,
+    missCounts,
+    setMissCounts,
     nextProblem,
     retryProblem,
     selectProblem,

@@ -251,8 +251,13 @@ export default function CalcKeypad({ shiftActive, angleMode, onPress, highlighte
                     shiftActive={shiftActive}
                     onPress={onPress}
                     highlighted={
-                      normalizedButton.action === highlightedAction ||
-                      (shiftActive && normalizedButton.shiftAction === highlightedAction)
+                      // highlightedAction を渡さない使い方（単体の関数電卓）では
+                      // どのキーも光らせない。この判定を省くと、SHIFT 中に
+                      // 副機能を持たないキーの shiftAction(undefined) と
+                      // highlightedAction(undefined) が一致して全部光る。
+                      highlightedAction !== undefined &&
+                      (normalizedButton.action === highlightedAction ||
+                        (shiftActive && normalizedButton.shiftAction === highlightedAction))
                     }
                   />
                 </TooltipTrigger>
