@@ -3,7 +3,7 @@
 // **メインサイト(koukou-jouhou)の src/lib/site-links.ts が唯一の出どころで、
 // ここはその写し。**　以前はここだけが独自の16件を持っていて、
 // 覚える君を使っている生徒がヘッダーから他のツール(作戦盤・フローチャート・
-// かんじチェック・なぞり書き等)に辿り着けなかった。両方を同じ中身にしてある。
+// 漢字ドリル・なぞり書き等)に辿り着けなかった。両方を同じ中身にしてある。
 //
 // **メインサイトでツールを増やしたら、ここにも同じ1件を足すこと。**
 // リンクはサイトのルート基準(`/flowchart/` など)で書く。同一ドメインなので
@@ -39,10 +39,17 @@ export const sections: SiteLinkSection[] = [
 		items: [
 			{
 				href: '/kanji-check/',
-				label: 'かんじチェック（漢字・英単語）',
-				desc: '漢字と英単語を手書きで練習・小テスト。QRを配るだけで自動採点され、結果が先生に集まります。書き順のなぞり練習も。',
+				label: '漢字ドリル（テストと練習）',
+				desc: '出す漢字を選ぶと、小テストと練習用ドリルのQRがまとめてできます。手書きを自動採点し、テストの結果は先生に集まります。書き順のなぞり練習も。',
 				accent: '#f43f5e',
 				icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>',
+			},
+			{
+				href: '/kanji-check/eigo-test/',
+				label: '英単語テスト（先生用）',
+				desc: '英単語を1マス1文字ずつ手書きさせる小テスト。QRを配るだけで自動採点され、結果が先生に集まります。',
+				bg: '#7c3aed',
+				icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6" /><path d="m4 14 6-6 2-3" /><path d="M2 5h12" /><path d="M7 2h1" /><path d="m22 22-5-10-5 10" /><path d="M14 18h6" /></svg>',
 			},
 			{
 				href: '/tools/typing-japanese/',
@@ -341,7 +348,7 @@ const bothTools = new Set([
 /**
  * 使うときに通信するもの。**確かめられたものだけを true にしている。**
  * - 作戦盤・フローチャート: 共有リンクを作ると中身を預かる（KV）
- * - かんじチェック: 小テストの結果が先生に集まる
+ * - 漢字ドリル: 小テストの結果が先生に集まる
  * - 機能リクエスト: フォームの送信
  *
  * 所見作成ツールはここから外した。フォーム送信の道具だと取り違えて登録されていたが、
